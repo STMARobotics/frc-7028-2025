@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.commands.PhotonVisionCommand;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
@@ -36,8 +37,9 @@ public class RobotContainer {
 
   private final CommandXboxController joystick = new CommandXboxController(0);
 
-  public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+  private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
   private final DrivetrainTelemetry drivetrainTelemetry = new DrivetrainTelemetry(MaxSpeed);
+  private final PhotonVisionCommand visionCommand = new PhotonVisionCommand(drivetrain);
 
   /* Path follower */
   private final SendableChooser<Command> autoChooser;
@@ -47,6 +49,8 @@ public class RobotContainer {
     SmartDashboard.putData("Auto Mode", autoChooser);
 
     configureBindings();
+
+    visionCommand.schedule();
   }
 
   private void configureBindings() {
