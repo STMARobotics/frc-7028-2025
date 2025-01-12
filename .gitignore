@@ -170,8 +170,15 @@ out/
 
 # Simulation GUI and other tools window save file
 networktables.json
+networktables.ini
 simgui.json
 *-window.json
+simgui-ds.json
+*.wpilog
+*.hoot
+
+# Merge conflict diff files
+*.orig
 
 # Simulation data log directory
 logs/

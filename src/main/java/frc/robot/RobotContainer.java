@@ -9,6 +9,7 @@ import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -19,6 +20,7 @@ import frc.robot.commands.PhotonVisionCommand;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
+@Logged(strategy = Logged.Strategy.OPT_IN)
 public class RobotContainer {
   private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
   private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max
@@ -33,12 +35,10 @@ public class RobotContainer {
   private final SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric()
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
-  private final Telemetry logger = new Telemetry(MaxSpeed);
-
   private final CommandXboxController joystick = new CommandXboxController(0);
 
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-
+  private final DrivetrainTelemetry drivetrainTelemetry = new DrivetrainTelemetry(MaxSpeed);
   private final PhotonVisionCommand visionCommand = new PhotonVisionCommand(drivetrain);
 
   /* Path follower */
@@ -84,7 +84,7 @@ public class RobotContainer {
     // reset the field-centric heading on left bumper press
     joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
-    drivetrain.registerTelemetry(logger::telemeterize);
+    drivetrain.registerTelemetry(drivetrainTelemetry::telemeterize);
   }
 
   public Command getAutonomousCommand() {
