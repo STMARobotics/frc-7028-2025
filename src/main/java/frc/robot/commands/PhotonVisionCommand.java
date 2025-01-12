@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import com.ctre.phoenix6.Utils;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Vision;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -23,7 +24,10 @@ public class PhotonVisionCommand extends Command {
       // Change our trust in the measurement based on the tags we can see
       var estStdDevs = vision.getEstimationStdDevs();
 
-      drivetrain.addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
+      drivetrain.addVisionMeasurement(
+          est.estimatedPose.toPose2d(),
+            Utils.fpgaToCurrentTime(est.timestampSeconds),
+            estStdDevs);
     });
 
   }
