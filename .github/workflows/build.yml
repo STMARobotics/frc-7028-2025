@@ -6,7 +6,7 @@ name: CI Build
 on: [push]
 
 jobs:
-  build:
+  ci-build:
     runs-on: ubuntu-latest
 
     # Use the WPILib docker container

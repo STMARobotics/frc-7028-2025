@@ -6,7 +6,7 @@ name: Spotless formatting check
 on: [push]
 
 jobs:
-  build:
+  spotless-check:
     runs-on: ubuntu-latest
 
     # Use the WPILib docker container
