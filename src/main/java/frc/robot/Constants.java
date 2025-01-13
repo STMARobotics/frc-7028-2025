@@ -1,5 +1,7 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
@@ -9,6 +11,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.units.measure.AngularVelocity;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -34,5 +37,13 @@ public class Constants {
     // (Fake values. Experiment and determine estimation noise on an actual robot.)
     public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
     public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
+  }
+
+  public static class IndexerConstants {
+    public static final int DEVICE_ID_BELT = 0; // TODO pick device id
+
+    public static final AngularVelocity INTAKE_VELOCITY = RadiansPerSecond.of(2 * Math.PI * 6);
+    public static final AngularVelocity SCOREL1_VELOCITY = RadiansPerSecond.of(2 * Math.PI * -6);
+    public static final AngularVelocity EJECT_VELOCITY = RadiansPerSecond.of(2 * Math.PI * -12);
   }
 }
