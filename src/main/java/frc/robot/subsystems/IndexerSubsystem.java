@@ -1,6 +1,9 @@
 package frc.robot.subsystems;
 
 import static frc.robot.Constants.IndexerConstants.DEVICE_ID_BELT;
+import static frc.robot.Constants.IndexerConstants.INTAKE_VELOCITY;
+import static frc.robot.Constants.IndexerConstants.SCOREL1_VELOCITY;
+import static frc.robot.Constants.IndexerConstants.EJECT_VELOCITY;
 
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -23,7 +26,7 @@ public class IndexerSubsystem implements Subsystem {
    * Runs belt to move coral onto end effector
    */
   public void intake() {
-    beltMotor.setControl(beltControl.withVelocity(Constants.IndexerConstants.INTAKE_VELOCITY));
+    beltMotor.setControl(beltControl.withVelocity(INTAKE_VELOCITY));
   }
 
   /*
@@ -37,13 +40,13 @@ public class IndexerSubsystem implements Subsystem {
    * Run belt backward to score on L1
    */
   public void scoreL1() {
-    beltMotor.setControl(beltControl.withVelocity(Constants.IndexerConstants.SCOREL1_VELOCITY));
+    beltMotor.setControl(beltControl.withVelocity(SCOREL1_VELOCITY));
   }
 
   /*
    * Run belt backward to remove coral from the system
    */
   public void eject() {
-    beltMotor.setControl(beltControl.withVelocity(Constants.IndexerConstants.EJECT_VELOCITY));
+    beltMotor.setControl(beltControl.withVelocity(EJECT_VELOCITY));
   }
 }
