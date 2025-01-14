@@ -40,7 +40,7 @@ public class Constants {
   }
 
   public static class IndexerConstants {
-    public static final int DEVICE_ID_BELT = 0; // TODO pick device id
+    public static final int DEVICE_ID_BELT = 70;
 
     public static final AngularVelocity INTAKE_VELOCITY = RadiansPerSecond.of(2 * Math.PI * 6);
     public static final AngularVelocity SCOREL1_VELOCITY = RadiansPerSecond.of(2 * Math.PI * -6);
