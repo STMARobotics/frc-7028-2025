@@ -64,4 +64,8 @@ public class Constants {
   public static class EffectorConstants {
 
   }
+
+  public static class ElevatorConstants {
+
+  }
 }
