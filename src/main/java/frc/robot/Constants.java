@@ -23,7 +23,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
  * constants are needed, to reduce verbosity.
  */
 public class Constants {
-  public static class Vision {
+  public static class VisionConstants {
     public static final String kCameraName = "YOUR CAMERA NAME";
     // Cam mounted facing forward, half a meter forward of center, half a meter up from center.
     public static final Transform3d kRobotToCam = new Transform3d(
@@ -39,11 +39,44 @@ public class Constants {
     public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
   }
 
+  /**
+   * Constants for the climb subsystem
+   */
+  public static class ClimbConstants {
+
+    public static final int DEVICE_ID_CLIMB_MOTOR_1 = 60;
+    public static final int DEVICE_ID_CLIMB_MOTOR_2 = 65;
+  }
+
+  /**
+   * Constants for the algae subsystem
+   */
+  public static class AlgaeConstants {
+
+  }
+
+  /**
+   * Constants for the indexer subsystem
+   */
   public static class IndexerConstants {
     public static final int DEVICE_ID_BELT = 70;
 
     public static final AngularVelocity INTAKE_VELOCITY = RadiansPerSecond.of(1);
     public static final AngularVelocity SCORE_VELOCITY_LEVEL_1 = RadiansPerSecond.of(-1);
     public static final AngularVelocity EJECT_VELOCITY = RadiansPerSecond.of(-2);
+  }
+
+  /*
+   * Constants for the arm subsystem
+   */
+  public static class ArmConstants {
+
+  }
+
+  /*
+   * Constants for the game piece manipulator
+   */
+  public static class GamePieceManipulatorConstants {
+
   }
 }
