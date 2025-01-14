@@ -39,16 +39,25 @@ public class Constants {
     public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
   }
 
+  /**
+   * Constants for the climb subsystem
+   */
   public static class ClimbConstants {
 
     public static final int DEVICE_ID_CLIMB_MOTOR_1 = 60;
     public static final int DEVICE_ID_CLIMB_MOTOR_2 = 65;
   }
 
-  public static class AlgaeDudeConstants {
+  /**
+   * Constants for the algae subsystem
+   */
+  public static class AlgaeConstants {
 
   }
 
+  /**
+   * Constants for the indexer subsystem
+   */
   public static class IndexerConstants {
     public static final int DEVICE_ID_BELT = 70;
 
@@ -57,15 +66,17 @@ public class Constants {
     public static final AngularVelocity EJECT_VELOCITY = RadiansPerSecond.of(2 * Math.PI * -12);
   }
 
+  /*
+   * Constants for the arm subsystem
+   */
   public static class ArmConstants {
 
   }
 
-  public static class EffectorConstants {
-
-  }
-
-  public static class ElevatorConstants {
+  /*
+   * Constants for the game piece manipulator
+   */
+  public static class GamePieceManipulatorConstants {
 
   }
 }
