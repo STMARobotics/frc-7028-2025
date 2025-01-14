@@ -1,14 +1,13 @@
 package frc.robot.subsystems;
 
 import static frc.robot.Constants.IndexerConstants.DEVICE_ID_BELT;
+import static frc.robot.Constants.IndexerConstants.EJECT_VELOCITY;
 import static frc.robot.Constants.IndexerConstants.INTAKE_VELOCITY;
 import static frc.robot.Constants.IndexerConstants.SCOREL1_VELOCITY;
-import static frc.robot.Constants.IndexerConstants.EJECT_VELOCITY;
 
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.robot.Constants;
 
 /*
  * The subsystem for the coral box/indexer
