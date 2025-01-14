@@ -42,7 +42,7 @@ public class Constants {
   public static class ClimbConstants {
 
     public static final int DEVICE_ID_CLIMB_MOTOR_1 = 60;
-    public static final int DEVICE_ID_CLIMB_MOTOR_2 = 61;
+    public static final int DEVICE_ID_CLIMB_MOTOR_2 = 65;
   }
 
   public static class AlgaeDudeConstants {
