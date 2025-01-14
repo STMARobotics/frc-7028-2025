@@ -3,7 +3,7 @@ package frc.robot.subsystems;
 import static frc.robot.Constants.IndexerConstants.DEVICE_ID_BELT;
 import static frc.robot.Constants.IndexerConstants.EJECT_VELOCITY;
 import static frc.robot.Constants.IndexerConstants.INTAKE_VELOCITY;
-import static frc.robot.Constants.IndexerConstants.SCOREL1_VELOCITY;
+import static frc.robot.Constants.IndexerConstants.SCORE_VELOCITY_LEVEL_1;
 
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -36,10 +36,10 @@ public class IndexerSubsystem implements Subsystem {
   }
 
   /*
-   * Run belt backward to score on L1
+   * Run belt backward to score on level 1 of the reef
    */
-  public void scoreL1() {
-    beltMotor.setControl(beltControl.withVelocity(SCOREL1_VELOCITY));
+  public void scoreLevel1() {
+    beltMotor.setControl(beltControl.withVelocity(SCORE_VELOCITY_LEVEL_1));
   }
 
   /*
