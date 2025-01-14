@@ -1,5 +1,7 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
@@ -9,6 +11,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.units.measure.AngularVelocity;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -20,7 +23,7 @@ import edu.wpi.first.math.numbers.N3;
  * constants are needed, to reduce verbosity.
  */
 public class Constants {
-  public static class Vision {
+  public static class VisionConstants {
     public static final String kCameraName = "YOUR CAMERA NAME";
     // Cam mounted facing forward, half a meter forward of center, half a meter up from center.
     public static final Transform3d kRobotToCam = new Transform3d(
@@ -34,5 +37,46 @@ public class Constants {
     // (Fake values. Experiment and determine estimation noise on an actual robot.)
     public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
     public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
+  }
+
+  /**
+   * Constants for the climb subsystem
+   */
+  public static class ClimbConstants {
+
+    public static final int DEVICE_ID_CLIMB_MOTOR_1 = 60;
+    public static final int DEVICE_ID_CLIMB_MOTOR_2 = 65;
+  }
+
+  /**
+   * Constants for the algae subsystem
+   */
+  public static class AlgaeConstants {
+
+  }
+
+  /**
+   * Constants for the indexer subsystem
+   */
+  public static class IndexerConstants {
+    public static final int DEVICE_ID_BELT = 70;
+
+    public static final AngularVelocity INTAKE_VELOCITY = RadiansPerSecond.of(2 * Math.PI * 6);
+    public static final AngularVelocity SCOREL1_VELOCITY = RadiansPerSecond.of(2 * Math.PI * -6);
+    public static final AngularVelocity EJECT_VELOCITY = RadiansPerSecond.of(2 * Math.PI * -12);
+  }
+
+  /*
+   * Constants for the arm subsystem
+   */
+  public static class ArmConstants {
+
+  }
+
+  /*
+   * Constants for the game piece manipulator
+   */
+  public static class GamePieceManipulatorConstants {
+
   }
 }
