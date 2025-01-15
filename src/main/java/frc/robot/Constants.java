@@ -3,7 +3,6 @@ package frc.robot;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 
 import com.ctre.phoenix6.configs.SlotConfigs;
-
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
@@ -67,12 +66,12 @@ public class Constants {
     public static final AngularVelocity SCORE_VELOCITY_LEVEL_1 = RadiansPerSecond.of(-1);
     public static final AngularVelocity EJECT_VELOCITY = RadiansPerSecond.of(-2);
 
-    public static final SlotConfigs SLOT_CONFIGS = new SlotConfigs()
-    .withKP(0.0)
-    .withKI(0.0)
-    .withKD(0.0)
-    .withKS(0.0)
-    .withKV(0.0);
+    public static final SlotConfigs SLOT_CONFIGS = new SlotConfigs().withKP(0.0) // Not sure why spotless wants it this
+                                                                                 // way
+        .withKI(0.0)
+        .withKD(0.0)
+        .withKS(0.0)
+        .withKV(0.0);
   }
 
   /*
