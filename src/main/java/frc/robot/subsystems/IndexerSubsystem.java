@@ -39,10 +39,10 @@ public class IndexerSubsystem implements Subsystem {
           null));
 
   public IndexerSubsystem() {
-
     var indexerTalonConfig = new TalonFXConfiguration();
     indexerTalonConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     indexerTalonConfig.Slot0 = Slot0Configs.from(SLOT_CONFIGS);
+    beltMotor.getConfigurator().apply(indexerTalonConfig);
   }
 
   /*
