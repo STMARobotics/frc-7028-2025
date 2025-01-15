@@ -1,13 +1,22 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.IndexerConstants.DEVICE_ID_BELT;
 import static frc.robot.Constants.IndexerConstants.EJECT_VELOCITY;
 import static frc.robot.Constants.IndexerConstants.INTAKE_VELOCITY;
 import static frc.robot.Constants.IndexerConstants.SCORE_VELOCITY_LEVEL_1;
+import static frc.robot.Constants.IndexerConstants.SLOT_CONFIGS;
 
+import com.ctre.phoenix6.SignalLogger;
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 /*
  * The subsystem for the coral box/indexer
@@ -16,11 +25,23 @@ public class IndexerSubsystem implements Subsystem {
 
   private final TalonFX beltMotor = new TalonFX(DEVICE_ID_BELT);
   private final VelocityTorqueCurrentFOC beltControl = new VelocityTorqueCurrentFOC(0.0);
+  private final TorqueCurrentFOC indexerSysIdControl = new TorqueCurrentFOC(0.0);
+
+  private final SysIdRoutine IndexerSysIdRoutine = new SysIdRoutine(
+      new SysIdRoutine.Config(
+          null, // Use default ramp rate (1 V/s)
+          null, // Use dynamic voltage of 7 V
+          null, // Use default timeout (10 s)
+          // Log state with SignalLogger class
+          state -> SignalLogger.writeString("Indexer Sys ID", state.toString())),
+        new SysIdRoutine.Mechanism((amps) -> beltMotor.setControl(indexerSysIdControl.withOutput(amps.in(Volts))), null, null));
 
   public IndexerSubsystem() {
 
+    var indexerTalonConfig = new TalonFXConfiguration();
+    indexerTalonConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    indexerTalonConfig.Slot0 = Slot0Configs.from(SLOT_CONFIGS);
   }
-
   /*
    * Runs belt to move coral onto end effector
    */
