@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.IndexerConstants.DEVICE_ID_BELT;
 import static frc.robot.Constants.IndexerConstants.EJECT_VELOCITY;
@@ -14,9 +13,9 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import com.ctre.phoenix6.signals.NeutralModeValue;
 
 /*
  * The subsystem for the coral box/indexer
@@ -34,7 +33,10 @@ public class IndexerSubsystem implements Subsystem {
           null, // Use default timeout (10 s)
           // Log state with SignalLogger class
           state -> SignalLogger.writeString("Indexer Sys ID", state.toString())),
-        new SysIdRoutine.Mechanism((amps) -> beltMotor.setControl(indexerSysIdControl.withOutput(amps.in(Volts))), null, null));
+      new SysIdRoutine.Mechanism(
+          (amps) -> beltMotor.setControl(indexerSysIdControl.withOutput(amps.in(Volts))),
+          null,
+          null));
 
   public IndexerSubsystem() {
 
@@ -42,6 +44,7 @@ public class IndexerSubsystem implements Subsystem {
     indexerTalonConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     indexerTalonConfig.Slot0 = Slot0Configs.from(SLOT_CONFIGS);
   }
+
   /*
    * Runs belt to move coral onto end effector
    */
