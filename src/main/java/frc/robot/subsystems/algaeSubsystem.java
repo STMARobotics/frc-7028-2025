@@ -16,11 +16,15 @@ import frc.robot.Constants;
 
 public class algaeSubsystem extends SubsystemBase {
   
-  //define motor
+  //define motors
   public final TalonFX rollerMotor = new TalonFX(DEVICE_ID_ROLLERMOTOR);
-  //define how motor is controlled
+  public final TalonFX wristMotor = new TalonFX(DEVICE_ID_ROLLERMOTOR);
+  //define how motors are controlled
   private final VelocityTorqueCurrentFOC rollerControl = new VelocityTorqueCurrentFOC(0.0);
+  private final VelocityTorqueCurrentFOC wristControl = new VelocityTorqueCurrentFOC(0.0);
   
+  //leave, score coral holding, go back to human player to get coral and score it if time permits i.e cycle as many coral as you can
+
   public algaeSubsystem() {}
   
   public void intake() {
@@ -34,6 +38,19 @@ public class algaeSubsystem extends SubsystemBase {
 
   public void stop() {
     rollerMotor.stopMotor();
+  }
+
+  //score function probably has to be different from outtake due to speeds of rollers
+  public void score() {
+    rollerMotor.setControl(rollerControl.withVelocity(Constants.AlgaeSubsystemConstants.scoreSpeed));
+  }
+
+  public void moveIntakeDown() {
+    wristMotor.setControl(wristControl.withVelocity(Constants.AlgaeSubsystemConstants.wristDownSpeed));
+  }
+
+  public void moveIntakeUp() {
+    wristMotor.setControl(wristControl.withVelocity(Constants.AlgaeSubsystemConstants.wristUpSpeed));
   }
 }
 
