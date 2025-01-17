@@ -28,23 +28,16 @@ public class IndexerSubsystem implements Subsystem {
   private final TorqueCurrentFOC beltSysIdControl = new TorqueCurrentFOC(0.0);
 
   private final SysIdRoutine BeltSysIdRoutine = new SysIdRoutine(
-      new SysIdRoutine.Config(
-          null,
-          null,
-          null,
-          state -> SignalLogger.writeString("Indexer Sys ID", state.toString())),
-      new SysIdRoutine.Mechanism(
-          (amps) -> beltMotor.setControl(BeltSysIdControl.withOutput(amps.in(Volts))),
-          null,
-          null));
+          new SysIdRoutine.Config(null, null, null, state -> SignalLogger.writeString("Indexer Sys ID", state.toString()))
+  );
 
   public IndexerSubsystem() {
     var indexerTalonConfig = new TalonFXConfiguration();
     beltTalonConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     beltTalonConfig.Slot0 = Slot0Configs.from(SLOT_CONFIGS);
     beltTalonConfig.getConfigurator().apply(indexerTalonConfig);
-    beltTalonConfig.CurrentLimits.SupplyCurrentLimit = SUPPLY_CURRENT_LIMIT.in(Amps);
-    beltTalonConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    beltMotor.CurrentLimits.SupplyCurrentLimit = SUPPLY_CURRENT_LIMIT.in(Amps);
+    beltMotor.CurrentLimits.SupplyCurrentLimitEnable = true;
   }
 
   /*
