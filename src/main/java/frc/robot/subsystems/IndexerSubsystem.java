@@ -25,26 +25,26 @@ public class IndexerSubsystem implements Subsystem {
 
   private final TalonFX beltMotor = new TalonFX(DEVICE_ID_BELT);
   private final VelocityTorqueCurrentFOC beltControl = new VelocityTorqueCurrentFOC(0.0);
-  private final TorqueCurrentFOC indexerSysIdControl = new TorqueCurrentFOC(0.0);
+  private final TorqueCurrentFOC beltSysIdControl = new TorqueCurrentFOC(0.0);
 
-  private final SysIdRoutine IndexerSysIdRoutine = new SysIdRoutine(
+  private final SysIdRoutine BeltSysIdRoutine = new SysIdRoutine(
       new SysIdRoutine.Config(
           null,
           null,
           null,
           state -> SignalLogger.writeString("Indexer Sys ID", state.toString())),
       new SysIdRoutine.Mechanism(
-          (amps) -> beltMotor.setControl(indexerSysIdControl.withOutput(amps.in(Volts))),
+          (amps) -> beltMotor.setControl(BeltSysIdControl.withOutput(amps.in(Volts))),
           null,
           null));
 
   public IndexerSubsystem() {
     var indexerTalonConfig = new TalonFXConfiguration();
-    indexerTalonConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    indexerTalonConfig.Slot0 = Slot0Configs.from(SLOT_CONFIGS);
-    indexerTalonConfig.getConfigurator().apply(indexerTalonConfig);
-    indexerTalonConfig.CurrentLimits.SupplyCurrentLimit = SUPPLY_CURRENT_LIMIT.in(Amps);
-    indexerTalonConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    beltTalonConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    beltTalonConfig.Slot0 = Slot0Configs.from(SLOT_CONFIGS);
+    beltTalonConfig.getConfigurator().apply(indexerTalonConfig);
+    beltTalonConfig.CurrentLimits.SupplyCurrentLimit = SUPPLY_CURRENT_LIMIT.in(Amps);
+    beltTalonConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
   }
 
   /*
