@@ -12,8 +12,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.units.Current;
-import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.AngularVelocity;
 
 /**
@@ -68,7 +67,7 @@ public class Constants {
     public static final AngularVelocity SCORE_VELOCITY_LEVEL_1 = RadiansPerSecond.of(-1);
     public static final AngularVelocity EJECT_VELOCITY = RadiansPerSecond.of(-2);
 
-    public static final Measure<Current> SUPPLY_CURRENT_LIMIT = Amps.of(10); // Placeholder, will have to change
+    public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(10); // Placeholder, will have to change
 
     public static final SlotConfigs SLOT_CONFIGS = new SlotConfigs().withKP(0.0)
         .withKI(0.0)
