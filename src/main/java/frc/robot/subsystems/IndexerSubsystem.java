@@ -6,6 +6,7 @@ import static frc.robot.Constants.IndexerConstants.EJECT_VELOCITY;
 import static frc.robot.Constants.IndexerConstants.INTAKE_VELOCITY;
 import static frc.robot.Constants.IndexerConstants.SCORE_VELOCITY_LEVEL_1;
 import static frc.robot.Constants.IndexerConstants.SLOT_CONFIGS;
+import static frc.robot.Constants.IndexerConstants.SUPPLY_CURRENT_LIMIT;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -28,10 +29,9 @@ public class IndexerSubsystem implements Subsystem {
 
   private final SysIdRoutine IndexerSysIdRoutine = new SysIdRoutine(
       new SysIdRoutine.Config(
-          null, // Use default ramp rate (1 V/s)
-          null, // Use dynamic voltage of 7 V
-          null, // Use default timeout (10 s)
-          // Log state with SignalLogger class
+          null,
+          null,
+          null,
           state -> SignalLogger.writeString("Indexer Sys ID", state.toString())),
       new SysIdRoutine.Mechanism(
           (amps) -> beltMotor.setControl(indexerSysIdControl.withOutput(amps.in(Volts))),
@@ -42,7 +42,9 @@ public class IndexerSubsystem implements Subsystem {
     var indexerTalonConfig = new TalonFXConfiguration();
     indexerTalonConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     indexerTalonConfig.Slot0 = Slot0Configs.from(SLOT_CONFIGS);
-    beltMotor.getConfigurator().apply(indexerTalonConfig);
+    indexerTalonConfig.getConfigurator().apply(indexerTalonConfig);
+    indexerTalonConfig.CurrentLimits.SupplyCurrentLimit = SUPPLY_CURRENT_LIMIT.in(Amps);
+    indexerTalonConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
   }
 
   /*
