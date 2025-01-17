@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.IndexerConstants.DEVICE_ID_BELT;
 import static frc.robot.Constants.IndexerConstants.EJECT_VELOCITY;
 import static frc.robot.Constants.IndexerConstants.INTAKE_VELOCITY;
@@ -28,8 +27,7 @@ public class IndexerSubsystem implements Subsystem {
   private final TorqueCurrentFOC beltSysIdControl = new TorqueCurrentFOC(0.0);
 
   private final SysIdRoutine BeltSysIdRoutine = new SysIdRoutine(
-          new SysIdRoutine.Config(null, null, null, state -> SignalLogger.writeString("Indexer Sys ID", state.toString()))
-  );
+    new SysIdRoutine.Config(null, null, null, state -> SignalLogger.writeString("Indexer Sys ID", state.toString())));
 
   public IndexerSubsystem() {
     var indexerTalonConfig = new TalonFXConfiguration();
