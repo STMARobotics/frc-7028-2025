@@ -55,7 +55,17 @@ public class Constants {
    * Constants for the algae subsystem
    */
   public static class AlgaeConstants {
+    public static final int DEVICE_ID_ROLLERMOTOR = 1; // this number probably isn't right, fix it later
 
+    // roller constants
+    public static final AngularVelocity intakeSpeed = RadiansPerSecond.of(5); // 5 is probably a wonky number, change it
+                                                                              // later
+    public static final AngularVelocity outtakeSpeed = RadiansPerSecond.of(-5);
+    public static final AngularVelocity scoreSpeed = RadiansPerSecond.of(5); // score speed probably lower number
+
+    // wrist constants
+    public static final AngularVelocity wristDownSpeed = RadiansPerSecond.of(5);
+    public static final AngularVelocity wristUpSpeed = RadiansPerSecond.of(-5);
   }
 
   /**
