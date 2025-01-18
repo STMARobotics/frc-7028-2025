@@ -1,6 +1,7 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Radian;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 
 import com.ctre.phoenix6.configs.SlotConfigs;
@@ -13,6 +14,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 
@@ -82,6 +84,9 @@ public class Constants {
    */
   public static class ArmConstants {
 
+    public static Angle LEVEL2 = Radian.of(0);
+    public static Angle LEVEL3 = Radian.of(0);
+    public static Angle LEVEL4 = Radian.of(0);
   }
 
   /*
