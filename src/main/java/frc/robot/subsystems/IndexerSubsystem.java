@@ -2,9 +2,13 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kForward;
+import static edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kReverse;
 import static frc.robot.Constants.IndexerConstants.DEVICE_ID_BELT;
+import static frc.robot.Constants.IndexerConstants.DYNAMIC;
 import static frc.robot.Constants.IndexerConstants.EJECT_VELOCITY;
 import static frc.robot.Constants.IndexerConstants.INTAKE_VELOCITY;
+import static frc.robot.Constants.IndexerConstants.QUASI;
 import static frc.robot.Constants.IndexerConstants.SCORE_VELOCITY_LEVEL_1;
 import static frc.robot.Constants.IndexerConstants.SLOT_CONFIGS;
 import static frc.robot.Constants.IndexerConstants.SUPPLY_CURRENT_LIMIT;
@@ -16,6 +20,7 @@ import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -53,13 +58,13 @@ public class IndexerSubsystem implements Subsystem {
    * @param mode The mode of the SysId routine (DYNAMIC, QUASI_STATIC).
    * @return The SysId output data for the mode selected
    */
-  public Command sysIdBeltCommand(Direction direction, SysIdMode mode) {
+  public Command indexerBeltSysIdCommand(Direction direction, int mode) {
     switch (mode) {
       case DYNAMIC:
         return beltSysIdRoutine.dynamic(direction)
             .withName("SysId indexer belt dynamic " + direction)
             .finallyDo(this::stop);
-      case QUASI_STATIC:
+      case QUASI:
         return beltSysIdRoutine.quasistatic(direction)
             .withName("SysId indexer belt quasi " + direction)
             .finallyDo(this::stop);
@@ -69,23 +74,17 @@ public class IndexerSubsystem implements Subsystem {
   }
 
   /**
-   * Enumeration representing the different modes for the SysId routine
+   * Populates dashboard with controls to run SysId for indexer
    */
-  public enum SysIdMode {
-    DYNAMIC,
-    QUASI_STATIC
-  }
+  public void indexerPopulateDashboard() {
+    var tab = Shuffleboard.getTab("Drive SysId");
+    int columnIndex = 0;
 
-  /**
-   * Enumeration representing the different directions for the SysId routine
-   */
-  public enum direction {
-    FORWARD,
-    REVERSE
-  }
-
-  private void SysIdImplementationBeta() {
-
+    // Column 0 indexer
+    tab.add("Indexer Quasi Forward", indexerBeltSysIdCommand(kForward, QUASI).withPosition(columnIndex, 0));
+    tab.add("Indexer Quasi Reverse", indexerBeltSysIdCommand(kReverse, QUASI).withPosition(columnIndex, 1));
+    tab.add("Indexer Dynam Forward", indexerBeltSysIdCommand(kForward, DYNAMIC).withPosition(columnIndex, 2));
+    tab.add("Indexer Dynam Reverse", indexerBeltSysIdCommand(kReverse, DYNAMIC).withPosition(columnIndex, 3));
   }
 
   /**
