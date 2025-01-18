@@ -45,6 +45,9 @@ public class IndexerSubsystem implements Subsystem {
 
   /**
    * Command to run indexer belt SysId routine in dynamic mode
+   * 
+   * @param direction The direction to run the belt motor for dynamic mode
+   * @return The SysId output data for dynamic mode
    */
   public Command sysIdBeltDynamicCommand(Direction direction) {
     return beltSysIdRoutine.dynamic(direction)
@@ -54,6 +57,9 @@ public class IndexerSubsystem implements Subsystem {
 
   /**
    * Command to run indexer belt SysId routine in quasistatic mode
+   * 
+   * @param direction The direction to run the belt motor for quasistatic mode
+   * @return The SysId output data for quasistatic mode
    */
   public Command sysIdBeltQuasistaticCommand(Direction direction) {
     return beltSysIdRoutine.quasistatic(direction)
