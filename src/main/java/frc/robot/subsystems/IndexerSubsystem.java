@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.IndexerConstants.DEVICE_ID_BELT;
 import static frc.robot.Constants.IndexerConstants.EJECT_VELOCITY;
 import static frc.robot.Constants.IndexerConstants.INTAKE_VELOCITY;
@@ -15,6 +16,7 @@ import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -31,7 +33,9 @@ public class IndexerSubsystem implements Subsystem {
 
   private final SysIdRoutine beltSysIdRoutine = new SysIdRoutine(
       new SysIdRoutine.Config(null, null, null, state -> SignalLogger.writeString("Indexer SysId", state.toString())),
-      null);
+      new SysIdRoutine.Mechanism((amps) -> {
+        beltMotor.setControl(beltSysIdControl.withOutput(amps.in(Volts)));
+      }, null, this));
 
   public IndexerSubsystem() {
     var beltTalonConfig = new TalonFXConfiguration();
