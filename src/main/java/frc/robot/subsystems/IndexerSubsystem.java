@@ -47,33 +47,44 @@ public class IndexerSubsystem implements Subsystem {
   }
 
   /**
-   * Command to run indexer belt SysId routine in dynamic mode
-   * 
-   * @param direction The direction to run the belt motor for dynamic mode
-   * @return The SysId output data for dynamic mode
+   * Executes SysId commands for the indexer belt
+   *
+   * @param direction The direction to run the belt motor (FORWARD, REVERSE)
+   * @param mode The mode of the SysId routine (DYNAMIC, QUASI_STATIC).
+   * @return The SysId output data for the mode selected
    */
-  public Command sysIdBeltDynamicCommand(Direction direction) {
-    return beltSysIdRoutine.dynamic(direction)
-        .withName("SysId indexer belt dynamic " + direction)
-        .finallyDo(this::stop);
+  public Command sysIdBeltCommand(Direction direction, SysIdMode mode) {
+    switch (mode) {
+      case DYNAMIC:
+        return beltSysIdRoutine.dynamic(direction)
+            .withName("SysId indexer belt dynamic " + direction)
+            .finallyDo(this::stop);
+      case QUASI_STATIC:
+        return beltSysIdRoutine.quasistatic(direction)
+            .withName("SysId indexer belt quasi " + direction)
+            .finallyDo(this::stop);
+      default:
+        throw new IllegalArgumentException("Invalid SysIdMode: " + mode);
+    }
   }
 
   /**
-   * Command to run indexer belt SysId routine in quasistatic mode
-   * 
-   * @param direction The direction to run the belt motor for quasistatic mode
-   * @return The SysId output data for quasistatic mode
+   * Enumeration representing the different modes for the SysId routine
    */
-  public Command sysIdBeltQuasistaticCommand(Direction direction) {
-    return beltSysIdRoutine.quasistatic(direction)
-        .withName("SysId indexer belt quasi " + direction)
-        .finallyDo(this::stop);
+  public enum SysIdMode {
+    DYNAMIC,
+    QUASI_STATIC
   }
 
   /**
-   * Creates a button on elastic to run the indexer SysId routine
+   * Enumeration representing the different directions for the SysId routine
    */
-  public void indexerPopulateSysIdDashboard() {
+  public enum direction {
+    FORWARD,
+    REVERSE
+  }
+
+  private void SysIdImplementationBeta() {
 
   }
 
