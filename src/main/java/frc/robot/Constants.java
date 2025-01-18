@@ -77,6 +77,13 @@ public class Constants {
    * Constants for the game piece manipulator
    */
   public static class GamePieceManipulatorConstants {
+    public static final AngularVelocity IntakeSpeed = RadiansPerSecond.of(5);
 
+    public static final AngularVelocity OuttakeSpeed = RadiansPerSecond.of(-5);
+
+    public static final AngularVelocity ScoreSpeed = RadiansPerSecond.of(5);
+
+    public static final int DEVICE_ID_MANIPULATORMOTOR = 5;
+    public static final int DEVICE_ID_CANrange = 5;
   }
 }
