@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Amps;
 import static frc.robot.Constants.IndexerConstants.DEVICE_ID_BELT;
 import static frc.robot.Constants.IndexerConstants.EJECT_VELOCITY;
 import static frc.robot.Constants.IndexerConstants.INTAKE_VELOCITY;
@@ -14,8 +15,11 @@ import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 /*
  * The subsystem for the coral box/indexer
@@ -26,16 +30,31 @@ public class IndexerSubsystem implements Subsystem {
   private final VelocityTorqueCurrentFOC beltControl = new VelocityTorqueCurrentFOC(0.0);
   private final TorqueCurrentFOC beltSysIdControl = new TorqueCurrentFOC(0.0);
 
-  private final SysIdRoutine BeltSysIdRoutine = new SysIdRoutine(
-    new SysIdRoutine.Config(null, null, null, state -> SignalLogger.writeString("Indexer Sys ID", state.toString())));
+  private final SysIdRoutine beltSysIdRoutine = new SysIdRoutine(
+    new SysIdRoutine.Config(null, null, null, state -> SignalLogger.writeString("Indexer SysId", state.toString())), null);
 
   public IndexerSubsystem() {
-    var indexerTalonConfig = new TalonFXConfiguration();
+    var beltTalonConfig = new TalonFXConfiguration();
     beltTalonConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     beltTalonConfig.Slot0 = Slot0Configs.from(SLOT_CONFIGS);
-    beltTalonConfig.getConfigurator().apply(indexerTalonConfig);
-    beltMotor.CurrentLimits.SupplyCurrentLimit = SUPPLY_CURRENT_LIMIT.in(Amps);
-    beltMotor.CurrentLimits.SupplyCurrentLimitEnable = true;
+    beltTalonConfig.CurrentLimits.SupplyCurrentLimit = SUPPLY_CURRENT_LIMIT.in(Amps);
+    beltTalonConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+
+    beltMotor.getConfigurator().apply(beltTalonConfig);
+  }
+
+  /*
+   * Command to run indexer belt SysId routine in dynamic mode
+   */
+  public Command sysIdBeltDynamicCommand(Direction direction) {
+    return beltSysIdRoutine.dynamic(direction).withName("SysId indexer belt dynamic " + direction).finallyDo(this::stop);
+  }
+
+  /*
+   * Command to run indexer belt SysId routine in quasistatic mode
+   */
+  public Command sysIdBeltQuasistaticCommand(Direction direction) {
+    return beltSysIdRoutine.quasistatic(direction).withName("SysId indexer belt quasi " + direction).finallyDo(this::stop);
   }
 
   /*
