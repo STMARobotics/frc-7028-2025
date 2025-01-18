@@ -15,7 +15,6 @@ import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -31,7 +30,8 @@ public class IndexerSubsystem implements Subsystem {
   private final TorqueCurrentFOC beltSysIdControl = new TorqueCurrentFOC(0.0);
 
   private final SysIdRoutine beltSysIdRoutine = new SysIdRoutine(
-    new SysIdRoutine.Config(null, null, null, state -> SignalLogger.writeString("Indexer SysId", state.toString())), null);
+      new SysIdRoutine.Config(null, null, null, state -> SignalLogger.writeString("Indexer SysId", state.toString())),
+      null);
 
   public IndexerSubsystem() {
     var beltTalonConfig = new TalonFXConfiguration();
@@ -47,14 +47,18 @@ public class IndexerSubsystem implements Subsystem {
    * Command to run indexer belt SysId routine in dynamic mode
    */
   public Command sysIdBeltDynamicCommand(Direction direction) {
-    return beltSysIdRoutine.dynamic(direction).withName("SysId indexer belt dynamic " + direction).finallyDo(this::stop);
+    return beltSysIdRoutine.dynamic(direction)
+        .withName("SysId indexer belt dynamic " + direction)
+        .finallyDo(this::stop);
   }
 
   /*
    * Command to run indexer belt SysId routine in quasistatic mode
    */
   public Command sysIdBeltQuasistaticCommand(Direction direction) {
-    return beltSysIdRoutine.quasistatic(direction).withName("SysId indexer belt quasi " + direction).finallyDo(this::stop);
+    return beltSysIdRoutine.quasistatic(direction)
+        .withName("SysId indexer belt quasi " + direction)
+        .finallyDo(this::stop);
   }
 
   /*
