@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
-/*
+/**
  * The subsystem for the coral box/indexer
  */
 public class IndexerSubsystem implements Subsystem {
@@ -43,7 +43,7 @@ public class IndexerSubsystem implements Subsystem {
     beltMotor.getConfigurator().apply(beltTalonConfig);
   }
 
-  /*
+  /**
    * Command to run indexer belt SysId routine in dynamic mode
    */
   public Command sysIdBeltDynamicCommand(Direction direction) {
@@ -52,7 +52,7 @@ public class IndexerSubsystem implements Subsystem {
         .finallyDo(this::stop);
   }
 
-  /*
+  /**
    * Command to run indexer belt SysId routine in quasistatic mode
    */
   public Command sysIdBeltQuasistaticCommand(Direction direction) {
@@ -61,28 +61,28 @@ public class IndexerSubsystem implements Subsystem {
         .finallyDo(this::stop);
   }
 
-  /*
+  /**
    * Runs belt to move coral onto end effector
    */
   public void intake() {
     beltMotor.setControl(beltControl.withVelocity(INTAKE_VELOCITY));
   }
 
-  /*
+  /**
    * Stops the belt
    */
   public void stop() {
     beltMotor.stopMotor();
   }
 
-  /*
+  /**
    * Run belt backward to score on level 1 of the reef
    */
   public void scoreLevel1() {
     beltMotor.setControl(beltControl.withVelocity(SCORE_VELOCITY_LEVEL_1));
   }
 
-  /*
+  /**
    * Run belt backward to remove coral from the system
    */
   public void eject() {
