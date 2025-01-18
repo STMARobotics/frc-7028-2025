@@ -71,6 +71,13 @@ public class IndexerSubsystem implements Subsystem {
   }
 
   /**
+   * Creates a button on elastic to run the indexer SysId routine
+   */
+  public void indexerPopulateSysIdDashboard() {
+
+  }
+
+  /**
    * Runs belt to move coral onto end effector
    */
   public void intake() {
