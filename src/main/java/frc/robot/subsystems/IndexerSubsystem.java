@@ -35,6 +35,13 @@ public class IndexerSubsystem implements Subsystem {
       new SysIdRoutine.Mechanism((amps) -> {
         beltMotor.setControl(beltSysIdControl.withOutput(amps.in(Volts)));
       }, null, this));
+  private final TorqueCurrentFOC beltSysIdControl = new TorqueCurrentFOC(0.0);
+
+  private final SysIdRoutine beltSysIdRoutine = new SysIdRoutine(
+      new SysIdRoutine.Config(null, null, null, state -> SignalLogger.writeString("Indexer SysId", state.toString())),
+      new SysIdRoutine.Mechanism((amps) -> {
+        beltMotor.setControl(beltSysIdControl.withOutput(amps.in(Volts)));
+      }, null, this));
 
   public IndexerSubsystem() {
     var beltTalonConfig = new TalonFXConfiguration();
@@ -69,28 +76,6 @@ public class IndexerSubsystem implements Subsystem {
         .withName("SysId indexer belt quasi " + direction)
         .finallyDo(this::stop);
   }
-
-  // /**
-  // * Executes SysId commands for the indexer belt
-  // *
-  // * @param direction The direction to run the belt motor (FORWARD, REVERSE)
-  // * @param mode The mode of the SysId routine (DYNAMIC, QUASI_STATIC).
-  // * @return The SysId output data for the mode selected
-  // */
-  // public Command indexerBeltSysIdCommand(Direction direction, int mode) {
-  // switch (mode) {
-  // case DYNAMIC:
-  // return beltSysIdRoutine.dynamic(direction)
-  // .withName("SysId indexer belt dynamic " + direction)
-  // .finallyDo(this::stop);
-  // case QUASI:
-  // return beltSysIdRoutine.quasistatic(direction)
-  // .withName("SysId indexer belt quasi " + direction)
-  // .finallyDo(this::stop);
-  // default:
-  // throw new IllegalArgumentException("Invalid SysIdMode: " + mode);
-  // }
-  // }
 
   /**
    * Runs belt to move coral onto end effector
