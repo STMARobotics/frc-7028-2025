@@ -70,9 +70,6 @@ public class Constants {
 
     public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(10); // Placeholder, will have to change
 
-    public static final int DYNAMIC = 0;
-    public static final int QUASI = 1;
-
     public static final SlotConfigs SLOT_CONFIGS = new SlotConfigs().withKP(0.0)
         .withKI(0.0)
         .withKD(0.0)
