@@ -100,7 +100,7 @@ public class RobotContainer {
   }
 
   public void indexerPopulateDashboard() {
-    var tab = Shuffleboard.getTab("Drive SysId");
+    var tab = Shuffleboard.getTab("Indexer SysId");
     int columnIndex = 0;
 
     // Column 0 indexer
