@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Millimeters;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.configs.SlotConfigs;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -19,6 +20,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.Voltage;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean constants. This
@@ -52,8 +54,8 @@ public class Constants {
   public static class ClimbConstants {
     public static final int DEVICE_ID_CLIMB_MOTOR_1 = 60;
     public static final int DEVICE_ID_CLIMB_MOTOR_2 = 65;
-    public static final int DEVICE_ID_CLIMB_ENCODER_1 = 0;
-    public static final int DEVICE_ID_CLIMB_DETECTION = 0;
+    public static final int DEVICE_ID_CLIMB_ENCODER_1 = 61;
+    public static final int DEVICE_ID_CLIMB_DETECTION = 67;
 
     // configuraton {
     public static final Current CLIMB_STATOR_CURRENT_LIMIT = Amps.of(100);
@@ -65,7 +67,10 @@ public class Constants {
 
     public static final Distance CAGE_DETECTION_THRESHOLD_DISTANCE = Millimeters.of(0); // TODO determine distance
 
-    public static final Angle CLIMB_MAGNETIC_OFFSET = Radians.of(-0.35505078125);
+    public static final Angle LEFT_CLIMB_MAGNETIC_OFFSET = Radians.of(0);
+    public static final Angle RIGHT_CLIMB_MAGNETIC_OFFSET = Radians.of(0);
+
+    public static final Voltage MAX_CLIMB_VOLTAGE = Volts.of(2);
 
   }
 
