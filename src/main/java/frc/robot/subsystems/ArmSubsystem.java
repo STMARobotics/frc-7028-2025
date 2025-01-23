@@ -151,8 +151,9 @@ public class ArmSubsystem implements Subsystem {
     return CANdi.getS2Closed().getValue().booleanValue();
   }
 
-  /*
+  /**
    * Moves the elevator to a position measured in meters.
+   *
    * @param The desired position in meters
    */
   public void MoveElevator(Distance position) {
