@@ -32,7 +32,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
-public class arm implements Subsystem {
+public class ArmSubsystem implements Subsystem {
   private final TalonFX motorA = new TalonFX(0);
   private final TalonFX motorB = new TalonFX(0);
 
@@ -60,7 +60,7 @@ public class arm implements Subsystem {
   private boolean atTargetLevel = false;
   private boolean active = false;
 
-  public arm() {
+  public ArmSubsystem() {
     var ElevatorTalonConfig = new TalonFXConfiguration();
     ElevatorTalonConfig.MotorOutput.NeutralMode = Brake;
     ElevatorTalonConfig.Slot0 = Slot0Configs.from(SLOT_CONFIGS);
@@ -96,7 +96,7 @@ public class arm implements Subsystem {
    * @param direction The direction to run the elevator motor for quasistatic mode
    * @return The SysId output data for quasistatic mode
    */
-  public Command sysIdBeltQuasistaticCommand(Direction direction) {
+  public Command sysIdElevator1QuasistaticCommand(Direction direction) {
     return elevatorSysIdRoutine1.quasistatic(direction)
         .withName("SysId elevator 1 quasi " + direction)
         .finallyDo(this::stopElevator);
