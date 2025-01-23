@@ -58,7 +58,7 @@ public class Constants {
     // configuraton {
     public static final Current CLIMB_STATOR_CURRENT_LIMIT = Amps.of(100);
     public static final Current CLIMB_SUPPLY_CURRENT_LIMIT = Amps.of(40);
-    public static final double CLIMB_ROTOR_TO_SENSOR_RATIO = (1 / 25); // 25 motor/shaft turns = 1 rotor turn
+    public static final double CLIMB_ROTOR_TO_SENSOR_RATIO = (25 / 1); // 25 rotor turns = 1 mechanism turn
 
     public static final Angle CLIMB_LIMIT_FORWARD = Radians.of(3.1);
     public static final Angle CLIMB_LIMIT_REVERSE = Radians.of(-3.08);
