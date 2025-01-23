@@ -4,12 +4,28 @@
 
 package frc.robot.subsystems;
 
+import static frc.robot.Constants.AlgaeConstants.ALGAE_SLOT_CONFIGS;
+import static frc.robot.Constants.AlgaeConstants.DEVICE_ID_CANCODER;
 import static frc.robot.Constants.AlgaeConstants.DEVICE_ID_ROLLERMOTOR;
+import static frc.robot.Constants.AlgaeConstants.DEVICE_ID_WRISTMOTOR;
+import static frc.robot.Constants.AlgaeConstants.INTAKE_SPEED;
+import static frc.robot.Constants.AlgaeConstants.OUTTAKE_SPEED;
+import static frc.robot.Constants.AlgaeConstants.SCORE_SPEED;
+import static frc.robot.Constants.AlgaeConstants.WRIST_DOWN_POSITION;
+import static frc.robot.Constants.AlgaeConstants.WRIST_UP_POSITION;
 
+import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.HardwareLimitSwitchConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.ForwardLimitSourceValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 
 /**
  * Algae subsystem does all jobs related to algae (intake, scoring, etc).
@@ -18,26 +34,50 @@ public class AlgaeSubsystem extends SubsystemBase {
 
   // define motors
   public final TalonFX rollerMotor = new TalonFX(DEVICE_ID_ROLLERMOTOR);
-  public final TalonFX wristMotor = new TalonFX(DEVICE_ID_ROLLERMOTOR);
+  public final TalonFX wristMotor = new TalonFX(DEVICE_ID_WRISTMOTOR);
   // define how motors are controlled
   private final VelocityTorqueCurrentFOC rollerControl = new VelocityTorqueCurrentFOC(0.0);
-  private final VelocityTorqueCurrentFOC wristControl = new VelocityTorqueCurrentFOC(0.0);
+  private final PositionVoltage wristControl = new PositionVoltage(0.0);
+  // define cancoder
+  public final static CANcoder cancoder = new CANcoder(DEVICE_ID_CANCODER);
+  // get variable for absolute position from cancoder
+  public final StatusSignal<Angle> absolutePosition = cancoder.getAbsolutePosition();
 
   public AlgaeSubsystem() {
+    var rollerMotorConfig = new TalonFXConfiguration();
+    var wristMotorConfig = new TalonFXConfiguration();
+
+    rollerMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    wristMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
+    rollerMotorConfig.Slot0 = Slot0Configs.from(ALGAE_SLOT_CONFIGS);
+    wristMotorConfig.Slot0 = Slot0Configs.from(ALGAE_SLOT_CONFIGS);
+
+    // setting cancoder as a limit switch
+    HardwareLimitSwitchConfigs limitConfigs = new HardwareLimitSwitchConfigs();
+
+    limitConfigs.ForwardLimitSource = ForwardLimitSourceValue.RemoteCANcoder;
+    limitConfigs.ForwardLimitRemoteSensorID = cancoder.getDeviceID();
+
+    rollerMotor.getConfigurator().apply(rollerMotorConfig);
+    rollerMotor.getConfigurator().apply(limitConfigs);
+
+    wristMotor.getConfigurator().apply(wristMotorConfig);
+    wristMotor.getConfigurator().apply(limitConfigs);
   }
 
   /**
    * Activates motor to activate rollers and intake algae
    */
   public void intake() {
-    rollerMotor.setControl(rollerControl.withVelocity(Constants.AlgaeConstants.intakeSpeed));
+    rollerMotor.setControl(rollerControl.withVelocity(INTAKE_SPEED));
   }
 
   /**
    * Reverses motors to push it out
    */
   public void outtake() {
-    rollerMotor.setControl(rollerControl.withVelocity(Constants.AlgaeConstants.outtakeSpeed));
+    rollerMotor.setControl(rollerControl.withVelocity(OUTTAKE_SPEED));
   }
 
   /**
@@ -45,26 +85,27 @@ public class AlgaeSubsystem extends SubsystemBase {
    */
   public void stop() {
     rollerMotor.stopMotor();
+    wristMotor.stopMotor();
   }
 
   /**
    * Scores intake, does same thing as outtake but at a different speed
    */
   public void score() {
-    rollerMotor.setControl(rollerControl.withVelocity(Constants.AlgaeConstants.scoreSpeed));
+    rollerMotor.setControl(rollerControl.withVelocity(SCORE_SPEED));
   }
 
   /**
    * Moves intake to the floor position in order to pick up
    */
   public void moveIntakeDown() {
-    wristMotor.setControl(wristControl.withVelocity(Constants.AlgaeConstants.wristDownSpeed));
+    wristMotor.setControl(wristControl.withPosition(WRIST_DOWN_POSITION));
   }
 
   /**
    * Moves intake to the upwards position for holding/scoring
    */
   public void moveIntakeUp() {
-    wristMotor.setControl(wristControl.withVelocity(Constants.AlgaeConstants.wristUpSpeed));
+    wristMotor.setControl(wristControl.withPosition(WRIST_UP_POSITION));
   }
 }

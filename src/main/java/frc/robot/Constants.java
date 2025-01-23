@@ -55,17 +55,32 @@ public class Constants {
    * Constants for the algae subsystem
    */
   public static class AlgaeConstants {
-    public static final int DEVICE_ID_ROLLERMOTOR = 1; // this number probably isn't right, fix it later
+    public static final int DEVICE_ID_ROLLERMOTOR = 40;
+    // I never saw what the id for the wrist motor would be, this is a placeholder
+    public static final int DEVICE_ID_WRISTMOTOR = 1;
+    // Same thing with the CANcoder
+    public static final int DEVICE_ID_CANCODER = 1;
 
     // roller constants
-    public static final AngularVelocity intakeSpeed = RadiansPerSecond.of(5); // 5 is probably a wonky number, change it
-                                                                              // later
-    public static final AngularVelocity outtakeSpeed = RadiansPerSecond.of(-5);
-    public static final AngularVelocity scoreSpeed = RadiansPerSecond.of(5); // score speed probably lower number
+    public static final AngularVelocity INTAKE_SPEED = RadiansPerSecond.of(5); // 5 is probably a wonky number
+    public static final AngularVelocity OUTTAKE_SPEED = RadiansPerSecond.of(-5);
+    public static final AngularVelocity SCORE_SPEED = RadiansPerSecond.of(5); // score speed probably lower number
 
     // wrist constants
-    public static final AngularVelocity wristDownSpeed = RadiansPerSecond.of(5);
-    public static final AngularVelocity wristUpSpeed = RadiansPerSecond.of(-5);
+    public static final AngularVelocity WRIST_DOWN_SPEED = RadiansPerSecond.of(5);
+    public static final AngularVelocity WRIST_UP_SPEED = RadiansPerSecond.of(-5);
+
+    // numbers are probably wonky here
+    public static final double WRIST_DOWN_POSITION = 180;
+    public static final double WRIST_UP_POSITION = 90;
+
+    // Configs
+    // I also have no idea what the numbers for these are, probably update them later
+    public static final SlotConfigs ALGAE_SLOT_CONFIGS = new SlotConfigs().withKP(0.0)
+        .withKI(0.0)
+        .withKD(0.0)
+        .withKS(0.0)
+        .withKV(0.0);
   }
 
   /**
