@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.PhotonVisionCommand;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.IndexerSubsystem;
 
@@ -43,6 +44,7 @@ public class RobotContainer {
 
   private final CommandXboxController joystick = new CommandXboxController(0);
 
+  private final ArmSubsystem armSubsystem = new ArmSubsystem();
   private final IndexerSubsystem indexerSubsystem = new IndexerSubsystem();
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
   private final DrivetrainTelemetry drivetrainTelemetry = new DrivetrainTelemetry(MaxSpeed);
@@ -110,5 +112,30 @@ public class RobotContainer {
         .withPosition(columnIndex, 1);
     tab.add("Indexer Dynam Forward", indexerSubsystem.sysIdBeltDynamicCommand(kForward)).withPosition(columnIndex, 2);
     tab.add("Indexer Dynam Reverse", indexerSubsystem.sysIdBeltDynamicCommand(kReverse)).withPosition(columnIndex, 3);
+  }
+
+  public void elevatorPopulateDashboard() {
+    var tab = Shuffleboard.getTab("Elevator SysId");
+    int columnIndex = 0;
+
+    // Column 1 Elevator motor 1
+    tab.add("Elevator 1 Quasi Forward", armSubsystem.sysIdElevator1QuasistaticCommand(kForward))
+        .withPosition(columnIndex + 1, 0);
+    tab.add("Elevator 1 Quasi Reverse", armSubsystem.sysIdElevator1QuasistaticCommand(kReverse))
+        .withPosition(columnIndex + 1, 1);
+    tab.add("Elevator 1 Dynam Forward", armSubsystem.sysIdElevator1DynamicCommand(kForward))
+        .withPosition(columnIndex + 1, 2);
+    tab.add("Elevator 1 Dynam Reverse", armSubsystem.sysIdElevator1DynamicCommand(kReverse))
+        .withPosition(columnIndex + 1, 3);
+
+    // Column 2 Elevator motor 2
+    tab.add("Elevator 2 Quasi Forward", armSubsystem.sysIdElevator1QuasistaticCommand(kForward))
+        .withPosition(columnIndex + 2, 0);
+    tab.add("Elevator 2 Quasi Reverse", armSubsystem.sysIdElevator1QuasistaticCommand(kReverse))
+        .withPosition(columnIndex + 2, 1);
+    tab.add("Elevator 2 Dynam Forward", armSubsystem.sysIdElevator1DynamicCommand(kForward))
+        .withPosition(columnIndex + 2, 2);
+    tab.add("Elevator 2 Dynam Reverse", armSubsystem.sysIdElevator1DynamicCommand(kReverse))
+        .withPosition(columnIndex + 2, 3);
   }
 }
