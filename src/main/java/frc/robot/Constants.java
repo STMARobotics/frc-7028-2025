@@ -1,9 +1,10 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Radian;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
-
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.SlotConfigs;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -17,6 +18,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Distance;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -83,6 +85,34 @@ public class Constants {
    * Constants for the arm subsystem
    */
   public static class ArmConstants {
+    public static final int DEVICE_ID_ELEVATOR_MOTOR_1 = 80;
+    public static final int DEVICE_ID_ELEVATOR_MOTOR_2 = 81;
+    public static final int DEVICE_ID_CANDI = 85;
+
+    public static final SlotConfigs SLOT_CONFIGS = new SlotConfigs().withKP(0.0)
+        .withKI(0.0)
+        .withKD(0.0)
+        .withKS(0.0)
+        .withKV(0.0);
+
+    public static final MotionMagicConfigs MOTION_MAGIC_CONFIGS = new MotionMagicConfigs()
+        .withMotionMagicAcceleration(0.01)
+        .withMotionMagicCruiseVelocity(0.01);
+
+    public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(0); // Placeholder
+
+    public static final Distance METERS_PER_REVOLUTION = Meters.of(0); // Placeholder
+
+    public static final Distance TOP_LIMIT = Meters.of(0); // Placeholder
+    public static final Distance BOTTOM_LIMIT = Meters.of(0); // Placeholder
+
+    /*
+     * The position in meters the elevator has to arrive at in order to score with placeholder numbers for now
+     */
+    public static final Distance LEVEL_1_HEIGHT = Meters.of(0);
+    public static final Distance LEVEL_2_HEIGHT = Meters.of(0);
+    public static final Distance LEVEL_3_HEIGHT = Meters.of(0);
+    public static final Distance LEVEL_4_HEIGHT = Meters.of(0);
 
     public static Angle LEVEL2 = Radian.of(0);
     public static Angle LEVEL3 = Radian.of(0);
