@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.IndexerConstants.DEVICE_ID_BELT;
 import static frc.robot.Constants.IndexerConstants.EJECT_VELOCITY;
@@ -31,7 +32,11 @@ public class IndexerSubsystem implements Subsystem {
   private final TorqueCurrentFOC beltSysIdControl = new TorqueCurrentFOC(0.0);
 
   private final SysIdRoutine beltSysIdRoutine = new SysIdRoutine(
-      new SysIdRoutine.Config(null, null, null, state -> SignalLogger.writeString("Indexer SysId", state.toString())),
+      new SysIdRoutine.Config(
+          Volts.of(5).per(Second),
+          null,
+          null,
+          state -> SignalLogger.writeString("Indexer SysId", state.toString())),
       new SysIdRoutine.Mechanism((amps) -> {
         beltMotor.setControl(beltSysIdControl.withOutput(amps.in(Volts)));
       }, null, this));
@@ -68,13 +73,6 @@ public class IndexerSubsystem implements Subsystem {
     return beltSysIdRoutine.quasistatic(direction)
         .withName("SysId indexer belt quasi " + direction)
         .finallyDo(this::stop);
-  }
-
-  /**
-   * Creates a button on elastic to run the indexer SysId routine
-   */
-  public void indexerPopulateSysIdDashboard() {
-
   }
 
   /**
