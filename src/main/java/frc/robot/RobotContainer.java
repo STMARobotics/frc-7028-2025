@@ -115,22 +115,22 @@ public class RobotContainer {
 
     // Column 1 Elevator motor 1
     tab.add("Elevator 1 Quasi Forward", armSubsystem.sysIdElevator1QuasistaticCommand(kForward))
-    .withPosition(columnIndex + 1, 0);
+        .withPosition(columnIndex + 1, 0);
     tab.add("Elevator 1 Quasi Reverse", armSubsystem.sysIdElevator1QuasistaticCommand(kReverse))
-    .withPosition(columnIndex + 1, 1);
+        .withPosition(columnIndex + 1, 1);
     tab.add("Elevator 1 Dynam Forward", armSubsystem.sysIdElevator1DynamicCommand(kForward))
-    .withPosition(columnIndex + 1, 2);
+        .withPosition(columnIndex + 1, 2);
     tab.add("Elevator 1 Dynam Reverse", armSubsystem.sysIdElevator1DynamicCommand(kReverse))
-    .withPosition(columnIndex + 1, 3);
+        .withPosition(columnIndex + 1, 3);
 
     // Column 1 Elevator motor 1
     tab.add("Elevator 2 Quasi Forward", armSubsystem.sysIdElevator1QuasistaticCommand(kForward))
-    .withPosition(columnIndex + 2, 0);
+        .withPosition(columnIndex + 2, 0);
     tab.add("Elevator 2 Quasi Reverse", armSubsystem.sysIdElevator1QuasistaticCommand(kReverse))
-    .withPosition(columnIndex + 2, 1);
+        .withPosition(columnIndex + 2, 1);
     tab.add("Elevator 2 Dynam Forward", armSubsystem.sysIdElevator1DynamicCommand(kForward))
-    .withPosition(columnIndex + 2, 2);
+        .withPosition(columnIndex + 2, 2);
     tab.add("Elevator 2 Dynam Reverse", armSubsystem.sysIdElevator1DynamicCommand(kReverse))
-    .withPosition(columnIndex + 2, 3);
+        .withPosition(columnIndex + 2, 3);
   }
 }

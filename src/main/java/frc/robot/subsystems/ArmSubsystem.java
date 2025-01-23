@@ -1,8 +1,10 @@
 package frc.robot.subsystems;
 
+import static com.ctre.phoenix6.signals.NeutralModeValue.Brake;
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Volts;
+import static frc.robot.Constants.ArmConstants.BOTTOM_LIMIT;
 import static frc.robot.Constants.ArmConstants.DEVICE_ID_CANDI;
 import static frc.robot.Constants.ArmConstants.DEVICE_ID_ELEVATOR_MOTOR_1;
 import static frc.robot.Constants.ArmConstants.DEVICE_ID_ELEVATOR_MOTOR_2;
@@ -10,12 +12,11 @@ import static frc.robot.Constants.ArmConstants.LEVEL_1_HEIGHT;
 import static frc.robot.Constants.ArmConstants.LEVEL_2_HEIGHT;
 import static frc.robot.Constants.ArmConstants.LEVEL_3_HEIGHT;
 import static frc.robot.Constants.ArmConstants.LEVEL_4_HEIGHT;
-import static frc.robot.Constants.ArmConstants.SLOT_CONFIGS;
-import static frc.robot.Constants.ArmConstants.MOTION_MAGIC_CONFIGS;
-import static frc.robot.Constants.ArmConstants.SUPPLY_CURRENT_LIMIT;
 import static frc.robot.Constants.ArmConstants.METERS_PER_REVOLUTION;
+import static frc.robot.Constants.ArmConstants.MOTION_MAGIC_CONFIGS;
+import static frc.robot.Constants.ArmConstants.SLOT_CONFIGS;
+import static frc.robot.Constants.ArmConstants.SUPPLY_CURRENT_LIMIT;
 import static frc.robot.Constants.ArmConstants.TOP_LIMIT;
-import static frc.robot.Constants.ArmConstants.BOTTOM_LIMIT;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -24,8 +25,6 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANdi;
 import com.ctre.phoenix6.hardware.TalonFX;
-import static com.ctre.phoenix6.signals.NeutralModeValue.Brake;
-
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -45,16 +44,24 @@ public class ArmSubsystem implements Subsystem {
   private final VoltageOut voltageControl = new VoltageOut(0.0);
 
   private final SysIdRoutine elevatorSysIdRoutine1 = new SysIdRoutine(
-      new SysIdRoutine.Config(null, null, null, state -> SignalLogger.writeString("Elevator Motor 1 SysId", state.toString())),
+      new SysIdRoutine.Config(
+          null,
+          null,
+          null,
+          state -> SignalLogger.writeString("Elevator Motor 1 SysId", state.toString())),
       new SysIdRoutine.Mechanism((amps) -> {
         elevatorMotor1.setControl(voltageControl.withOutput(amps.in(Volts)));
       }, null, this));
 
   private final SysIdRoutine elevatorSysIdRoutine2 = new SysIdRoutine(
-    new SysIdRoutine.Config(null, null, null, state -> SignalLogger.writeString("Elevator Motor 2 SysId", state.toString())),
-    new SysIdRoutine.Mechanism((amps) -> {
-      elevatorMotor2.setControl(voltageControl.withOutput(amps.in(Volts)));
-    }, null, this));
+      new SysIdRoutine.Config(
+          null,
+          null,
+          null,
+          state -> SignalLogger.writeString("Elevator Motor 2 SysId", state.toString())),
+      new SysIdRoutine.Mechanism((amps) -> {
+        elevatorMotor2.setControl(voltageControl.withOutput(amps.in(Volts)));
+      }, null, this));
 
   private int targetLevel;
   private boolean atTargetLevel = false;
@@ -68,11 +75,11 @@ public class ArmSubsystem implements Subsystem {
     ElevatorTalonConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     ElevatorTalonConfig.MotionMagic = MOTION_MAGIC_CONFIGS;
     ElevatorTalonConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-    ElevatorTalonConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
-        TOP_LIMIT.in(Meters) / METERS_PER_REVOLUTION.in(Meters);
-        ElevatorTalonConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-        ElevatorTalonConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
-        BOTTOM_LIMIT.in(Meters) / METERS_PER_REVOLUTION.in(Meters);
+    ElevatorTalonConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = TOP_LIMIT.in(Meters)
+        / METERS_PER_REVOLUTION.in(Meters);
+    ElevatorTalonConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+    ElevatorTalonConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = BOTTOM_LIMIT.in(Meters)
+        / METERS_PER_REVOLUTION.in(Meters);
 
     elevatorMotor1.getConfigurator().apply(ElevatorTalonConfig);
     elevatorMotor2.getConfigurator().apply(ElevatorTalonConfig);
@@ -126,8 +133,9 @@ public class ArmSubsystem implements Subsystem {
         .finallyDo(this::stopElevator);
   }
 
-    /**
+  /**
    * Indicates if the top limit switch is tripped
+   * 
    * @return true if the limit switch is tripped, otherwise false
    */
   public boolean isAtTopLimit() {
@@ -136,6 +144,7 @@ public class ArmSubsystem implements Subsystem {
 
   /**
    * Indicates if the bottom limit switch is tripped
+   * 
    * @return true if the bottom limit switch is tripped, otherwise false
    */
   public boolean isAtBottomLimit() {
@@ -146,10 +155,10 @@ public class ArmSubsystem implements Subsystem {
    * Moves the elevator to a position measured in rotations.
    */
   public void MoveElevator(Distance position) {
-    elevatorMotor1.setControl(ElevatorControl
-        .withPosition(position.in(Meters) * METERS_PER_REVOLUTION.in(Meters))
-        .withLimitForwardMotion(isAtBottomLimit())
-        .withLimitReverseMotion(isAtBottomLimit()));
+    elevatorMotor1.setControl(
+        ElevatorControl.withPosition(position.in(Meters) * METERS_PER_REVOLUTION.in(Meters))
+            .withLimitForwardMotion(isAtBottomLimit())
+            .withLimitReverseMotion(isAtBottomLimit()));
   }
 
   /*
