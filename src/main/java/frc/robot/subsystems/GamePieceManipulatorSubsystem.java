@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
  * The is the Subsytem for the Game Pieace Manipulator.
  */
 public class GamePieceManipulatorSubsystem extends SubsystemBase {
-  /** Creates a new Subsytem for the Game Pieace Manipulator. */
 
   // define motors
   private final TalonFX manipulatorMotor = new TalonFX(DEVICE_ID_MANIPULATORMOTOR);
@@ -24,9 +23,9 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
   // define how motors are controlled
   private final VelocityTorqueCurrentFOC wheelControl = new VelocityTorqueCurrentFOC(0);
 
+  /** Creates a new Subsytem for the Game Pieace Manipulator. */
   public GamePieceManipulatorSubsystem() {
   }
-  // ** Creates a new Subsytem for the Game Pieace Manipulator. */
 
   /**
    * Allow the wheels to move forward so they can grab the coral from the inside.
