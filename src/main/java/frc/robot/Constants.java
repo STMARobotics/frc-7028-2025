@@ -94,6 +94,6 @@ public class Constants {
 
     public static final AngularVelocity SCORE_SPEED = RadiansPerSecond.of(-5);
 
-    public static final int DEVICE_ID_MANIPULATORMOTOR = 5;
+    public static final int DEVICE_ID_MANIPULATORMOTOR = 50;
   }
 }
