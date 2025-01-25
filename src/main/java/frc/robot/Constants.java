@@ -159,8 +159,8 @@ public class Constants {
    * Constants for the arm subsystem
    */
   public static class ArmConstants {
-    public static final int DEVICE_ID_ELEVATOR_MOTOR_1 = 80;
-    public static final int DEVICE_ID_ELEVATOR_MOTOR_2 = 81;
+    public static final int DEVICE_ID_ELEVATOR_MOTOR_LEADER = 80;
+    public static final int DEVICE_ID_ELEVATOR_MOTOR_FOLLOWER = 81;
     public static final int DEVICE_ID_CANDI = 85;
 
     public static final SlotConfigs SLOT_CONFIGS = new SlotConfigs().withKP(0.0)
@@ -195,12 +195,22 @@ public class Constants {
    */
   public static class GamePieceManipulatorConstants {
     public static final AngularVelocity INTAKE_SPEED = RadiansPerSecond.of(5);
-
-    public static final AngularVelocity OUTTAKE_SPEED = RadiansPerSecond.of(-5);
-
+    public static final AngularVelocity EJECT_SPEED = RadiansPerSecond.of(-5);
     public static final AngularVelocity SCORE_SPEED = RadiansPerSecond.of(-5);
 
-    public static final int DEVICE_ID_MANIPULATORMOTOR = 50;
+    public static final AngularVelocity INTAKE_ALGAE_VELOCITY = RadiansPerSecond.of(5);
+    public static final AngularVelocity EJECT_ALGAE_VELOCITY = RadiansPerSecond.of(-5);
+    public static final AngularVelocity SCORE_ALGAE_VELOCITY = RadiansPerSecond.of(-5);
+
+    public static final int DEVICE_ID_MANIPULATOR_MOTOR = 50;
+
+    public static final SlotConfigs MANIPULATION_SLOT_CONFIGS = new SlotConfigs().withKP(0.0).withKD(0.0).withKS(0.0);
+    public static final SlotConfigs HOLD_SLOT_CONFIGS = new SlotConfigs().withKP(0.0).withKD(0.0);
+
+    public static final Current STATOR_CURRENT_LIMIT = Amps.of(20);
+    public static final Current TORQUE_CURRENT_LIMIT = Amps.of(20);
+    public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(10);
+
   }
 
   /*
