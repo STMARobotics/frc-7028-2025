@@ -35,6 +35,9 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
+/**
+ * The is the Subsytem for the Arm, including the elevator.
+ */
 public class ArmSubsystem implements Subsystem {
 
   private final TalonFX elevatorMotorLeader = new TalonFX(DEVICE_ID_ELEVATOR_MOTOR_LEADER, CANIVORE_BUS_NAME);
@@ -58,6 +61,9 @@ public class ArmSubsystem implements Subsystem {
   private final StatusSignal<Boolean> atTopLimitSignal = canDi.getS1Closed();
   private final StatusSignal<Boolean> atBottomLimitSignal = canDi.getS2Closed();
 
+  /**
+   * Creates a new ArmSubsystem.
+   */
   public ArmSubsystem() {
     var elevatorTalonConfig = new TalonFXConfiguration();
     elevatorTalonConfig.MotorOutput.withNeutralMode(Brake);
