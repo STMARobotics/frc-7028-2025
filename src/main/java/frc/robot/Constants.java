@@ -62,18 +62,18 @@ public class Constants {
    * Constants for the climb subsystem
    */
   public static class ClimbConstants {
-    public static final int DEVICE_ID_CLIMB_MOTOR_1 = 60;
-    public static final int DEVICE_ID_CLIMB_MOTOR_2 = 65;
-    public static final int DEVICE_ID_CLIMB_ENCODER_1 = 61;
-    public static final int DEVICE_ID_CLIMB_DETECTION = 67;
+    public static final int DEVICE_ID_CLIMB_MOTOR_FRONT = 60;
+    public static final int DEVICE_ID_CLIMB_MOTOR_BACK = 65;
+    public static final int DEVICE_ID_CLIMB_ENCODER_FRONT = 61;
+    public static final int DEVICE_ID_CLIMB_ENCODER_BACK = 66;
+
+    public static final Angle CLIMB_MAGNETIC_OFFSET_FRONT = Rotations.of(0.0);
+    public static final Angle CLIMB_MAGNETIC_OFFSET_BACK = Rotations.of(0.0);
 
     // configuraton {
     public static final Current CLIMB_STATOR_CURRENT_LIMIT = Amps.of(100);
     public static final Current CLIMB_SUPPLY_CURRENT_LIMIT = Amps.of(40);
     public static final double CLIMB_ROTOR_TO_SENSOR_RATIO = (25 / 1); // 25 rotor turns = 1 mechanism turn
-
-    public static final Angle CLIMB_LIMIT_FORWARD = Radians.of(3.1);
-    public static final Angle CLIMB_LIMIT_REVERSE = Radians.of(-3.08);
 
     public static final Distance CAGE_DETECTION_THRESHOLD_DISTANCE = Millimeters.of(0); // TODO determine distance
 
