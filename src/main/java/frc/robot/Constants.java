@@ -1,7 +1,11 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Millimeters;
+import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.configs.SlotConfigs;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -13,8 +17,11 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.Voltage;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -46,16 +53,60 @@ public class Constants {
    * Constants for the climb subsystem
    */
   public static class ClimbConstants {
-
     public static final int DEVICE_ID_CLIMB_MOTOR_1 = 60;
     public static final int DEVICE_ID_CLIMB_MOTOR_2 = 65;
+    public static final int DEVICE_ID_CLIMB_ENCODER_1 = 61;
+    public static final int DEVICE_ID_CLIMB_DETECTION = 67;
+
+    // configuraton {
+    public static final Current CLIMB_STATOR_CURRENT_LIMIT = Amps.of(100);
+    public static final Current CLIMB_SUPPLY_CURRENT_LIMIT = Amps.of(40);
+    public static final double CLIMB_ROTOR_TO_SENSOR_RATIO = (25 / 1); // 25 rotor turns = 1 mechanism turn
+
+    public static final Angle CLIMB_LIMIT_FORWARD = Radians.of(3.1);
+    public static final Angle CLIMB_LIMIT_REVERSE = Radians.of(-3.08);
+
+    public static final Distance CAGE_DETECTION_THRESHOLD_DISTANCE = Millimeters.of(0); // TODO determine distance
+
+    public static final Angle LEFT_CLIMB_MAGNETIC_OFFSET = Radians.of(0);
+    public static final Angle RIGHT_CLIMB_MAGNETIC_OFFSET = Radians.of(0);
+
+    public static final Voltage MAX_CLIMB_VOLTAGE = Volts.of(2);
+
   }
 
   /**
    * Constants for the algae subsystem
    */
   public static class AlgaeConstants {
+    public static final int DEVICE_ID_ROLLERMOTOR = 40;
+    // I never saw what the id for the wrist motor would be, this is a placeholder
+    public static final int DEVICE_ID_WRISTMOTOR = 45;
+    // Same thing with the CANcoder
+    public static final int DEVICE_ID_CANRANGE = 46;
+    // Same thing with the CANcoder
+    public static final int DEVICE_ID_CANCODER = 47;
 
+    // roller constants
+    public static final AngularVelocity INTAKE_SPEED = RadiansPerSecond.of(5); // 5 is probably a wonky number
+    public static final AngularVelocity OUTTAKE_SPEED = RadiansPerSecond.of(-5);
+    public static final AngularVelocity SCORE_SPEED = RadiansPerSecond.of(-5); // score speed probably lower number
+
+    // wrist constants
+    public static final AngularVelocity WRIST_DOWN_SPEED = RadiansPerSecond.of(-5);
+    public static final AngularVelocity WRIST_UP_SPEED = RadiansPerSecond.of(5);
+
+    // numbers are probably wonky here
+    public static final Angle WRIST_DOWN_POSITION = Degrees.of(180);
+    public static final Angle WRIST_UP_POSITION = Degrees.of(90);
+
+    // Configs
+    // I also have no idea what the numbers for these are, probably update them later
+    public static final SlotConfigs ALGAE_SLOT_CONFIGS = new SlotConfigs().withKP(0.0)
+        .withKI(0.0)
+        .withKD(0.0)
+        .withKS(0.0)
+        .withKV(0.0);
   }
 
   /**
