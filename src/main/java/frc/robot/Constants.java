@@ -160,9 +160,10 @@ public class Constants {
    * Constants for the arm subsystem
    */
   public static class ArmConstants {
-    public static final int DEVICE_ID_ELEVATOR_MOTOR_1 = 80;
-    public static final int DEVICE_ID_ELEVATOR_MOTOR_2 = 81;
-    public static final int DEVICE_ID_CANDI = 85;
+    public static final int DEVICE_ID_ELEVATOR_MOTOR_LEADER = 80;
+    public static final int DEVICE_ID_ELEVATOR_MOTOR_FOLLOWER = 81;
+    public static final int DEVICE_ID_CANDI_ELEVATOR = 85;
+    public static final int DEVICE_ID_CANDI_ARM = 100;
 
     public static final int ARM_ORIENT_MOTOR_ID = 0;
     public static final int ARM_ORIENT_CANCODER_ID = 0;
@@ -195,6 +196,8 @@ public class Constants {
     public static final Angle LEVEL_2_ANGLE = Radian.of(0);
     public static final Angle LEVEL_3_ANGLE = Radian.of(0);
     public static final Angle LEVEL_4_ANGLE = Radian.of(0);
+    public static final Angle INTAKE_ANGLE = Radian.of(0);
+    public static final Angle HOLDING_ANGLE = Radian.of(0);
 
     public static final Current ARM_STATOR_CURRENT_LIMIT = Amps.of(0);
     public static final Current ARM_SUPPLY_CURRENT_LIMIT = Amps.of(0);
