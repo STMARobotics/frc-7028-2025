@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import static com.ctre.phoenix6.signals.NeutralModeValue.Brake;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
+import static frc.robot.Constants.CANIVORE_BUS_NAME;
 import static frc.robot.Constants.IndexerConstants.DEVICE_ID_BELT;
 import static frc.robot.Constants.IndexerConstants.EJECT_VELOCITY;
 import static frc.robot.Constants.IndexerConstants.INTAKE_VELOCITY;
@@ -27,7 +28,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
  */
 public class IndexerSubsystem implements Subsystem {
 
-  private final TalonFX beltMotor = new TalonFX(DEVICE_ID_BELT);
+  private final TalonFX beltMotor = new TalonFX(DEVICE_ID_BELT, CANIVORE_BUS_NAME);
   private final VelocityTorqueCurrentFOC beltControl = new VelocityTorqueCurrentFOC(0.0);
   private final TorqueCurrentFOC beltSysIdControl = new TorqueCurrentFOC(0.0);
 
