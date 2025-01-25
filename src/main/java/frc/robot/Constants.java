@@ -71,7 +71,7 @@ public class Constants {
     public static final AngularVelocity SCORE_SPEED = RadiansPerSecond.of(-5); // score speed probably lower number
 
     // wrist constants
-    public static final AngularVelocity WRIST_DOWN_SPEED = RadiansPerSecond.of(5);
+    public static final AngularVelocity WRIST_DOWN_SPEED = RadiansPerSecond.of(-5);
     public static final AngularVelocity WRIST_UP_SPEED = RadiansPerSecond.of(5);
 
     // numbers are probably wonky here
