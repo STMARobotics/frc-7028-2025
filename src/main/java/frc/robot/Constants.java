@@ -132,6 +132,7 @@ public class Constants {
 
     public static final Current ROLLER_STATOR_CURRENT_LIMIT = Amps.of(100);
     public static final Current ROLLER_SUPPLY_CURRENT_LIMIT = Amps.of(40);
+
   }
 
   /**
