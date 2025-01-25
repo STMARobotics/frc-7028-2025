@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Millimeters;
+import static edu.wpi.first.units.Units.Radian;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
@@ -163,6 +164,9 @@ public class Constants {
     public static final int DEVICE_ID_ELEVATOR_MOTOR_2 = 81;
     public static final int DEVICE_ID_CANDI = 85;
 
+    public static final int ARM_ORIENT_MOTOR_ID = 0;
+    public static final int ARM_ORIENT_CANCODER_ID = 0;
+
     public static final SlotConfigs SLOT_CONFIGS = new SlotConfigs().withKP(0.0)
         .withKI(0.0)
         .withKD(0.0)
@@ -188,6 +192,14 @@ public class Constants {
     public static final Distance LEVEL_3_HEIGHT = Meters.of(0);
     public static final Distance LEVEL_4_HEIGHT = Meters.of(0);
 
+    public static final Angle LEVEL_2_ANGLE = Radian.of(0);
+    public static final Angle LEVEL_3_ANGLE = Radian.of(0);
+    public static final Angle LEVEL_4_ANGLE = Radian.of(0);
+
+    public static final Current ARM_STATOR_CURRENT_LIMIT = Amps.of(0);
+    public static final Current ARM_SUPPLY_CURRENT_LIMIT = Amps.of(0);
+    public static final double ARM_ROTOR_TO_SENSOR_RATIO = 0;
+
   }
 
   /*
@@ -212,4 +224,5 @@ public class Constants {
     public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(10);
 
   }
+
 }

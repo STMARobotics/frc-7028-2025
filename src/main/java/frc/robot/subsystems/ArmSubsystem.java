@@ -4,6 +4,7 @@ import static com.ctre.phoenix6.signals.NeutralModeValue.Brake;
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Volts;
+import static frc.robot.Constants.ArmConstants.ARM_ORIENT_MOTOR_ID;
 import static frc.robot.Constants.ArmConstants.BOTTOM_LIMIT;
 import static frc.robot.Constants.ArmConstants.DEVICE_ID_CANDI;
 import static frc.robot.Constants.ArmConstants.DEVICE_ID_ELEVATOR_MOTOR_1;
@@ -27,6 +28,7 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANdi;
 import com.ctre.phoenix6.hardware.TalonFX;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -37,6 +39,8 @@ public class ArmSubsystem implements Subsystem {
 
   private final TalonFX elevatorMotorLeader = new TalonFX(DEVICE_ID_ELEVATOR_MOTOR_1);
   private final TalonFX elevatorMotorFollower = new TalonFX(DEVICE_ID_ELEVATOR_MOTOR_2);
+
+  private final TalonFX ArmMotor = new TalonFX(ARM_ORIENT_MOTOR_ID);
 
   private final CANdi canDi = new CANdi(DEVICE_ID_CANDI);
 
@@ -165,5 +169,25 @@ public class ArmSubsystem implements Subsystem {
    */
   public void stopElevator() {
     elevatorMotorLeader.stopMotor();
+  }
+
+  public void orientToLevel2() {
+
+  }
+
+  public void orientToLevel3() {
+
+  }
+
+  public void orientToLevel4() {
+
+  }
+
+  public void orientForIntake() {
+
+  }
+
+  private void orientToAngle(Angle targetAngle) {
+
   }
 }
