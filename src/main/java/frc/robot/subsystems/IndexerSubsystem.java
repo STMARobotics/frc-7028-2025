@@ -118,6 +118,9 @@ public class IndexerSubsystem implements Subsystem {
     beltMotor.setControl(beltControl.withVelocity(EJECT_VELOCITY));
   }
 
+  /*
+   * Command to get the speed of the indexer
+   */
   public double getIndexerSpeed() {
     return indexerSpeed.getValueAsDouble();
   }

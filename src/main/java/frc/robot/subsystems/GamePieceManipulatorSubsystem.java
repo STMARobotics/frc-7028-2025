@@ -177,6 +177,9 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
     wheelMotor.stopMotor();
   }
 
+  /*
+   * Method to get the speed of the manipulator
+   */
   public double getManipulatorSpeed() {
     return manipulatorSpeed.getValueAsDouble();
   }
