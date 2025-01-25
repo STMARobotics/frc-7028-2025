@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.PhotonVisionCommand;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.IndexerSubsystem;
 
@@ -43,6 +44,7 @@ public class RobotContainer {
 
   private final CommandXboxController joystick = new CommandXboxController(0);
 
+  private final ArmSubsystem armSubsystem = new ArmSubsystem();
   private final IndexerSubsystem indexerSubsystem = new IndexerSubsystem();
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
   private final DrivetrainTelemetry drivetrainTelemetry = new DrivetrainTelemetry(MaxSpeed);
@@ -110,5 +112,20 @@ public class RobotContainer {
         .withPosition(columnIndex, 1);
     tab.add("Indexer Dynam Forward", indexerSubsystem.sysIdBeltDynamicCommand(kForward)).withPosition(columnIndex, 2);
     tab.add("Indexer Dynam Reverse", indexerSubsystem.sysIdBeltDynamicCommand(kReverse)).withPosition(columnIndex, 3);
+  }
+
+  public void elevatorPopulateDashboard() {
+    var tab = Shuffleboard.getTab("Elevator SysId");
+    int columnIndex = 0;
+
+    // Column 1 Elevator motor 1
+    tab.add("Elevator Quasi Forward", armSubsystem.sysIdElevatorQuasistaticCommand(kForward))
+        .withPosition(columnIndex + 1, 0);
+    tab.add("Elevator Quasi Reverse", armSubsystem.sysIdElevatorQuasistaticCommand(kReverse))
+        .withPosition(columnIndex + 1, 1);
+    tab.add("Elevator Dynam Forward", armSubsystem.sysIdElevatorDynamicCommand(kForward))
+        .withPosition(columnIndex + 1, 2);
+    tab.add("Elevator Dynam Reverse", armSubsystem.sysIdElevatorDynamicCommand(kReverse))
+        .withPosition(columnIndex + 1, 3);
   }
 }
