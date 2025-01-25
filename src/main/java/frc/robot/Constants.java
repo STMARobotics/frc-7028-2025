@@ -159,8 +159,8 @@ public class Constants {
    * Constants for the arm subsystem
    */
   public static class ArmConstants {
-    public static final int DEVICE_ID_ELEVATOR_MOTOR_1 = 80;
-    public static final int DEVICE_ID_ELEVATOR_MOTOR_2 = 81;
+    public static final int DEVICE_ID_ELEVATOR_MOTOR_LEADER = 80;
+    public static final int DEVICE_ID_ELEVATOR_MOTOR_FOLLOWER = 81;
     public static final int DEVICE_ID_CANDI = 85;
 
     public static final SlotConfigs SLOT_CONFIGS = new SlotConfigs().withKP(0.0)

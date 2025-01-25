@@ -1,13 +1,14 @@
 package frc.robot.subsystems;
 
+import static com.ctre.phoenix6.signals.ForwardLimitSourceValue.RemoteCANdiS1;
 import static com.ctre.phoenix6.signals.NeutralModeValue.Brake;
-import static edu.wpi.first.units.Units.Amps;
+import static com.ctre.phoenix6.signals.ReverseLimitSourceValue.RemoteCANdiS2;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.ArmConstants.BOTTOM_LIMIT;
 import static frc.robot.Constants.ArmConstants.DEVICE_ID_CANDI;
-import static frc.robot.Constants.ArmConstants.DEVICE_ID_ELEVATOR_MOTOR_1;
-import static frc.robot.Constants.ArmConstants.DEVICE_ID_ELEVATOR_MOTOR_2;
+import static frc.robot.Constants.ArmConstants.DEVICE_ID_ELEVATOR_MOTOR_FOLLOWER;
+import static frc.robot.Constants.ArmConstants.DEVICE_ID_ELEVATOR_MOTOR_LEADER;
 import static frc.robot.Constants.ArmConstants.LEVEL_1_HEIGHT;
 import static frc.robot.Constants.ArmConstants.LEVEL_2_HEIGHT;
 import static frc.robot.Constants.ArmConstants.LEVEL_3_HEIGHT;
@@ -17,6 +18,7 @@ import static frc.robot.Constants.ArmConstants.MOTION_MAGIC_CONFIGS;
 import static frc.robot.Constants.ArmConstants.SLOT_CONFIGS;
 import static frc.robot.Constants.ArmConstants.SUPPLY_CURRENT_LIMIT;
 import static frc.robot.Constants.ArmConstants.TOP_LIMIT;
+import static frc.robot.Constants.CANIVORE_BUS_NAME;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.StatusSignal;
@@ -35,10 +37,10 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 public class ArmSubsystem implements Subsystem {
 
-  private final TalonFX elevatorMotorLeader = new TalonFX(DEVICE_ID_ELEVATOR_MOTOR_1);
-  private final TalonFX elevatorMotorFollower = new TalonFX(DEVICE_ID_ELEVATOR_MOTOR_2);
+  private final TalonFX elevatorMotorLeader = new TalonFX(DEVICE_ID_ELEVATOR_MOTOR_LEADER, CANIVORE_BUS_NAME);
+  private final TalonFX elevatorMotorFollower = new TalonFX(DEVICE_ID_ELEVATOR_MOTOR_FOLLOWER, CANIVORE_BUS_NAME);
 
-  private final CANdi canDi = new CANdi(DEVICE_ID_CANDI);
+  private final CANdi canDi = new CANdi(DEVICE_ID_CANDI, CANIVORE_BUS_NAME);
 
   private final MotionMagicVoltage elevatorControl = new MotionMagicVoltage(0.0);
   private final VoltageOut sysIdElevatorControl = new VoltageOut(0.0);
@@ -50,10 +52,7 @@ public class ArmSubsystem implements Subsystem {
           null,
           state -> SignalLogger.writeString("Elevator Motor SysId", state.toString())),
       new SysIdRoutine.Mechanism((voltage) -> {
-        elevatorMotorLeader.setControl(
-            sysIdElevatorControl.withOutput(voltage.in(Volts))
-                .withLimitForwardMotion(isAtTopLimit())
-                .withLimitReverseMotion(isAtBottomLimit()));
+        elevatorMotorLeader.setControl(sysIdElevatorControl.withOutput(voltage.in(Volts)));
       }, null, this));
 
   private final StatusSignal<Boolean> atTopLimitSignal = canDi.getS1Closed();
@@ -61,17 +60,18 @@ public class ArmSubsystem implements Subsystem {
 
   public ArmSubsystem() {
     var elevatorTalonConfig = new TalonFXConfiguration();
-    elevatorTalonConfig.MotorOutput.NeutralMode = Brake;
-    elevatorTalonConfig.Slot0 = Slot0Configs.from(SLOT_CONFIGS);
-    elevatorTalonConfig.CurrentLimits.SupplyCurrentLimit = SUPPLY_CURRENT_LIMIT.in(Amps);
-    elevatorTalonConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-    elevatorTalonConfig.MotionMagic = MOTION_MAGIC_CONFIGS;
-    elevatorTalonConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-    elevatorTalonConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = TOP_LIMIT.in(Meters)
-        / METERS_PER_REVOLUTION.in(Meters);
-    elevatorTalonConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-    elevatorTalonConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = BOTTOM_LIMIT.in(Meters)
-        / METERS_PER_REVOLUTION.in(Meters);
+    elevatorTalonConfig.MotorOutput.withNeutralMode(Brake);
+    elevatorTalonConfig.withSlot0(Slot0Configs.from(SLOT_CONFIGS));
+    elevatorTalonConfig.CurrentLimits.withSupplyCurrentLimit(SUPPLY_CURRENT_LIMIT).withSupplyCurrentLimitEnable(true);
+    elevatorTalonConfig.withMotionMagic(MOTION_MAGIC_CONFIGS);
+    elevatorTalonConfig.HardwareLimitSwitch.withForwardLimitRemoteSensorID(canDi.getDeviceID())
+        .withForwardLimitSource(RemoteCANdiS1)
+        .withReverseLimitRemoteSensorID(canDi.getDeviceID())
+        .withReverseLimitSource(RemoteCANdiS2);
+    elevatorTalonConfig.SoftwareLimitSwitch.withForwardSoftLimitEnable(true)
+        .withForwardSoftLimitThreshold(TOP_LIMIT.in(Meters) / METERS_PER_REVOLUTION.in(Meters))
+        .withReverseSoftLimitEnable(true)
+        .withReverseSoftLimitThreshold(BOTTOM_LIMIT.in(Meters) / METERS_PER_REVOLUTION.in(Meters));
 
     elevatorMotorLeader.getConfigurator().apply(elevatorTalonConfig);
     elevatorMotorFollower.getConfigurator().apply(elevatorTalonConfig);
@@ -126,10 +126,8 @@ public class ArmSubsystem implements Subsystem {
    * @param The desired position in meters
    */
   public void moveElevator(Distance position) {
-    elevatorMotorLeader.setControl(
-        elevatorControl.withPosition(position.in(Meters) * METERS_PER_REVOLUTION.in(Meters))
-            .withLimitForwardMotion(isAtTopLimit())
-            .withLimitReverseMotion(isAtBottomLimit()));
+    elevatorMotorLeader
+        .setControl(elevatorControl.withPosition(position.in(Meters) * METERS_PER_REVOLUTION.in(Meters)));
   }
 
   /*
