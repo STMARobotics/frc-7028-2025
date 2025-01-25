@@ -96,4 +96,12 @@ public class Constants {
 
     public static final int DEVICE_ID_MANIPULATORMOTOR = 50;
   }
+
+  /*
+   * Constants for test mode
+   */
+  public static class TestingConstants {
+    public static final RadiansPerSecond INDEXER_TESTING_SPEED = RadiansPerSecond.of(2);
+    public static final RadiansPerSecond MANIPULATOR_TESTING_SPEED = RadiansPerSecond.of(2);
+  }
 }

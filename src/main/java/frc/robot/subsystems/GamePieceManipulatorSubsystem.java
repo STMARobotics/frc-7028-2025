@@ -27,6 +27,10 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
   public GamePieceManipulatorSubsystem() {
   }
 
+  public void runManipulatorWheels() {
+    manipulatorMotor.setControl(wheelControl.withVelocity(INTAKE_SPEED));
+  }
+
   /**
    * Allow the wheels to move forward so they can grab the coral from the inside.
    */

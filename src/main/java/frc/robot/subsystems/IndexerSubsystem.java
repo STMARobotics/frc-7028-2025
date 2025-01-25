@@ -76,6 +76,15 @@ public class IndexerSubsystem implements Subsystem {
   }
 
   /**
+   * Runs the indexer belt at any specific speed
+   * 
+   * @param speed to run the belt in radians per second
+   */
+  public void runBelt(RadiansPerSecond speed) {
+    beltMotor.setControl(beltControl.withVelocity());
+  }
+
+  /**
    * Runs belt to move coral onto end effector
    */
   public void intake() {
