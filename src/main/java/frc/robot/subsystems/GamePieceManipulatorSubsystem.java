@@ -33,6 +33,11 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
     manipulatorSpeed = manipulatorMotor.getVelocity();
   }
 
+  /**
+   * Runs the manipulator wheels at any specific speed
+   * 
+   * @param speed to run the belt in radians per second
+   */
   public void runManipulatorWheels(AngularVelocity speed) {
     manipulatorMotor.setControl(wheelControl.withVelocity(speed));
   }

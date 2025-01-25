@@ -1,14 +1,20 @@
 package frc.robot.commands;
 
 import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Volts;
+import static frc.robot.Constants.TestingConstants.CLIMB_TESTING_VOLTAGE;
 import static frc.robot.Constants.TestingConstants.INDEXER_BACKWARDS_TESTING_SPEED;
 import static frc.robot.Constants.TestingConstants.INDEXER_TESTING_SPEED;
 import static frc.robot.Constants.TestingConstants.MANIPULATOR_BACKWARDS_TESTING_SPEED;
 import static frc.robot.Constants.TestingConstants.MANIPULATOR_TESTING_SPEED;
+import static frc.robot.Constants.TestingConstants.ROLLER_BACKWARDS_TESTING_SPEED;
+import static frc.robot.Constants.TestingConstants.ROLLER_TESTING_SPEED;
 
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.AlgaeSubsystem;
+import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.GamePieceManipulatorSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 
@@ -16,17 +22,25 @@ public class TestCommand extends Command {
 
   private final IndexerSubsystem indexersubsystem;
   private final GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem;
+  private final AlgaeSubsystem algaeSubsystem;
+  private final ClimbSubsystem climbSubsystem;
 
   private boolean hasStopped = false;
   private int teststate = 0;
 
   private Timer timer = new Timer();
 
-  public TestCommand(IndexerSubsystem indexersubsystem, GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem) {
+  public TestCommand(
+      IndexerSubsystem indexersubsystem,
+      GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem,
+      AlgaeSubsystem algaeSubsystem,
+      ClimbSubsystem climbSubsystem) {
     this.indexersubsystem = indexersubsystem;
     this.gamePieceManipulatorSubsystem = gamePieceManipulatorSubsystem;
+    this.algaeSubsystem = algaeSubsystem;
+    this.climbSubsystem = climbSubsystem;
 
-    addRequirements(indexersubsystem, gamePieceManipulatorSubsystem);
+    addRequirements(indexersubsystem, gamePieceManipulatorSubsystem, algaeSubsystem);
   }
 
   @Override
@@ -109,15 +123,101 @@ public class TestCommand extends Command {
           timer.reset();
           hasStopped = false;
         }
+        break;
+
+      case 4:
+        if (!hasStopped) {
+          algaeSubsystem.runRollers(ROLLER_TESTING_SPEED);
+          timer.start();
+        }
+        if (algaeSubsystem.getRollerSpeed() == (ROLLER_TESTING_SPEED.in(RadiansPerSecond)) && !hasStopped) {
+          algaeSubsystem.stop();
+          hasStopped = true;
+        }
+        if (timer.hasElapsed(4) && hasStopped) {
+          teststate++;
+          timer.stop();
+          timer.reset();
+          hasStopped = false;
+        }
+        break;
+
+      case 5:
+        if (!hasStopped) {
+          algaeSubsystem.runRollers(ROLLER_BACKWARDS_TESTING_SPEED);
+          timer.start();
+        }
+        if (algaeSubsystem.getRollerSpeed() == (ROLLER_BACKWARDS_TESTING_SPEED.in(RadiansPerSecond)) && !hasStopped) {
+          algaeSubsystem.stop();
+          hasStopped = true;
+        }
+        if (timer.hasElapsed(4) && hasStopped) {
+          teststate++;
+          timer.stop();
+          timer.reset();
+          hasStopped = false;
+        }
+        break;
+
+      case 6:
+        if (!hasStopped) {
+          climbSubsystem.runBackClimb(CLIMB_TESTING_VOLTAGE.in(Volts));
+          climbSubsystem.runFrontClimb(CLIMB_TESTING_VOLTAGE.in(Volts));
+          timer.start();
+        }
+        if (timer.hasElapsed(2) && !hasStopped) {
+          climbSubsystem.stopMotors();
+          hasStopped = true;
+        }
+        if (timer.hasElapsed(4) && hasStopped) {
+          teststate++;
+          timer.stop();
+          timer.reset();
+          hasStopped = false;
+        }
+        break;
+
+      case 7:
+        if (!hasStopped) {
+          algaeSubsystem.moveIntakeDown();
+          timer.start();
+        }
+        if (algaeSubsystem.isWristAtPosition() && !hasStopped) {
+          algaeSubsystem.stop();
+          hasStopped = true;
+        }
+        if (timer.hasElapsed(4) && hasStopped) {
+          teststate++;
+          timer.stop();
+          timer.reset();
+          hasStopped = false;
+        }
+        break;
+
+      case 8:
+        if (!hasStopped) {
+          algaeSubsystem.moveIntakeUp();
+          timer.start();
+        }
+        if (algaeSubsystem.isWristAtPosition() && !hasStopped) {
+          algaeSubsystem.stop();
+          hasStopped = true;
+        }
+        if (timer.hasElapsed(4) && hasStopped) {
+          teststate++;
+          timer.stop();
+          timer.reset();
+          hasStopped = false;
+        }
+        break;
     }
   }
 
+  /*
+   * Returns the amount of tests that have been completed
+   */
   public int getTestState() {
     return teststate;
-  }
-
-  public boolean getHasStopped() {
-    return hasStopped;
   }
 
   @Override
@@ -129,5 +229,7 @@ public class TestCommand extends Command {
   public void end(boolean interrupted) {
     indexersubsystem.stop();
     gamePieceManipulatorSubsystem.stop();
+    climbSubsystem.stopMotors();
+    algaeSubsystem.stop();
   }
 }

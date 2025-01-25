@@ -208,8 +208,14 @@ public class Constants {
    */
   public static class TestingConstants {
     public static final AngularVelocity INDEXER_TESTING_SPEED = RadiansPerSecond.of(2);
-    public static final AngularVelocity INDEXER_BACKWARDS_TESTING_SPEED = RadiansPerSecond.of(-2);
+    public static final AngularVelocity INDEXER_BACKWARDS_TESTING_SPEED = RadiansPerSecond
+        .of(-(INDEXER_TESTING_SPEED.in(RadiansPerSecond)));
     public static final AngularVelocity MANIPULATOR_TESTING_SPEED = RadiansPerSecond.of(2);
-    public static final AngularVelocity MANIPULATOR_BACKWARDS_TESTING_SPEED = RadiansPerSecond.of(-2);
+    public static final AngularVelocity MANIPULATOR_BACKWARDS_TESTING_SPEED = RadiansPerSecond
+        .of(-(MANIPULATOR_TESTING_SPEED.in(RadiansPerSecond)));
+    public static final AngularVelocity ROLLER_TESTING_SPEED = RadiansPerSecond.of(5);
+    public static final AngularVelocity ROLLER_BACKWARDS_TESTING_SPEED = RadiansPerSecond
+        .of(-(ROLLER_TESTING_SPEED.in(RadiansPerSecond)));
+    public static final Voltage CLIMB_TESTING_VOLTAGE = Volts.of(5);
   }
 }

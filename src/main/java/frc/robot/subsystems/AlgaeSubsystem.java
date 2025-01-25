@@ -177,6 +177,10 @@ public class AlgaeSubsystem extends SubsystemBase {
     return wristSysIdRoutine.quasistatic(direction).withName("Deploy quasi " + direction).finallyDo(this::stop);
   }
 
+  public void runRollers(AngularVelocity speed) {
+    rollerMotor.setControl(rollerControl.withVelocity(speed));
+  }
+
   /**
    * Activates motor to activate rollers and intake algae
    */
@@ -237,5 +241,9 @@ public class AlgaeSubsystem extends SubsystemBase {
    */
   public void moveIntakeUp() {
     wristMotor.setControl(wristControl.withPosition(WRIST_UP_POSITION));
+  }
+
+  public double getRollerSpeed() {
+    return wristVelocity.getValueAsDouble();
   }
 }
