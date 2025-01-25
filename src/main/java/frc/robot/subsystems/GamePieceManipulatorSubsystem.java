@@ -8,9 +8,11 @@ import static frc.robot.Constants.GamePieceManipulatorConstants.INTAKE_SPEED;
 import static frc.robot.Constants.GamePieceManipulatorConstants.OUTTAKE_SPEED;
 import static frc.robot.Constants.GamePieceManipulatorConstants.SCORE_SPEED;
 
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.units.measure.AngularVelocity;
 
 /**
  * The is the Subsytem for the Game Pieace Manipulator.
@@ -31,8 +33,8 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
     manipulatorSpeed = manipulatorMotor.getVelocity();
   }
 
-  public void runManipulatorWheels() {
-    manipulatorMotor.setControl(wheelControl.withVelocity(INTAKE_SPEED));
+  public void runManipulatorWheels(AngularVelocity speed) {
+    manipulatorMotor.setControl(wheelControl.withVelocity(speed));
   }
 
   /**

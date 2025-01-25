@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import edu.wpi.first.units.measure.AngularVelocity;
 
 /**
  * The subsystem for the coral box/indexer
@@ -84,7 +85,7 @@ public class IndexerSubsystem implements Subsystem {
    * 
    * @param speed to run the belt in radians per second
    */
-  public void runBelt(RadiansPerSecond speed) {
+  public void runBelt(AngularVelocity speed) {
     beltMotor.setControl(beltControl.withVelocity());
   }
 

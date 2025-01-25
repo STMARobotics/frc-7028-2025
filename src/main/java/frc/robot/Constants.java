@@ -152,7 +152,7 @@ public class Constants {
    * Constants for test mode
    */
   public static class TestingConstants {
-    public static final RadiansPerSecond INDEXER_TESTING_SPEED = RadiansPerSecond.of(2);
-    public static final RadiansPerSecond MANIPULATOR_TESTING_SPEED = RadiansPerSecond.of(2);
+    public static final AngularVelocity INDEXER_TESTING_SPEED = RadiansPerSecond.of(2);
+    public static final AngularVelocity MANIPULATOR_TESTING_SPEED = RadiansPerSecond.of(2);
   }
 }
