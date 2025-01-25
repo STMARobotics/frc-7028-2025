@@ -1,12 +1,13 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Millimeters;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.SlotConfigs;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -33,6 +34,9 @@ import edu.wpi.first.units.measure.Voltage;
  * constants are needed, to reduce verbosity.
  */
 public class Constants {
+
+  public static final String CANIVORE_BUS_NAME = "canivore";
+
   public static class VisionConstants {
     public static final String kCameraName = "YOUR CAMERA NAME";
     // Cam mounted facing forward, half a meter forward of center, half a meter up from center.
@@ -79,34 +83,7 @@ public class Constants {
    * Constants for the algae subsystem
    */
   public static class AlgaeConstants {
-    public static final int DEVICE_ID_ROLLERMOTOR = 40;
-    // I never saw what the id for the wrist motor would be, this is a placeholder
-    public static final int DEVICE_ID_WRISTMOTOR = 45;
-    // Same thing with the CANcoder
-    public static final int DEVICE_ID_CANRANGE = 46;
-    // Same thing with the CANcoder
-    public static final int DEVICE_ID_CANCODER = 47;
 
-    // roller constants
-    public static final AngularVelocity INTAKE_SPEED = RadiansPerSecond.of(5); // 5 is probably a wonky number
-    public static final AngularVelocity OUTTAKE_SPEED = RadiansPerSecond.of(-5);
-    public static final AngularVelocity SCORE_SPEED = RadiansPerSecond.of(-5); // score speed probably lower number
-
-    // wrist constants
-    public static final AngularVelocity WRIST_DOWN_SPEED = RadiansPerSecond.of(-5);
-    public static final AngularVelocity WRIST_UP_SPEED = RadiansPerSecond.of(5);
-
-    // numbers are probably wonky here
-    public static final Angle WRIST_DOWN_POSITION = Degrees.of(180);
-    public static final Angle WRIST_UP_POSITION = Degrees.of(90);
-
-    // Configs
-    // I also have no idea what the numbers for these are, probably update them later
-    public static final SlotConfigs ALGAE_SLOT_CONFIGS = new SlotConfigs().withKP(0.0)
-        .withKI(0.0)
-        .withKD(0.0)
-        .withKS(0.0)
-        .withKV(0.0);
   }
 
   /**
@@ -132,6 +109,34 @@ public class Constants {
    * Constants for the arm subsystem
    */
   public static class ArmConstants {
+    public static final int DEVICE_ID_ELEVATOR_MOTOR_1 = 80;
+    public static final int DEVICE_ID_ELEVATOR_MOTOR_2 = 81;
+    public static final int DEVICE_ID_CANDI = 85;
+
+    public static final SlotConfigs SLOT_CONFIGS = new SlotConfigs().withKP(0.0)
+        .withKI(0.0)
+        .withKD(0.0)
+        .withKS(0.0)
+        .withKV(0.0);
+
+    public static final MotionMagicConfigs MOTION_MAGIC_CONFIGS = new MotionMagicConfigs()
+        .withMotionMagicAcceleration(0.01)
+        .withMotionMagicCruiseVelocity(0.01);
+
+    public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(0); // Placeholder
+
+    public static final Distance METERS_PER_REVOLUTION = Meters.of(0); // Placeholder
+
+    public static final Distance TOP_LIMIT = Meters.of(0); // Placeholder
+    public static final Distance BOTTOM_LIMIT = Meters.of(0); // Placeholder
+
+    /*
+     * The position in meters the elevator has to arrive at in order to score with placeholder numbers for now
+     */
+    public static final Distance LEVEL_1_HEIGHT = Meters.of(0);
+    public static final Distance LEVEL_2_HEIGHT = Meters.of(0);
+    public static final Distance LEVEL_3_HEIGHT = Meters.of(0);
+    public static final Distance LEVEL_4_HEIGHT = Meters.of(0);
 
   }
 
