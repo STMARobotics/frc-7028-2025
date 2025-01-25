@@ -243,6 +243,9 @@ public class AlgaeSubsystem extends SubsystemBase {
     wristMotor.setControl(wristControl.withPosition(WRIST_UP_POSITION));
   }
 
+  /*
+   * Command to get the speed of the algae rollers
+   */
   public double getRollerSpeed() {
     return wristVelocity.getValueAsDouble();
   }
