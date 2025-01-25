@@ -1,6 +1,6 @@
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Amps;
+import static com.ctre.phoenix6.signals.NeutralModeValue.Brake;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.IndexerConstants.DEVICE_ID_BELT;
@@ -9,6 +9,7 @@ import static frc.robot.Constants.IndexerConstants.INTAKE_VELOCITY;
 import static frc.robot.Constants.IndexerConstants.SCORE_VELOCITY_LEVEL_1;
 import static frc.robot.Constants.IndexerConstants.SLOT_CONFIGS;
 import static frc.robot.Constants.IndexerConstants.SUPPLY_CURRENT_LIMIT;
+import static frc.robot.Constants.IndexerConstants.TORQUE_CURRENT_LIMIT;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.StatusSignal;
@@ -17,7 +18,6 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -47,11 +47,11 @@ public class IndexerSubsystem implements Subsystem {
 
   public IndexerSubsystem() {
     var beltTalonConfig = new TalonFXConfiguration();
-    beltTalonConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    beltTalonConfig.Slot0 = Slot0Configs.from(SLOT_CONFIGS);
-    beltTalonConfig.CurrentLimits.SupplyCurrentLimit = SUPPLY_CURRENT_LIMIT.in(Amps);
-    beltTalonConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-
+    beltTalonConfig.MotorOutput.withNeutralMode(Brake);
+    beltTalonConfig.withSlot0(Slot0Configs.from(SLOT_CONFIGS));
+    beltTalonConfig.CurrentLimits.withSupplyCurrentLimit(SUPPLY_CURRENT_LIMIT).withSupplyCurrentLimitEnable(true);
+    beltTalonConfig.TorqueCurrent.withPeakForwardTorqueCurrent(TORQUE_CURRENT_LIMIT)
+        .withPeakReverseTorqueCurrent(TORQUE_CURRENT_LIMIT.unaryMinus());
     beltMotor.getConfigurator().apply(beltTalonConfig);
     indexerSpeed = beltMotor.getVelocity();
   }
