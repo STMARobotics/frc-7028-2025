@@ -164,9 +164,9 @@ public class Constants {
     public static final Distance LEVEL_3_HEIGHT = Meters.of(0);
     public static final Distance LEVEL_4_HEIGHT = Meters.of(0);
 
-    public static Angle LEVEL2 = Radian.of(0);
-    public static Angle LEVEL3 = Radian.of(0);
-    public static Angle LEVEL4 = Radian.of(0);
+    public static final Angle LEVEL2 = Radian.of(0);
+    public static final Angle LEVEL3 = Radian.of(0);
+    public static final Angle LEVEL4 = Radian.of(0);
   }
 
   /*
