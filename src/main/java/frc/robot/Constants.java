@@ -1,6 +1,7 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 
 import com.ctre.phoenix6.configs.SlotConfigs;
@@ -13,6 +14,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 
@@ -57,22 +59,24 @@ public class Constants {
   public static class AlgaeConstants {
     public static final int DEVICE_ID_ROLLERMOTOR = 40;
     // I never saw what the id for the wrist motor would be, this is a placeholder
-    public static final int DEVICE_ID_WRISTMOTOR = 1;
+    public static final int DEVICE_ID_WRISTMOTOR = 45;
     // Same thing with the CANcoder
-    public static final int DEVICE_ID_CANCODER = 1;
+    public static final int DEVICE_ID_CANRANGE = 46;
+    // Same thing with the CANcoder
+    public static final int DEVICE_ID_CANCODER = 47;
 
     // roller constants
     public static final AngularVelocity INTAKE_SPEED = RadiansPerSecond.of(5); // 5 is probably a wonky number
     public static final AngularVelocity OUTTAKE_SPEED = RadiansPerSecond.of(-5);
-    public static final AngularVelocity SCORE_SPEED = RadiansPerSecond.of(5); // score speed probably lower number
+    public static final AngularVelocity SCORE_SPEED = RadiansPerSecond.of(-5); // score speed probably lower number
 
     // wrist constants
     public static final AngularVelocity WRIST_DOWN_SPEED = RadiansPerSecond.of(5);
-    public static final AngularVelocity WRIST_UP_SPEED = RadiansPerSecond.of(-5);
+    public static final AngularVelocity WRIST_UP_SPEED = RadiansPerSecond.of(5);
 
     // numbers are probably wonky here
-    public static final double WRIST_DOWN_POSITION = 180;
-    public static final double WRIST_UP_POSITION = 90;
+    public static final Angle WRIST_DOWN_POSITION = Degrees.of(180);
+    public static final Angle WRIST_UP_POSITION = Degrees.of(90);
 
     // Configs
     // I also have no idea what the numbers for these are, probably update them later
