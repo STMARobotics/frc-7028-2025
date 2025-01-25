@@ -1,11 +1,15 @@
 package frc.robot;
 
+import static com.ctre.phoenix6.signals.GravityTypeValue.Arm_Cosine;
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Millimeters;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
@@ -35,6 +39,9 @@ import edu.wpi.first.units.measure.Voltage;
  * constants are needed, to reduce verbosity.
  */
 public class Constants {
+
+  public static final String CANIVORE_BUS_NAME = "canivore";
+
   public static class VisionConstants {
     public static final String kCameraName = "YOUR CAMERA NAME";
     // Cam mounted facing forward, half a meter forward of center, half a meter up from center.
@@ -82,16 +89,22 @@ public class Constants {
    */
   public static class AlgaeConstants {
     public static final int DEVICE_ID_ROLLERMOTOR = 40;
-    // I never saw what the id for the wrist motor would be, this is a placeholder
     public static final int DEVICE_ID_WRISTMOTOR = 45;
-    // Same thing with the CANcoder
     public static final int DEVICE_ID_CANRANGE = 46;
-    // Same thing with the CANcoder
     public static final int DEVICE_ID_CANCODER = 47;
+
+    public static final Angle WRIST_ENCODER_OFFSET = Rotations.of(0.0);
+
+    public static final Current WRIST_STATOR_CURRENT_LIMIT = Amps.of(100);
+    public static final Current WRIST_SUPPLY_CURRENT_LIMIT = Amps.of(40);
+    public static final double WRIST_ROTOR_TO_SENSOR_RATIO = 1; // TODO Need to get this from design team
+
+    public static final Angle WRIST_SOFT_LIMIT_FORWARD = Rotations.of(0.4);
+    public static final Angle WRIST_SOFT_LIMIT_REVERSE = Rotations.of(0.0);
 
     // roller constants
     public static final AngularVelocity INTAKE_SPEED = RadiansPerSecond.of(5); // 5 is probably a wonky number
-    public static final AngularVelocity OUTTAKE_SPEED = RadiansPerSecond.of(-5);
+    public static final AngularVelocity EJECT_SPEED = RadiansPerSecond.of(-5);
     public static final AngularVelocity SCORE_SPEED = RadiansPerSecond.of(-5); // score speed probably lower number
 
     // wrist constants
@@ -101,14 +114,25 @@ public class Constants {
     // numbers are probably wonky here
     public static final Angle WRIST_DOWN_POSITION = Degrees.of(180);
     public static final Angle WRIST_UP_POSITION = Degrees.of(90);
+    public static final Angle WRIST_PROCESSOR_POSITION = Rotations.of(0.2);
+    public static final Angle WRIST_TOLERANCE = Degrees.of(1);
 
-    // Configs
-    // I also have no idea what the numbers for these are, probably update them later
-    public static final SlotConfigs ALGAE_SLOT_CONFIGS = new SlotConfigs().withKP(0.0)
-        .withKI(0.0)
+    public static final SlotConfigs WRIST_SLOT_CONFIGS = new SlotConfigs().withGravityType(Arm_Cosine)
+        .withKP(0.0)
         .withKD(0.0)
         .withKS(0.0)
-        .withKV(0.0);
+        .withKV(0.0)
+        .withKA(0.0);
+
+    public static final SlotConfigs ROLLER_SLOT_CONFIGS = new SlotConfigs().withKP(0.0).withKD(0.0).withKS(0.0);
+
+    public static final MotionMagicConfigs WRIST_MOTION_MAGIC_CONFIGS = new MotionMagicConfigs()
+        .withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(5))
+        .withMotionMagicCruiseVelocity(RotationsPerSecond.of(5));
+
+    public static final Current ROLLER_STATOR_CURRENT_LIMIT = Amps.of(100);
+    public static final Current ROLLER_SUPPLY_CURRENT_LIMIT = Amps.of(40);
+
   }
 
   /**
