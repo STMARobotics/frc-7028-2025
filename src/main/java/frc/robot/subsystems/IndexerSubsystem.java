@@ -17,6 +17,7 @@ import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.StatusSignal;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -30,6 +31,8 @@ public class IndexerSubsystem implements Subsystem {
   private final TalonFX beltMotor = new TalonFX(DEVICE_ID_BELT);
   private final VelocityTorqueCurrentFOC beltControl = new VelocityTorqueCurrentFOC(0.0);
   private final TorqueCurrentFOC beltSysIdControl = new TorqueCurrentFOC(0.0);
+
+  private StatusSignal<Double> indexerSpeed;
 
   private final SysIdRoutine beltSysIdRoutine = new SysIdRoutine(
       new SysIdRoutine.Config(
@@ -49,6 +52,7 @@ public class IndexerSubsystem implements Subsystem {
     beltTalonConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
     beltMotor.getConfigurator().apply(beltTalonConfig);
+    indexerSpeed = beltMotor.getVelocity();
   }
 
   /**
@@ -110,5 +114,9 @@ public class IndexerSubsystem implements Subsystem {
    */
   public void eject() {
     beltMotor.setControl(beltControl.withVelocity(EJECT_VELOCITY));
+  }
+
+  public double getIndexerSpeed() {
+    return indexerSpeed;
   }
 }

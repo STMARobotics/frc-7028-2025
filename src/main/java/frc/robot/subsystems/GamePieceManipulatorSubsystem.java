@@ -23,8 +23,12 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
   // define how motors are controlled
   private final VelocityTorqueCurrentFOC wheelControl = new VelocityTorqueCurrentFOC(0);
 
+  private StatusSignal<Double> manipulatorSpeed;
+
   /** Creates a new Subsytem for the Game Pieace Manipulator. */
   public GamePieceManipulatorSubsystem() {
+  
+    manipulatorSpeed = manipulatorMotor.getVelocity();
   }
 
   public void runManipulatorWheels() {
@@ -57,5 +61,9 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
    */
   public void stop() {
     manipulatorMotor.stopMotor();
+  }
+
+  public double getIndexerSpeed() {
+    return manipulatorSpeed;
   }
 }

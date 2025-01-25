@@ -39,15 +39,14 @@ public class TestCommand extends Command {
       case 0:
         if (!hasStopped) {
           indexersubsystem.runBelt(INDEXER_TESTING_SPEED);
+          timer.start();
         }
-        if (timer.hasElapsed(2) && !hasStopped) {
+        if (indexersubsystem.getIndexerSpeed() == INDEXER_TESTING_SPEED && !hasStopped) {
           indexersubsystem.stop();
           hasStopped = true;
         }
         if (timer.hasElapsed(4) && hasStopped) {
           teststate++;
-          timer.stop();
-          timer.reset();
           hasStopped = false;
         }
         break;
@@ -55,8 +54,9 @@ public class TestCommand extends Command {
       case 1:
         if (!hasStopped) {
           indexersubsystem.runBelt(-INDEXER_TESTING_SPEED);
+          timer.start();
         }
-        if (timer.hasElapsed(2) && !hasStopped) {
+        if (indexersubsystem.getIndexerSpeed() == -INDEXER_TESTING_SPEED && !hasStopped) {
           indexersubsystem.stop();
           hasStopped = true;
         }
@@ -71,8 +71,9 @@ public class TestCommand extends Command {
       case 2:
         if (!hasStopped) {
           gamePieceManipulatorSubsystem.runManipulatorWheels(MANIPULATOR_TESTING_SPEED);
+          timer.start();
         }
-        if (timer.hasElapsed(2) && !hasStopped) {
+        if (gamePieceManipulatorSubsystem.getManipulatorSpeed() == MANIPULATOR_TESTING_SPEED && !hasStopped) {
           gamePieceManipulatorSubsystem.stop();
           hasStopped = true;
         }
@@ -85,9 +86,10 @@ public class TestCommand extends Command {
 
       case 3:
         if (!hasStopped) {
-          gamePieceManipulatorSubsystem.runManipulatorWheels(MANIPULATOR_TESTING_SPEED);
+          gamePieceManipulatorSubsystem.runManipulatorWheels(-MANIPULATOR_TESTING_SPEED);
+          timer.start();
         }
-        if (timer.hasElapsed(2) && !hasStopped) {
+        if (gamePieceManipulatorSubsystem.getManipulatorSpeed() == -MANIPULATOR_TESTING_SPEED && !hasStopped) {
           gamePieceManipulatorSubsystem.stop();
           hasStopped = true;
         }
