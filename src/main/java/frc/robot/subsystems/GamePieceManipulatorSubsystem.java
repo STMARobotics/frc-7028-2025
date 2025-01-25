@@ -11,8 +11,8 @@ import static frc.robot.Constants.GamePieceManipulatorConstants.SCORE_SPEED;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /**
  * The is the Subsytem for the Game Pieace Manipulator.
@@ -25,11 +25,11 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
   // define how motors are controlled
   private final VelocityTorqueCurrentFOC wheelControl = new VelocityTorqueCurrentFOC(0);
 
-  private StatusSignal<Double> manipulatorSpeed;
+  private StatusSignal<AngularVelocity> manipulatorSpeed;
 
   /** Creates a new Subsytem for the Game Pieace Manipulator. */
   public GamePieceManipulatorSubsystem() {
-  
+
     manipulatorSpeed = manipulatorMotor.getVelocity();
   }
 
@@ -65,7 +65,7 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
     manipulatorMotor.stopMotor();
   }
 
-  public double getIndexerSpeed() {
-    return manipulatorSpeed;
+  public double getManipulatorSpeed() {
+    return manipulatorSpeed.getValueAsDouble();
   }
 }

@@ -11,18 +11,18 @@ import static frc.robot.Constants.IndexerConstants.SLOT_CONFIGS;
 import static frc.robot.Constants.IndexerConstants.SUPPLY_CURRENT_LIMIT;
 
 import com.ctre.phoenix6.SignalLogger;
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.StatusSignal;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import edu.wpi.first.units.measure.AngularVelocity;
 
 /**
  * The subsystem for the coral box/indexer
@@ -33,7 +33,7 @@ public class IndexerSubsystem implements Subsystem {
   private final VelocityTorqueCurrentFOC beltControl = new VelocityTorqueCurrentFOC(0.0);
   private final TorqueCurrentFOC beltSysIdControl = new TorqueCurrentFOC(0.0);
 
-  private StatusSignal<Double> indexerSpeed;
+  private StatusSignal<AngularVelocity> indexerSpeed;
 
   private final SysIdRoutine beltSysIdRoutine = new SysIdRoutine(
       new SysIdRoutine.Config(
@@ -86,7 +86,7 @@ public class IndexerSubsystem implements Subsystem {
    * @param speed to run the belt in radians per second
    */
   public void runBelt(AngularVelocity speed) {
-    beltMotor.setControl(beltControl.withVelocity());
+    beltMotor.setControl(beltControl.withVelocity(speed));
   }
 
   /**
@@ -118,6 +118,6 @@ public class IndexerSubsystem implements Subsystem {
   }
 
   public double getIndexerSpeed() {
-    return indexerSpeed;
+    return indexerSpeed.getValueAsDouble();
   }
 }

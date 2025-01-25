@@ -153,6 +153,8 @@ public class Constants {
    */
   public static class TestingConstants {
     public static final AngularVelocity INDEXER_TESTING_SPEED = RadiansPerSecond.of(2);
+    public static final AngularVelocity INDEXER_BACKWARDS_TESTING_SPEED = RadiansPerSecond.of(-2);
     public static final AngularVelocity MANIPULATOR_TESTING_SPEED = RadiansPerSecond.of(2);
+    public static final AngularVelocity MANIPULATOR_BACKWARDS_TESTING_SPEED = RadiansPerSecond.of(-2);
   }
 }
