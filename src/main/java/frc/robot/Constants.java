@@ -111,6 +111,12 @@ public class Constants {
    * Constants for the game piece manipulator
    */
   public static class GamePieceManipulatorConstants {
+    public static final AngularVelocity INTAKE_SPEED = RadiansPerSecond.of(5);
 
+    public static final AngularVelocity OUTTAKE_SPEED = RadiansPerSecond.of(-5);
+
+    public static final AngularVelocity SCORE_SPEED = RadiansPerSecond.of(-5);
+
+    public static final int DEVICE_ID_MANIPULATORMOTOR = 50;
   }
 }
