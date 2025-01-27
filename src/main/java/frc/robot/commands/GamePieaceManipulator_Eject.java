@@ -6,18 +6,18 @@ import frc.robot.subsystems.GamePieceManipulatorSubsystem;
 /**
  * A GamePieceManipulatorCommands uses the GamepieceMainpulatorSubsytems
  */
-public class GamePieaceManipulator_Outtake extends Command {
+public class GamePieaceManipulator_Eject extends Command {
   // The Subsystem the command runs on.
   private final GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem;
 
-  public GamePieaceManipulator_Outtake(GamePieceManipulatorSubsystem manipulator) {
+  public GamePieaceManipulator_Eject(GamePieceManipulatorSubsystem manipulator) {
     this.gamePieceManipulatorSubsystem = manipulator;
     addRequirements(gamePieceManipulatorSubsystem);
   }
 
   @Override
   public void initialize() {
-    gamePieceManipulatorSubsystem.outtakeCoral();
+    gamePieceManipulatorSubsystem.ejectCoral();
 
   }
 
