@@ -1,13 +1,16 @@
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Amps;
+import static com.ctre.phoenix6.signals.NeutralModeValue.Brake;
+import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
+import static frc.robot.Constants.CANIVORE_BUS_NAME;
 import static frc.robot.Constants.IndexerConstants.DEVICE_ID_BELT;
 import static frc.robot.Constants.IndexerConstants.EJECT_VELOCITY;
 import static frc.robot.Constants.IndexerConstants.INTAKE_VELOCITY;
 import static frc.robot.Constants.IndexerConstants.SCORE_VELOCITY_LEVEL_1;
 import static frc.robot.Constants.IndexerConstants.SLOT_CONFIGS;
 import static frc.robot.Constants.IndexerConstants.SUPPLY_CURRENT_LIMIT;
+import static frc.robot.Constants.IndexerConstants.TORQUE_CURRENT_LIMIT;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -15,7 +18,6 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -26,23 +28,27 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
  */
 public class IndexerSubsystem implements Subsystem {
 
-  private final TalonFX beltMotor = new TalonFX(DEVICE_ID_BELT);
+  private final TalonFX beltMotor = new TalonFX(DEVICE_ID_BELT, CANIVORE_BUS_NAME);
   private final VelocityTorqueCurrentFOC beltControl = new VelocityTorqueCurrentFOC(0.0);
   private final TorqueCurrentFOC beltSysIdControl = new TorqueCurrentFOC(0.0);
 
   private final SysIdRoutine beltSysIdRoutine = new SysIdRoutine(
-      new SysIdRoutine.Config(null, null, null, state -> SignalLogger.writeString("Indexer SysId", state.toString())),
+      new SysIdRoutine.Config(
+          Volts.of(5).per(Second),
+          null,
+          null,
+          state -> SignalLogger.writeString("Indexer SysId", state.toString())),
       new SysIdRoutine.Mechanism((amps) -> {
         beltMotor.setControl(beltSysIdControl.withOutput(amps.in(Volts)));
       }, null, this));
 
   public IndexerSubsystem() {
     var beltTalonConfig = new TalonFXConfiguration();
-    beltTalonConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    beltTalonConfig.Slot0 = Slot0Configs.from(SLOT_CONFIGS);
-    beltTalonConfig.CurrentLimits.SupplyCurrentLimit = SUPPLY_CURRENT_LIMIT.in(Amps);
-    beltTalonConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-
+    beltTalonConfig.MotorOutput.withNeutralMode(Brake);
+    beltTalonConfig.withSlot0(Slot0Configs.from(SLOT_CONFIGS));
+    beltTalonConfig.CurrentLimits.withSupplyCurrentLimit(SUPPLY_CURRENT_LIMIT).withSupplyCurrentLimitEnable(true);
+    beltTalonConfig.TorqueCurrent.withPeakForwardTorqueCurrent(TORQUE_CURRENT_LIMIT)
+        .withPeakReverseTorqueCurrent(TORQUE_CURRENT_LIMIT.unaryMinus());
     beltMotor.getConfigurator().apply(beltTalonConfig);
   }
 
@@ -68,13 +74,6 @@ public class IndexerSubsystem implements Subsystem {
     return beltSysIdRoutine.quasistatic(direction)
         .withName("SysId indexer belt quasi " + direction)
         .finallyDo(this::stop);
-  }
-
-  /**
-   * Creates a button on elastic to run the indexer SysId routine
-   */
-  public void indexerPopulateSysIdDashboard() {
-
   }
 
   /**
