@@ -149,10 +149,10 @@ public class Constants {
     public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(10); // Placeholder, will have to change
 
     public static final SlotConfigs SLOT_CONFIGS = new SlotConfigs().withKP(0.0)
-        .withKI(0.0)
         .withKD(0.0)
         .withKS(0.0)
-        .withKV(0.0);
+        .withKV(0.0)
+        .withKA(0.0);
   }
 
   /*
