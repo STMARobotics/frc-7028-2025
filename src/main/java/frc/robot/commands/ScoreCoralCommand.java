@@ -6,18 +6,18 @@ import frc.robot.subsystems.GamePieceManipulatorSubsystem;
 /**
  * A GamePieceManipulatorCommands uses the GamepieceMainpulatorSubsytems
  */
-public class GamePieaceManipulator_Eject extends Command {
+public class ScoreCoralCommand extends Command {
   // The Subsystem the command runs on.
   private final GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem;
 
-  public GamePieaceManipulator_Eject(GamePieceManipulatorSubsystem manipulator) {
+  public ScoreCoralCommand(GamePieceManipulatorSubsystem manipulator) {
     this.gamePieceManipulatorSubsystem = manipulator;
     addRequirements(gamePieceManipulatorSubsystem);
   }
 
   @Override
   public void initialize() {
-    gamePieceManipulatorSubsystem.ejectCoral();
+    gamePieceManipulatorSubsystem.scoreCoral();
 
   }
 

@@ -210,9 +210,5 @@ public class Constants {
     public static final Current STATOR_CURRENT_LIMIT = Amps.of(20);
     public static final Current TORQUE_CURRENT_LIMIT = Amps.of(20);
     public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(10);
-
-    public static final AngularVelocity OUTTAKE_SPEED = RadiansPerSecond.of(-5);
-
-    public static final int DEVICE_ID_MANIPULATORMOTOR = 5;
   }
 }

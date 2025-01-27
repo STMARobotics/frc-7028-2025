@@ -4,26 +4,26 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.GamePieceManipulatorSubsystem;
 
 /**
- * A GamePieceManipulatorCommands uses the GamepieceMainpulatorSubsytems
+ * A GamePieceManipulatorCommands uses the GamepieceMainpulatorSubsytems and ejcets the coral.
  */
-public class GamePieaceManipulator_Intake extends Command {
+public class EjectCoralCommand extends Command {
   // The Subsystem the command runs on.
   private final GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem;
 
-  public GamePieaceManipulator_Intake(GamePieceManipulatorSubsystem manipulator) {
+  public EjectCoralCommand(GamePieceManipulatorSubsystem manipulator) {
     this.gamePieceManipulatorSubsystem = manipulator;
     addRequirements(gamePieceManipulatorSubsystem);
   }
 
   @Override
-  public void initialize() {
-    gamePieceManipulatorSubsystem.intakeCoral();
+  public void execute() {
+    gamePieceManipulatorSubsystem.ejectCoral();
 
   }
 
   @Override
   public boolean isFinished() {
-    return true;
+    return false;
   }
 
 }
