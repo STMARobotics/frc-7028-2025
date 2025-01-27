@@ -213,8 +213,6 @@ public class Constants {
 
     public static final AngularVelocity OUTTAKE_SPEED = RadiansPerSecond.of(-5);
 
-    public static final AngularVelocity SCORE_SPEED = RadiansPerSecond.of(-5);
-
     public static final int DEVICE_ID_MANIPULATORMOTOR = 5;
   }
 }
