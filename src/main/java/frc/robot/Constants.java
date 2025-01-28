@@ -162,28 +162,28 @@ public class Constants {
   public static class ArmConstants {
     public static final int DEVICE_ID_ELEVATOR_MOTOR_LEADER = 80;
     public static final int DEVICE_ID_ELEVATOR_MOTOR_FOLLOWER = 81;
-    public static final int DEVICE_ID_CANDI_ELEVATOR = 85;
-    public static final int DEVICE_ID_CANDI_ARM = 100;
+    public static final int DEVICE_ID_ELEVATOR_CANDI = 85;
 
-    public static final int ARM_ORIENT_MOTOR_ID = 0;
-    public static final int ARM_ORIENT_CANCODER_ID = 0;
+    public static final int DEVICE_ID_ARM_MOTOR = 45;
+    public static final int DEVICE_ID_ARM_LASERCAN = 46;
+    public static final int DEVICE_ID_ARM_CANCODER = 47;
 
-    public static final SlotConfigs SLOT_CONFIGS = new SlotConfigs().withKP(0.0)
+    public static final SlotConfigs ELEVATOR_SLOT_CONFIGS = new SlotConfigs().withKP(0.0)
         .withKI(0.0)
         .withKD(0.0)
         .withKS(0.0)
         .withKV(0.0);
 
-    public static final MotionMagicConfigs MOTION_MAGIC_CONFIGS = new MotionMagicConfigs()
+    public static final MotionMagicConfigs ELEVATOR_MOTION_MAGIC_CONFIGS = new MotionMagicConfigs()
         .withMotionMagicAcceleration(0.01)
         .withMotionMagicCruiseVelocity(0.01);
 
-    public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(0); // Placeholder
+    public static final Current ELEVATOR_SUPPLY_CURRENT_LIMIT = Amps.of(0); // Placeholder
 
-    public static final Distance METERS_PER_REVOLUTION = Meters.of(0); // Placeholder
+    public static final Distance ELEVATOR_METERS_PER_REVOLUTION = Meters.of(0); // Placeholder
 
-    public static final Distance TOP_LIMIT = Meters.of(0); // Placeholder
-    public static final Distance BOTTOM_LIMIT = Meters.of(0); // Placeholder
+    public static final Distance ELEVATOR_TOP_LIMIT = Meters.of(0); // Placeholder
+    public static final Distance ELEVATOR_BOTTOM_LIMIT = Meters.of(0); // Placeholder
 
     /*
      * The position in meters the elevator has to arrive at in order to score with placeholder numbers for now
@@ -197,12 +197,22 @@ public class Constants {
     public static final Angle LEVEL_3_ANGLE = Radian.of(0);
     public static final Angle LEVEL_4_ANGLE = Radian.of(0);
     public static final Angle INTAKE_ANGLE = Radian.of(0);
-    public static final Angle HOLDING_ANGLE = Radian.of(0);
 
     public static final Current ARM_STATOR_CURRENT_LIMIT = Amps.of(0);
     public static final Current ARM_SUPPLY_CURRENT_LIMIT = Amps.of(0);
     public static final double ARM_ROTOR_TO_SENSOR_RATIO = 0;
 
+    public static final Angle ARM_MAGNETIC_OFFSET = Rotations.of(0.0);
+
+    public static final SlotConfigs ARM_SLOT_CONFIGS = new SlotConfigs().withKP(0.0)
+        .withKD(0.0)
+        .withKS(0.0)
+        .withKV(0.0)
+        .withKA(0.0);
+
+    public static final MotionMagicConfigs ARM_MOTION_MAGIC_CONFIGS = new MotionMagicConfigs()
+        .withMotionMagicAcceleration(0.01)
+        .withMotionMagicCruiseVelocity(0.01);
   }
 
   /*
