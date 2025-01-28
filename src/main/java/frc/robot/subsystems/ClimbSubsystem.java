@@ -55,7 +55,7 @@ public class ClimbSubsystem extends SubsystemBase {
     frontMotor.getConfigurator().apply(climbTalonConfig);
     climbTalonConfig.Feedback.withRemoteCANcoder(backClimbEncoder);
     backMotor.getConfigurator().apply(climbTalonConfig);
-  };
+  }
 
   /**
    * Runs the front climb motor
