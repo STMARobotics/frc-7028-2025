@@ -3,10 +3,15 @@ package frc.robot;
 import static com.ctre.phoenix6.signals.GravityTypeValue.Arm_Cosine;
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Millimeters;
+import static edu.wpi.first.units.Units.Radian;
+import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
+import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.SlotConfigs;
@@ -22,6 +27,8 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.Voltage;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -56,9 +63,26 @@ public class Constants {
    * Constants for the climb subsystem
    */
   public static class ClimbConstants {
+    public static final int DEVICE_ID_CLIMB_MOTOR_FRONT = 60;
+    public static final int DEVICE_ID_CLIMB_MOTOR_BACK = 65;
+    public static final int DEVICE_ID_CLIMB_ENCODER_FRONT = 61;
+    public static final int DEVICE_ID_CLIMB_ENCODER_BACK = 66;
 
-    public static final int DEVICE_ID_CLIMB_MOTOR_1 = 60;
-    public static final int DEVICE_ID_CLIMB_MOTOR_2 = 65;
+    public static final Angle CLIMB_MAGNETIC_OFFSET_FRONT = Rotations.of(0.0);
+    public static final Angle CLIMB_MAGNETIC_OFFSET_BACK = Rotations.of(0.0);
+
+    // configuraton {
+    public static final Current CLIMB_STATOR_CURRENT_LIMIT = Amps.of(100);
+    public static final Current CLIMB_SUPPLY_CURRENT_LIMIT = Amps.of(40);
+    public static final double CLIMB_ROTOR_TO_SENSOR_RATIO = (25 / 1); // 25 rotor turns = 1 mechanism turn
+
+    public static final Distance CAGE_DETECTION_THRESHOLD_DISTANCE = Millimeters.of(0); // TODO determine distance
+
+    public static final Angle LEFT_CLIMB_MAGNETIC_OFFSET = Radians.of(0);
+    public static final Angle RIGHT_CLIMB_MAGNETIC_OFFSET = Radians.of(0);
+
+    public static final Voltage MAX_CLIMB_VOLTAGE = Volts.of(2);
+
   }
 
   /**
@@ -121,26 +145,96 @@ public class Constants {
     public static final AngularVelocity SCORE_VELOCITY_LEVEL_1 = RadiansPerSecond.of(-1);
     public static final AngularVelocity EJECT_VELOCITY = RadiansPerSecond.of(-2);
 
+    public static final Current TORQUE_CURRENT_LIMIT = Amps.of(100);
     public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(10); // Placeholder, will have to change
 
     public static final SlotConfigs SLOT_CONFIGS = new SlotConfigs().withKP(0.0)
-        .withKI(0.0)
         .withKD(0.0)
         .withKS(0.0)
-        .withKV(0.0);
+        .withKV(0.0)
+        .withKA(0.0);
   }
 
   /*
    * Constants for the arm subsystem
    */
   public static class ArmConstants {
+    public static final int DEVICE_ID_ELEVATOR_MOTOR_LEADER = 80;
+    public static final int DEVICE_ID_ELEVATOR_MOTOR_FOLLOWER = 81;
+    public static final int DEVICE_ID_ELEVATOR_CANDI = 85;
 
+    public static final int DEVICE_ID_ARM_MOTOR = 45;
+    public static final int DEVICE_ID_ARM_LASERCAN = 46;
+    public static final int DEVICE_ID_ARM_CANCODER = 47;
+
+    public static final SlotConfigs ELEVATOR_SLOT_CONFIGS = new SlotConfigs().withKP(0.0)
+        .withKI(0.0)
+        .withKD(0.0)
+        .withKS(0.0)
+        .withKV(0.0);
+
+    public static final MotionMagicConfigs ELEVATOR_MOTION_MAGIC_CONFIGS = new MotionMagicConfigs()
+        .withMotionMagicAcceleration(0.01)
+        .withMotionMagicCruiseVelocity(0.01);
+
+    public static final Current ELEVATOR_SUPPLY_CURRENT_LIMIT = Amps.of(0); // Placeholder
+
+    public static final Distance ELEVATOR_METERS_PER_REVOLUTION = Meters.of(0); // Placeholder
+
+    public static final Distance ELEVATOR_TOP_LIMIT = Meters.of(0); // Placeholder
+    public static final Distance ELEVATOR_BOTTOM_LIMIT = Meters.of(0); // Placeholder
+
+    /*
+     * The position in meters the elevator has to arrive at in order to score with placeholder numbers for now
+     */
+    public static final Distance LEVEL_1_HEIGHT = Meters.of(0);
+    public static final Distance LEVEL_2_HEIGHT = Meters.of(0);
+    public static final Distance LEVEL_3_HEIGHT = Meters.of(0);
+    public static final Distance LEVEL_4_HEIGHT = Meters.of(0);
+
+    public static final Angle LEVEL_2_ANGLE = Radian.of(0);
+    public static final Angle LEVEL_3_ANGLE = Radian.of(0);
+    public static final Angle LEVEL_4_ANGLE = Radian.of(0);
+    public static final Angle INTAKE_ANGLE = Radian.of(0);
+
+    public static final Current ARM_STATOR_CURRENT_LIMIT = Amps.of(0);
+    public static final Current ARM_SUPPLY_CURRENT_LIMIT = Amps.of(0);
+    public static final double ARM_ROTOR_TO_SENSOR_RATIO = 0;
+
+    public static final Angle ARM_MAGNETIC_OFFSET = Rotations.of(0.0);
+
+    public static final SlotConfigs ARM_SLOT_CONFIGS = new SlotConfigs().withKP(0.0)
+        .withKD(0.0)
+        .withKS(0.0)
+        .withKV(0.0)
+        .withKA(0.0);
+
+    public static final MotionMagicConfigs ARM_MOTION_MAGIC_CONFIGS = new MotionMagicConfigs()
+        .withMotionMagicAcceleration(0.01)
+        .withMotionMagicCruiseVelocity(0.01);
   }
 
   /*
    * Constants for the game piece manipulator
    */
   public static class GamePieceManipulatorConstants {
+    public static final AngularVelocity INTAKE_SPEED = RadiansPerSecond.of(5);
+    public static final AngularVelocity EJECT_SPEED = RadiansPerSecond.of(-5);
+    public static final AngularVelocity SCORE_SPEED = RadiansPerSecond.of(-5);
+
+    public static final AngularVelocity INTAKE_ALGAE_VELOCITY = RadiansPerSecond.of(5);
+    public static final AngularVelocity EJECT_ALGAE_VELOCITY = RadiansPerSecond.of(-5);
+    public static final AngularVelocity SCORE_ALGAE_VELOCITY = RadiansPerSecond.of(-5);
+
+    public static final int DEVICE_ID_MANIPULATOR_MOTOR = 50;
+
+    public static final SlotConfigs MANIPULATION_SLOT_CONFIGS = new SlotConfigs().withKP(0.0).withKD(0.0).withKS(0.0);
+    public static final SlotConfigs HOLD_SLOT_CONFIGS = new SlotConfigs().withKP(0.0).withKD(0.0);
+
+    public static final Current STATOR_CURRENT_LIMIT = Amps.of(20);
+    public static final Current TORQUE_CURRENT_LIMIT = Amps.of(20);
+    public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(10);
 
   }
+
 }
