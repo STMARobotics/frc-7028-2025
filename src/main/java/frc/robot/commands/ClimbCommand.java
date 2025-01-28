@@ -23,14 +23,14 @@ public class ClimbCommand extends Command {
     addRequirements(climbSubsystem);
   }
   
-
+  //command to running climb motors
   @Override
   public void execute() {
     climbSubsystem.runFrontClimb(frontClimbSpeed.getAsDouble());
     climbSubsystem.runBackClimb(backClimbSpeed.getAsDouble());
   }
 
-
+//command to stop running climb motors
   @Override
   public void end(boolean interrupted) {
     climbSubsystem.stopMotors();
