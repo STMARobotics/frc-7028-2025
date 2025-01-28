@@ -269,5 +269,7 @@ public class TestCommand extends Command {
     gamePieceManipulatorSubsystem.stop();
     climbSubsystem.stopMotors();
     algaeSubsystem.stop();
+    armSubsystem.stopArm();
+    armSubsystem.stopElevator();
   }
 }
