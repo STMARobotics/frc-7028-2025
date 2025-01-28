@@ -4,9 +4,12 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 import static edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kForward;
 import static edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kReverse;
 
@@ -63,6 +66,15 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
+    joystick.x().onTrue(runOnce(() -> {
+      armSubsystem.moveArmToAngle(Degrees.of(0));
+      armSubsystem.moveElevator(Meters.of(1));
+    }, armSubsystem));
+    joystick.y().onTrue(runOnce(() -> {
+      armSubsystem.moveArmToAngle(Degrees.of(270));
+      armSubsystem.moveElevator(Meters.of(.5));
+    }, armSubsystem));
+
     // Note that X is defined as forward according to WPILib convention,
     // and Y is defined as to the left according to WPILib convention.
     drivetrain.setDefaultCommand(

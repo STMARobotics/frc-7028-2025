@@ -169,10 +169,10 @@ public class Constants {
     public static final int DEVICE_ID_ARM_CANCODER = 47;
 
     public static final SlotConfigs ELEVATOR_SLOT_CONFIGS = new SlotConfigs().withKP(0.0)
-        .withKI(0.0)
         .withKD(0.0)
         .withKS(0.0)
-        .withKV(0.0);
+        .withKV(0.0)
+        .withKA(0.0);
 
     public static final MotionMagicConfigs ELEVATOR_MOTION_MAGIC_CONFIGS = new MotionMagicConfigs()
         .withMotionMagicAcceleration(0.01)
@@ -180,7 +180,7 @@ public class Constants {
 
     public static final Current ELEVATOR_SUPPLY_CURRENT_LIMIT = Amps.of(0); // Placeholder
 
-    public static final Distance ELEVATOR_METERS_PER_REVOLUTION = Meters.of(0); // Placeholder
+    public static final Distance ELEVATOR_METERS_PER_REVOLUTION = Meters.of(0.25); // Placeholder
 
     public static final Distance ELEVATOR_TOP_LIMIT = Meters.of(0); // Placeholder
     public static final Distance ELEVATOR_BOTTOM_LIMIT = Meters.of(0); // Placeholder
@@ -213,6 +213,10 @@ public class Constants {
     public static final MotionMagicConfigs ARM_MOTION_MAGIC_CONFIGS = new MotionMagicConfigs()
         .withMotionMagicAcceleration(0.01)
         .withMotionMagicCruiseVelocity(0.01);
+
+    public static final Distance ARM_PIVOT_LENGTH = Meters.of(0.577);
+    public static final Distance ELEVATOR_BASE_HEIGHT = Meters.of(1.0);
+
   }
 
   /*
