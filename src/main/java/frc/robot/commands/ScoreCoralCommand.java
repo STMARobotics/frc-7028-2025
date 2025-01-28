@@ -16,14 +16,14 @@ public class ScoreCoralCommand extends Command {
   }
 
   @Override
-  public void initialize() {
+  public void execute() {
     gamePieceManipulatorSubsystem.scoreCoral();
 
   }
 
   @Override
   public boolean isFinished() {
-    return true;
+    return false;
   }
 
 }

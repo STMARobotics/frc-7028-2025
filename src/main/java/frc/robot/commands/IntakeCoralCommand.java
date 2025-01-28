@@ -16,14 +16,14 @@ public class IntakeCoralCommand extends Command {
   }
 
   @Override
-  public void initialize() {
+  public void execute() {
     gamePieceManipulatorSubsystem.intakeCoral();
 
   }
 
   @Override
   public boolean isFinished() {
-    return true;
+    return false;
   }
 
 }
