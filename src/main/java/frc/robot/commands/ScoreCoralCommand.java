@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.GamePieceManipulatorSubsystem;
 
 /**
- * A GamePieceManipulatorCommands uses the GamepieceMainpulatorSubsytems
+ * A GamePieceManipulatorCommands uses the GamepieceMainpulatorSubsytems to score the coral.
  */
 public class ScoreCoralCommand extends Command {
   // The Subsystem the command runs on.
@@ -26,4 +26,8 @@ public class ScoreCoralCommand extends Command {
     return false;
   }
 
+  @Override
+  public void end(boolean interrupted) {
+    gamePieceManipulatorSubsystem.stop();
+  }
 }

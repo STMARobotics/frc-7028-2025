@@ -33,6 +33,6 @@ public class EjectCoralCommand extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    gamePieceManipulatorSubsystem.ejectCoral();
+    gamePieceManipulatorSubsystem.stop();
   }
 }

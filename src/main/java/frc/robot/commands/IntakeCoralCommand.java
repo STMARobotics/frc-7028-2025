@@ -33,7 +33,7 @@ public class IntakeCoralCommand extends Command {
 
   @Override
   public void end(boolean interupted) {
-    gamePieceManipulatorSubsystem.intakeCoral();
+    gamePieceManipulatorSubsystem.stop();
   }
 
 }

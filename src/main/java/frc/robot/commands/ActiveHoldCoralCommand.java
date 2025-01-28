@@ -5,8 +5,6 @@ import frc.robot.subsystems.GamePieceManipulatorSubsystem;
 
 /**
  * A GamePieceManipulatorCommands uses the GamepieceMainpulatorSubsytems and hold the coral in postion or fixes position
- * position
- * inst in the right postionthe coral.
  */
 public class ActiveHoldCoralCommand extends Command {
   // The Subsystem the command runs on.
@@ -35,6 +33,6 @@ public class ActiveHoldCoralCommand extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    gamePieceManipulatorSubsystem.activeHoldGamePiece();
+    gamePieceManipulatorSubsystem.stop();
   }
 }
