@@ -158,7 +158,7 @@ public class Constants {
         .withKA(0.0);
   }
 
-  /*
+  /**
    * Constants for the arm subsystem
    */
   public static class ArmConstants {
@@ -190,7 +190,7 @@ public class Constants {
     public static final Angle ELEVATOR_POSITION_TOLERANCE = Rotations.of(0); // Placeholder
     public static final Angle ARM_POSITION_TOLERANCE = Rotations.of(0); // Placeholder
 
-    /*
+    /**
      * The positions in meters the elevator could travel to with placeholder numbers for now
      */
     public static final Distance ELEVATOR_DEFAULT_HEIGHT = Meters.of(0);
@@ -221,7 +221,7 @@ public class Constants {
         .withMotionMagicCruiseVelocity(0.01);
   }
 
-  /*
+  /**
    * Constants for the game piece manipulator
    */
   public static class GamePieceManipulatorConstants {
@@ -244,7 +244,7 @@ public class Constants {
 
   }
 
-  /*
+  /**
    * Constants for test mode
    */
   public static class TestingConstants {
