@@ -203,7 +203,7 @@ public class ArmSubsystem implements Subsystem {
         .setControl(elevatorControl.withPosition(position.in(Meters) * ELEVATOR_METERS_PER_ROTATION.in(Meters)));
   }
 
-  /*
+  /**
    * Moves the elevator to the height it remains at when inactive
    */
   public void moveElevatorToDefault() {

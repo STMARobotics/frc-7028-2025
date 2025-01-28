@@ -111,6 +111,7 @@ public class Constants {
     // wrist constants
     public static final AngularVelocity WRIST_DOWN_SPEED = RadiansPerSecond.of(-5);
     public static final AngularVelocity WRIST_UP_SPEED = RadiansPerSecond.of(5);
+    public static final double ROLLER_SPEED_TOLERANCE = 0;
 
     // numbers are probably wonky here
     public static final Angle WRIST_DOWN_POSITION = Degrees.of(180);
@@ -145,6 +146,7 @@ public class Constants {
     public static final AngularVelocity INTAKE_VELOCITY = RadiansPerSecond.of(1);
     public static final AngularVelocity SCORE_VELOCITY_LEVEL_1 = RadiansPerSecond.of(-1);
     public static final AngularVelocity EJECT_VELOCITY = RadiansPerSecond.of(-2);
+    public static final double INDEXER_SPEED_TOLERANCE = 0;
 
     public static final Current TORQUE_CURRENT_LIMIT = Amps.of(100);
     public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(10); // Placeholder, will have to change
@@ -249,10 +251,12 @@ public class Constants {
     public static final AngularVelocity INDEXER_TESTING_SPEED = RadiansPerSecond.of(2);
     public static final AngularVelocity INDEXER_BACKWARDS_TESTING_SPEED = RadiansPerSecond
         .of(-(INDEXER_TESTING_SPEED.in(RadiansPerSecond)));
+    public static final double INDEXER_TESTING_TOLERANCE = 0;
 
     public static final AngularVelocity MANIPULATOR_TESTING_SPEED = RadiansPerSecond.of(2);
     public static final AngularVelocity MANIPULATOR_BACKWARDS_TESTING_SPEED = RadiansPerSecond
         .of(-(MANIPULATOR_TESTING_SPEED.in(RadiansPerSecond)));
+    public static final double MANIPULATOR_TESTING_TOLERANCE = 0;
 
     public static final AngularVelocity ROLLER_TESTING_SPEED = RadiansPerSecond.of(5);
     public static final AngularVelocity ROLLER_BACKWARDS_TESTING_SPEED = RadiansPerSecond

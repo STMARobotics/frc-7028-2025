@@ -6,6 +6,7 @@ import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.CANIVORE_BUS_NAME;
 import static frc.robot.Constants.IndexerConstants.DEVICE_ID_BELT;
 import static frc.robot.Constants.IndexerConstants.EJECT_VELOCITY;
+import static frc.robot.Constants.IndexerConstants.INDEXER_SPEED_TOLERANCE;
 import static frc.robot.Constants.IndexerConstants.INTAKE_VELOCITY;
 import static frc.robot.Constants.IndexerConstants.SCORE_VELOCITY_LEVEL_1;
 import static frc.robot.Constants.IndexerConstants.SLOT_CONFIGS;
@@ -118,10 +119,12 @@ public class IndexerSubsystem implements Subsystem {
     beltMotor.setControl(beltControl.withVelocity(EJECT_VELOCITY));
   }
 
-  /*
-   * Command to get the speed of the indexer
+  /**
+   * Method to check if the indexer is spinning at the proper speed with a tolerance
+   * 
+   * @return if its spinning at the proper speed as a boolean value
    */
-  public double getIndexerSpeed() {
-    return indexerSpeed.getValueAsDouble();
+  public boolean isIndexerAtSpeed() {
+    return (Math.abs(indexerSpeed.getValueAsDouble() - beltControl.Velocity) <= INDEXER_SPEED_TOLERANCE);
   }
 }

@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
+import static frc.robot.Constants.AlgaeConstants.ROLLER_SPEED_TOLERANCE;
 import static frc.robot.Constants.CANIVORE_BUS_NAME;
 import static frc.robot.Constants.GamePieceManipulatorConstants.DEVICE_ID_MANIPULATOR_MOTOR;
 import static frc.robot.Constants.GamePieceManipulatorConstants.EJECT_ALGAE_VELOCITY;
@@ -177,10 +178,12 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
     wheelMotor.stopMotor();
   }
 
-  /*
-   * Method to get the speed of the manipulator
+  /**
+   * Method to check if the manipulator is spinning at the proper speed with a tolerance
+   * 
+   * @return if its spinning at the proper speed as a boolean value
    */
-  public double getManipulatorSpeed() {
-    return manipulatorSpeed.getValueAsDouble();
+  public boolean isManipulatorAtSpeed() {
+    return (Math.abs(manipulatorSpeed.getValueAsDouble() - wheelControl.Velocity) <= ROLLER_SPEED_TOLERANCE);
   }
 }

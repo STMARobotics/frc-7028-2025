@@ -1,6 +1,5 @@
 package frc.robot.commands;
 
-import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.TestingConstants.CLIMB_TESTING_VOLTAGE;
 import static frc.robot.Constants.TestingConstants.INDEXER_BACKWARDS_TESTING_SPEED;
@@ -19,6 +18,9 @@ import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.GamePieceManipulatorSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 
+/**
+ * Command to run the test routine
+ */
 public class TestCommand extends Command {
 
   private final IndexerSubsystem indexersubsystem;
@@ -44,7 +46,7 @@ public class TestCommand extends Command {
     this.climbSubsystem = climbSubsystem;
     this.armSubsystem = armSubsystem;
 
-    addRequirements(indexersubsystem, gamePieceManipulatorSubsystem, algaeSubsystem);
+    addRequirements(indexersubsystem, gamePieceManipulatorSubsystem, algaeSubsystem, climbSubsystem, armSubsystem);
   }
 
   @Override
@@ -65,7 +67,7 @@ public class TestCommand extends Command {
           indexersubsystem.runBelt(INDEXER_TESTING_SPEED);
           timer.start();
         }
-        if (indexersubsystem.getIndexerSpeed() == (INDEXER_TESTING_SPEED.in(RadiansPerSecond)) && !hasStopped) {
+        if (indexersubsystem.isIndexerAtSpeed() && !hasStopped) {
           indexersubsystem.stop();
           hasStopped = true;
         }
@@ -80,8 +82,7 @@ public class TestCommand extends Command {
           indexersubsystem.runBelt(INDEXER_BACKWARDS_TESTING_SPEED);
           timer.start();
         }
-        if (indexersubsystem.getIndexerSpeed() == (INDEXER_BACKWARDS_TESTING_SPEED.in(RadiansPerSecond))
-            && !hasStopped) {
+        if (indexersubsystem.isIndexerAtSpeed() && !hasStopped) {
           indexersubsystem.stop();
           hasStopped = true;
         }
@@ -98,8 +99,7 @@ public class TestCommand extends Command {
           gamePieceManipulatorSubsystem.runManipulatorWheels(MANIPULATOR_TESTING_SPEED);
           timer.start();
         }
-        if (gamePieceManipulatorSubsystem.getManipulatorSpeed() == (MANIPULATOR_TESTING_SPEED.in(RadiansPerSecond))
-            && !hasStopped) {
+        if (gamePieceManipulatorSubsystem.isManipulatorAtSpeed() && !hasStopped) {
           gamePieceManipulatorSubsystem.stop();
           hasStopped = true;
         }
@@ -116,8 +116,7 @@ public class TestCommand extends Command {
           gamePieceManipulatorSubsystem.runManipulatorWheels(MANIPULATOR_BACKWARDS_TESTING_SPEED);
           timer.start();
         }
-        if (gamePieceManipulatorSubsystem
-            .getManipulatorSpeed() == (MANIPULATOR_BACKWARDS_TESTING_SPEED.in(RadiansPerSecond)) && !hasStopped) {
+        if (gamePieceManipulatorSubsystem.isManipulatorAtSpeed() && !hasStopped) {
           gamePieceManipulatorSubsystem.stop();
           hasStopped = true;
         }
@@ -134,7 +133,7 @@ public class TestCommand extends Command {
           algaeSubsystem.runRollers(ROLLER_TESTING_SPEED);
           timer.start();
         }
-        if (algaeSubsystem.getRollerSpeed() == (ROLLER_TESTING_SPEED.in(RadiansPerSecond)) && !hasStopped) {
+        if (algaeSubsystem.isAtRollerSpeed() && !hasStopped) {
           algaeSubsystem.stop();
           hasStopped = true;
         }
@@ -151,7 +150,7 @@ public class TestCommand extends Command {
           algaeSubsystem.runRollers(ROLLER_BACKWARDS_TESTING_SPEED);
           timer.start();
         }
-        if (algaeSubsystem.getRollerSpeed() == (ROLLER_BACKWARDS_TESTING_SPEED.in(RadiansPerSecond)) && !hasStopped) {
+        if (algaeSubsystem.isAtRollerSpeed() && !hasStopped) {
           algaeSubsystem.stop();
           hasStopped = true;
         }
@@ -251,8 +250,10 @@ public class TestCommand extends Command {
     }
   }
 
-  /*
-   * Returns the amount of tests that have been completed
+  /**
+   * gets the amount of tests that have been completed
+   * 
+   * @return the amount of tests that have been completed
    */
   public int getTestState() {
     return teststate;
