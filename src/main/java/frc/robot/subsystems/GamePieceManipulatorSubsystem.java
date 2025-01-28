@@ -68,8 +68,6 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
   private final VelocityTorqueCurrentFOC wheelControl = new VelocityTorqueCurrentFOC(0).withSlot(0);
   private final PositionVoltage holdControl = new PositionVoltage(0.0).withSlot(1);
 
-  public Object stop;
-
   /** Creates a new Subsytem for the Game Pieace Manipulator. */
   public GamePieceManipulatorSubsystem() {
     var motorConfig = new TalonFXConfiguration();
