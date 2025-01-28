@@ -10,6 +10,11 @@ public class EjectCoralCommand extends Command {
   // The Subsystem the command runs on.
   private final GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem;
 
+  /**
+   * Command for the Game Pieace Manipultor to drop/place the coral.
+   * 
+   * @param manipulator
+   */
   public EjectCoralCommand(GamePieceManipulatorSubsystem manipulator) {
     this.gamePieceManipulatorSubsystem = manipulator;
     addRequirements(gamePieceManipulatorSubsystem);
@@ -26,4 +31,8 @@ public class EjectCoralCommand extends Command {
     return false;
   }
 
+  @Override
+  public void end(boolean interrupted) {
+    gamePieceManipulatorSubsystem.ejectCoral();
+  }
 }

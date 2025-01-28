@@ -4,12 +4,19 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.GamePieceManipulatorSubsystem;
 
 /**
- * A GamePieceManipulatorCommands uses the GamepieceMainpulatorSubsytems and ejcets the coral.
+ * A GamePieceManipulatorCommands uses the GamepieceMainpulatorSubsytems and hold the coral in postion or fixes position
+ * position
+ * inst in the right postionthe coral.
  */
 public class ActiveHoldCoralCommand extends Command {
   // The Subsystem the command runs on.
   private final GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem;
 
+  /**
+   * Hold the coral in the Game Pieace Maniupltor.
+   * 
+   * @param manipulator
+   */
   public ActiveHoldCoralCommand(GamePieceManipulatorSubsystem manipulator) {
     this.gamePieceManipulatorSubsystem = manipulator;
     addRequirements(gamePieceManipulatorSubsystem);
@@ -17,7 +24,7 @@ public class ActiveHoldCoralCommand extends Command {
 
   @Override
   public void execute() {
-    gamePieceManipulatorSubsystem.ejectCoral();
+    gamePieceManipulatorSubsystem.activeHoldGamePiece();
 
   }
 
@@ -26,4 +33,8 @@ public class ActiveHoldCoralCommand extends Command {
     return false;
   }
 
+  @Override
+  public void end(boolean interrupted) {
+    gamePieceManipulatorSubsystem.activeHoldGamePiece();
+  }
 }
