@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.AlgaeSubsystem;
+import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.GamePieceManipulatorSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
@@ -24,6 +25,7 @@ public class TestCommand extends Command {
   private final GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem;
   private final AlgaeSubsystem algaeSubsystem;
   private final ClimbSubsystem climbSubsystem;
+  private final ArmSubsystem armSubsystem;
 
   private boolean hasStopped = false;
   private int teststate = 0;
@@ -34,11 +36,13 @@ public class TestCommand extends Command {
       IndexerSubsystem indexersubsystem,
       GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem,
       AlgaeSubsystem algaeSubsystem,
-      ClimbSubsystem climbSubsystem) {
+      ClimbSubsystem climbSubsystem,
+      ArmSubsystem armSubsystem) {
     this.indexersubsystem = indexersubsystem;
     this.gamePieceManipulatorSubsystem = gamePieceManipulatorSubsystem;
     this.algaeSubsystem = algaeSubsystem;
     this.climbSubsystem = climbSubsystem;
+    this.armSubsystem = armSubsystem;
 
     addRequirements(indexersubsystem, gamePieceManipulatorSubsystem, algaeSubsystem);
   }
@@ -161,6 +165,40 @@ public class TestCommand extends Command {
 
       case 6:
         if (!hasStopped) {
+          algaeSubsystem.moveIntakeDown();
+        }
+        if (algaeSubsystem.isWristAtPosition() && !hasStopped) {
+          algaeSubsystem.stop();
+          hasStopped = true;
+          timer.start();
+        }
+        if (timer.hasElapsed(4) && hasStopped) {
+          teststate++;
+          timer.stop();
+          timer.reset();
+          hasStopped = false;
+        }
+        break;
+
+      case 7:
+        if (!hasStopped) {
+          algaeSubsystem.moveIntakeUp();
+        }
+        if (algaeSubsystem.isWristAtPosition() && !hasStopped) {
+          algaeSubsystem.stop();
+          hasStopped = true;
+          timer.start();
+        }
+        if (timer.hasElapsed(4) && hasStopped) {
+          teststate++;
+          timer.stop();
+          timer.reset();
+          hasStopped = false;
+        }
+        break;
+
+      case 8:
+        if (!hasStopped) {
           climbSubsystem.runBackClimb(CLIMB_TESTING_VOLTAGE.in(Volts));
           climbSubsystem.runFrontClimb(CLIMB_TESTING_VOLTAGE.in(Volts));
           timer.start();
@@ -177,16 +215,16 @@ public class TestCommand extends Command {
         }
         break;
 
-      case 7:
+      case 9:
         if (!hasStopped) {
-          algaeSubsystem.moveIntakeDown();
+          armSubsystem.moveElevatorLevel4();
+        }
+        if (armSubsystem.isElevatorAtPosition() && !hasStopped) {
+          armSubsystem.moveElevatorToDefault();
+          hasStopped = true;
           timer.start();
         }
-        if (algaeSubsystem.isWristAtPosition() && !hasStopped) {
-          algaeSubsystem.stop();
-          hasStopped = true;
-        }
-        if (timer.hasElapsed(4) && hasStopped) {
+        if (timer.hasElapsed(4) && hasStopped && armSubsystem.isElevatorAtPosition()) {
           teststate++;
           timer.stop();
           timer.reset();
@@ -194,16 +232,16 @@ public class TestCommand extends Command {
         }
         break;
 
-      case 8:
+      case 10:
         if (!hasStopped) {
-          algaeSubsystem.moveIntakeUp();
+          armSubsystem.moveArmToLevel4();
+        }
+        if (armSubsystem.isArmAtPosition() && !hasStopped) {
+          armSubsystem.moveArmToIntake();
+          hasStopped = true;
           timer.start();
         }
-        if (algaeSubsystem.isWristAtPosition() && !hasStopped) {
-          algaeSubsystem.stop();
-          hasStopped = true;
-        }
-        if (timer.hasElapsed(4) && hasStopped) {
+        if (timer.hasElapsed(4) && hasStopped && armSubsystem.isArmAtPosition()) {
           teststate++;
           timer.stop();
           timer.reset();

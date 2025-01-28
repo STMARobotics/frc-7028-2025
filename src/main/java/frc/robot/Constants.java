@@ -180,14 +180,18 @@ public class Constants {
 
     public static final Current ELEVATOR_SUPPLY_CURRENT_LIMIT = Amps.of(0); // Placeholder
 
-    public static final Distance ELEVATOR_METERS_PER_REVOLUTION = Meters.of(0); // Placeholder
+    public static final Distance ELEVATOR_METERS_PER_ROTATION = Meters.of(0); // Placeholder
 
     public static final Distance ELEVATOR_TOP_LIMIT = Meters.of(0); // Placeholder
     public static final Distance ELEVATOR_BOTTOM_LIMIT = Meters.of(0); // Placeholder
 
+    public static final Angle ELEVATOR_POSITION_TOLERANCE = Rotations.of(0); // Placeholder
+    public static final Angle ARM_POSITION_TOLERANCE = Rotations.of(0); // Placeholder
+
     /*
-     * The position in meters the elevator has to arrive at in order to score with placeholder numbers for now
+     * The positions in meters the elevator could travel to with placeholder numbers for now
      */
+    public static final Distance ELEVATOR_DEFAULT_HEIGHT = Meters.of(0);
     public static final Distance LEVEL_1_HEIGHT = Meters.of(0);
     public static final Distance LEVEL_2_HEIGHT = Meters.of(0);
     public static final Distance LEVEL_3_HEIGHT = Meters.of(0);
@@ -245,12 +249,15 @@ public class Constants {
     public static final AngularVelocity INDEXER_TESTING_SPEED = RadiansPerSecond.of(2);
     public static final AngularVelocity INDEXER_BACKWARDS_TESTING_SPEED = RadiansPerSecond
         .of(-(INDEXER_TESTING_SPEED.in(RadiansPerSecond)));
+
     public static final AngularVelocity MANIPULATOR_TESTING_SPEED = RadiansPerSecond.of(2);
     public static final AngularVelocity MANIPULATOR_BACKWARDS_TESTING_SPEED = RadiansPerSecond
         .of(-(MANIPULATOR_TESTING_SPEED.in(RadiansPerSecond)));
+
     public static final AngularVelocity ROLLER_TESTING_SPEED = RadiansPerSecond.of(5);
     public static final AngularVelocity ROLLER_BACKWARDS_TESTING_SPEED = RadiansPerSecond
         .of(-(ROLLER_TESTING_SPEED.in(RadiansPerSecond)));
+
     public static final Voltage CLIMB_TESTING_VOLTAGE = Volts.of(5);
   }
 }
