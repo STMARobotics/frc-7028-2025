@@ -130,7 +130,7 @@ public class RobotContainer {
         .withPosition(columnIndex + 1, 3);
   }
 
-  public void populateSysidDashboard() {
+  public void populateTestingDashboard() {
     var tab = Shuffleboard.getTab("Testing");
 
     tab.add("Run tests", testMode.testCommand());
