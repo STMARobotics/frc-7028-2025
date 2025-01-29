@@ -10,6 +10,7 @@ import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.ArmConstants.ARM_MAGNETIC_OFFSET;
 import static frc.robot.Constants.ArmConstants.ARM_MOTION_MAGIC_CONFIGS;
 import static frc.robot.Constants.ArmConstants.ARM_PIVOT_LENGTH;
+import static frc.robot.Constants.ArmConstants.ARM_POSITION_TOLERANCE;
 import static frc.robot.Constants.ArmConstants.ARM_SLOT_CONFIGS;
 import static frc.robot.Constants.ArmConstants.ARM_STATOR_CURRENT_LIMIT;
 import static frc.robot.Constants.ArmConstants.ARM_SUPPLY_CURRENT_LIMIT;
@@ -20,8 +21,10 @@ import static frc.robot.Constants.ArmConstants.DEVICE_ID_ELEVATOR_MOTOR_FOLLOWER
 import static frc.robot.Constants.ArmConstants.DEVICE_ID_ELEVATOR_MOTOR_LEADER;
 import static frc.robot.Constants.ArmConstants.ELEVATOR_BASE_HEIGHT;
 import static frc.robot.Constants.ArmConstants.ELEVATOR_BOTTOM_LIMIT;
-import static frc.robot.Constants.ArmConstants.ELEVATOR_METERS_PER_REVOLUTION;
+import static frc.robot.Constants.ArmConstants.ELEVATOR_DEFAULT_HEIGHT;
+import static frc.robot.Constants.ArmConstants.ELEVATOR_DISTANCE_PER_ROTATION;
 import static frc.robot.Constants.ArmConstants.ELEVATOR_MOTION_MAGIC_CONFIGS;
+import static frc.robot.Constants.ArmConstants.ELEVATOR_POSITION_TOLERANCE;
 import static frc.robot.Constants.ArmConstants.ELEVATOR_SLOT_CONFIGS;
 import static frc.robot.Constants.ArmConstants.ELEVATOR_SUPPLY_CURRENT_LIMIT;
 import static frc.robot.Constants.ArmConstants.ELEVATOR_TOP_LIMIT;
@@ -133,9 +136,9 @@ public class ArmSubsystem extends SubsystemBase {
         .withReverseLimitRemoteSensorID(canDiElevator.getDeviceID())
         .withReverseLimitSource(RemoteCANdiS2);
     elevatorTalonConfig.SoftwareLimitSwitch.withForwardSoftLimitEnable(true)
-        .withForwardSoftLimitThreshold(ELEVATOR_TOP_LIMIT.in(Meters) / ELEVATOR_METERS_PER_REVOLUTION.in(Meters))
+        .withForwardSoftLimitThreshold(ELEVATOR_TOP_LIMIT.in(Meters) / ELEVATOR_DISTANCE_PER_ROTATION.in(Meters))
         .withReverseSoftLimitEnable(true)
-        .withReverseSoftLimitThreshold(ELEVATOR_BOTTOM_LIMIT.in(Meters) / ELEVATOR_METERS_PER_REVOLUTION.in(Meters));
+        .withReverseSoftLimitThreshold(ELEVATOR_BOTTOM_LIMIT.in(Meters) / ELEVATOR_DISTANCE_PER_ROTATION.in(Meters));
 
     elevatorMotorLeader.getConfigurator().apply(elevatorTalonConfig);
     elevatorMotorFollower.getConfigurator().apply(elevatorTalonConfig);
@@ -168,7 +171,7 @@ public class ArmSubsystem extends SubsystemBase {
       var armPosition = BaseStatusSignal.getLatencyCompensatedValue(armPositionSignal, armVelocitySignal);
       var elevatorPosition = BaseStatusSignal
           .getLatencyCompensatedValue(elevatorPositionSignal, elevatorVelocitySignal);
-      elevatorStageLigament.setLength(elevatorPosition.in(Rotations) / ELEVATOR_METERS_PER_REVOLUTION.in(Meters));
+      elevatorStageLigament.setLength(elevatorPosition.in(Rotations) / ELEVATOR_DISTANCE_PER_ROTATION.in(Meters));
       // 0 is straight down for the ligament, but 0 is straight out to the right for the real arm
       armLigament.setAngle(armPosition.in(Degrees) - 90);
     }
@@ -178,7 +181,7 @@ public class ArmSubsystem extends SubsystemBase {
   public void simulationPeriodic() {
     // For sim, just say the elevator and arm are instantly where they're supposed to be
     elevatorStageLigament
-        .setLength(elevatorControl.getPositionMeasure().in(Rotations) / ELEVATOR_METERS_PER_REVOLUTION.in(Meters));
+        .setLength(elevatorControl.getPositionMeasure().in(Rotations) / ELEVATOR_DISTANCE_PER_ROTATION.in(Meters));
     armLigament.setAngle(armControl.getPositionMeasure().in(Degrees) - 90);
   }
 
@@ -251,7 +254,14 @@ public class ArmSubsystem extends SubsystemBase {
    */
   public void moveElevator(Distance position) {
     elevatorMotorLeader
-        .setControl(elevatorControl.withPosition(position.in(Meters) * ELEVATOR_METERS_PER_REVOLUTION.in(Meters)));
+        .setControl(elevatorControl.withPosition(position.in(Meters) * ELEVATOR_DISTANCE_PER_ROTATION.in(Meters)));
+  }
+
+  /**
+   * Moves the elevator to the height it remains at when inactive
+   */
+  public void moveElevatorToDefault() {
+    moveElevator(ELEVATOR_DEFAULT_HEIGHT);
   }
 
   /*
@@ -331,5 +341,26 @@ public class ArmSubsystem extends SubsystemBase {
    */
   public void moveArmToAngle(Angle targetAngle) {
     armMotor.setControl(armControl.withPosition(targetAngle));
+  }
+
+  /**
+   * Checks if the elevator is at the target position
+   * 
+   * @return true if the elevator is at the target position, within a tolerance
+   */
+  public boolean isElevatorAtPosition() {
+    return Math
+        .abs(elevatorControl.Position - elevatorPositionSignal.getValue().in(Rotations)) < ELEVATOR_POSITION_TOLERANCE
+            .in(Rotations);
+  }
+
+  /**
+   * Checks if the arm is at the target position
+   * 
+   * @return true if the arm is at the target position, within a tolerance
+   */
+  public boolean isArmAtPosition() {
+    return Math.abs(armControl.Position - armPositionSignal.getValue().in(Rotations)) < ARM_POSITION_TOLERANCE
+        .in(Rotations);
   }
 }

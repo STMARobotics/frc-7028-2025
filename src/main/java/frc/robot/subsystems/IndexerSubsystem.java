@@ -6,6 +6,7 @@ import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.CANIVORE_BUS_NAME;
 import static frc.robot.Constants.IndexerConstants.DEVICE_ID_BELT;
 import static frc.robot.Constants.IndexerConstants.EJECT_VELOCITY;
+import static frc.robot.Constants.IndexerConstants.INDEXER_SPEED_TOLERANCE;
 import static frc.robot.Constants.IndexerConstants.INTAKE_VELOCITY;
 import static frc.robot.Constants.IndexerConstants.SCORE_VELOCITY_LEVEL_1;
 import static frc.robot.Constants.IndexerConstants.SLOT_CONFIGS;
@@ -13,24 +14,28 @@ import static frc.robot.Constants.IndexerConstants.SUPPLY_CURRENT_LIMIT;
 import static frc.robot.Constants.IndexerConstants.TORQUE_CURRENT_LIMIT;
 
 import com.ctre.phoenix6.SignalLogger;
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 /**
  * The subsystem for the coral box/indexer
  */
-public class IndexerSubsystem implements Subsystem {
+public class IndexerSubsystem extends SubsystemBase {
 
   private final TalonFX beltMotor = new TalonFX(DEVICE_ID_BELT, CANIVORE_BUS_NAME);
   private final VelocityTorqueCurrentFOC beltControl = new VelocityTorqueCurrentFOC(0.0);
   private final TorqueCurrentFOC beltSysIdControl = new TorqueCurrentFOC(0.0);
+
+  private StatusSignal<AngularVelocity> indexerSpeed;
 
   private final SysIdRoutine beltSysIdRoutine = new SysIdRoutine(
       new SysIdRoutine.Config(
@@ -50,6 +55,7 @@ public class IndexerSubsystem implements Subsystem {
     beltTalonConfig.TorqueCurrent.withPeakForwardTorqueCurrent(TORQUE_CURRENT_LIMIT)
         .withPeakReverseTorqueCurrent(TORQUE_CURRENT_LIMIT.unaryMinus());
     beltMotor.getConfigurator().apply(beltTalonConfig);
+    indexerSpeed = beltMotor.getVelocity();
   }
 
   /**
@@ -74,6 +80,15 @@ public class IndexerSubsystem implements Subsystem {
     return beltSysIdRoutine.quasistatic(direction)
         .withName("SysId indexer belt quasi " + direction)
         .finallyDo(this::stop);
+  }
+
+  /**
+   * Runs the indexer belt at any specific speed
+   * 
+   * @param speed to run the belt in radians per second
+   */
+  public void runBelt(AngularVelocity speed) {
+    beltMotor.setControl(beltControl.withVelocity(speed));
   }
 
   /**
@@ -102,5 +117,14 @@ public class IndexerSubsystem implements Subsystem {
    */
   public void eject() {
     beltMotor.setControl(beltControl.withVelocity(EJECT_VELOCITY));
+  }
+
+  /**
+   * Method to check if the indexer is spinning at the proper speed with a tolerance
+   * 
+   * @return if its spinning at the proper speed as a boolean value
+   */
+  public boolean isIndexerAtSpeed() {
+    return (Math.abs(indexerSpeed.getValueAsDouble() - beltControl.Velocity) <= INDEXER_SPEED_TOLERANCE);
   }
 }
