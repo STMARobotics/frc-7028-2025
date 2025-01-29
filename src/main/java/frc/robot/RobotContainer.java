@@ -22,6 +22,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.PhotonVisionCommand;
+import frc.robot.commands.ScoreFirstLevelCommand;
+import frc.robot.commands.ScoreFourthLevelCommand;
+import frc.robot.commands.ScoreSecondLevelCommand;
+import frc.robot.commands.ScoreThirdLevelCommand;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -94,6 +98,11 @@ public class RobotContainer {
     joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
     drivetrain.registerTelemetry(drivetrainTelemetry::telemeterize);
+
+    joystick.povRight().whileTrue(new ScoreFirstLevelCommand(armSubsystem));
+    joystick.povDown().whileTrue(new ScoreSecondLevelCommand(armSubsystem));
+    joystick.povLeft().whileTrue(new ScoreThirdLevelCommand(armSubsystem));
+    joystick.povUp().whileTrue(new ScoreFourthLevelCommand(armSubsystem));
   }
 
   public Command getAutonomousCommand() {
