@@ -14,6 +14,7 @@ import static frc.robot.Constants.AlgaeConstants.DEVICE_ID_ROLLERMOTOR;
 import static frc.robot.Constants.AlgaeConstants.DEVICE_ID_WRISTMOTOR;
 import static frc.robot.Constants.AlgaeConstants.EJECT_SPEED;
 import static frc.robot.Constants.AlgaeConstants.INTAKE_SPEED;
+import static frc.robot.Constants.AlgaeConstants.ROLLER_SPEED_TOLERANCE;
 import static frc.robot.Constants.AlgaeConstants.ROLLER_STATOR_CURRENT_LIMIT;
 import static frc.robot.Constants.AlgaeConstants.ROLLER_SUPPLY_CURRENT_LIMIT;
 import static frc.robot.Constants.AlgaeConstants.SCORE_SPEED;
@@ -178,6 +179,15 @@ public class AlgaeSubsystem extends SubsystemBase {
   }
 
   /**
+   * Method to run the rollers at any specific speed
+   * 
+   * @param speed in rotations
+   */
+  public void runRollers(AngularVelocity speed) {
+    rollerMotor.setControl(rollerControl.withVelocity(speed));
+  }
+
+  /**
    * Activates motor to activate rollers and intake algae
    */
   public void intake() {
@@ -237,5 +247,14 @@ public class AlgaeSubsystem extends SubsystemBase {
    */
   public void moveIntakeUp() {
     wristMotor.setControl(wristControl.withPosition(WRIST_UP_POSITION));
+  }
+
+  /**
+   * Method to check if the rollers are spinning at the proper speed with a tolerance
+   * 
+   * @return if its spinning at the proper speed as a boolean value
+   */
+  public boolean isAtRollerSpeed() {
+    return (Math.abs(wristVelocity.getValueAsDouble() - rollerControl.Velocity) <= ROLLER_SPEED_TOLERANCE);
   }
 }
