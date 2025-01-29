@@ -255,7 +255,7 @@ public class TestCommand extends Command {
    * 
    * @return the amount of tests that have been completed
    */
-  public int getTestState() {
+  public double getTestState() {
     return teststate;
   }
 

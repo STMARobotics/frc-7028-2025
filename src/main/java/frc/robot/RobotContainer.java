@@ -26,9 +26,13 @@ import frc.robot.commands.ScoreFirstLevelCommand;
 import frc.robot.commands.ScoreFourthLevelCommand;
 import frc.robot.commands.ScoreSecondLevelCommand;
 import frc.robot.commands.ScoreThirdLevelCommand;
+import frc.robot.commands.TestCommand;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.AlgaeSubsystem;
 import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.GamePieceManipulatorSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 
 @Logged(strategy = Logged.Strategy.OPT_IN)
@@ -50,9 +54,18 @@ public class RobotContainer {
 
   private final ArmSubsystem armSubsystem = new ArmSubsystem();
   private final IndexerSubsystem indexerSubsystem = new IndexerSubsystem();
+  private final AlgaeSubsystem algaeSubsystem = new AlgaeSubsystem();
+  private final ClimbSubsystem climbSubsystem = new ClimbSubsystem();
+  private final GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem = new GamePieceManipulatorSubsystem();
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
   private final DrivetrainTelemetry drivetrainTelemetry = new DrivetrainTelemetry(MaxSpeed);
   private final PhotonVisionCommand visionCommand = new PhotonVisionCommand(drivetrain);
+  private final TestCommand testCommand = new TestCommand(
+      indexerSubsystem,
+      gamePieceManipulatorSubsystem,
+      algaeSubsystem,
+      climbSubsystem,
+      armSubsystem);
 
   /* Path follower */
   private final SendableChooser<Command> autoChooser;
@@ -136,5 +149,12 @@ public class RobotContainer {
         .withPosition(columnIndex + 1, 2);
     tab.add("Elevator Dynam Reverse", armSubsystem.sysIdElevatorDynamicCommand(kReverse))
         .withPosition(columnIndex + 1, 3);
+  }
+
+  public void populateTestingDashboard() {
+    var tab = Shuffleboard.getTab("Testing");
+
+    tab.add("Test command", testCommand);
+    tab.addNumber("Number of Tests Run", () -> testCommand.getTestState());
   }
 }
