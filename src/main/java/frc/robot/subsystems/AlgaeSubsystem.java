@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import static com.ctre.phoenix6.signals.NeutralModeValue.Brake;
 import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.AlgaeConstants.DEVICE_ID_CANCODER;
@@ -179,9 +180,9 @@ public class AlgaeSubsystem extends SubsystemBase {
   }
 
   /**
-   * Method to run the rollers at any specific speed
+   * Runs the rollers at any specific speed
    * 
-   * @param speed in rotations
+   * @param speed speed to run the rollers
    */
   public void runRollers(AngularVelocity speed) {
     rollerMotor.setControl(rollerControl.withVelocity(speed));
@@ -255,6 +256,9 @@ public class AlgaeSubsystem extends SubsystemBase {
    * @return if its spinning at the proper speed as a boolean value
    */
   public boolean isAtRollerSpeed() {
-    return (Math.abs(wristVelocity.getValueAsDouble() - rollerControl.Velocity) <= ROLLER_SPEED_TOLERANCE);
+    return wristVelocity.refresh()
+        .getValue()
+        .minus(rollerControl.getVelocityMeasure())
+        .abs(RotationsPerSecond) <= ROLLER_SPEED_TOLERANCE.in(RotationsPerSecond);
   }
 }
