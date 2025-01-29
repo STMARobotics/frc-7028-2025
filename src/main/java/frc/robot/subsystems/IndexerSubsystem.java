@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import static com.ctre.phoenix6.signals.NeutralModeValue.Brake;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.CANIVORE_BUS_NAME;
@@ -22,20 +23,20 @@ import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 /**
  * The subsystem for the coral box/indexer
  */
-public class IndexerSubsystem implements Subsystem {
+public class IndexerSubsystem extends SubsystemBase {
 
   private final TalonFX beltMotor = new TalonFX(DEVICE_ID_BELT, CANIVORE_BUS_NAME);
   private final VelocityTorqueCurrentFOC beltControl = new VelocityTorqueCurrentFOC(0.0);
   private final TorqueCurrentFOC beltSysIdControl = new TorqueCurrentFOC(0.0);
 
-  private StatusSignal<AngularVelocity> indexerSpeed;
+  private final StatusSignal<AngularVelocity> beltVelocitySignal = beltMotor.getVelocity();
 
   private final SysIdRoutine beltSysIdRoutine = new SysIdRoutine(
       new SysIdRoutine.Config(
@@ -55,7 +56,6 @@ public class IndexerSubsystem implements Subsystem {
     beltTalonConfig.TorqueCurrent.withPeakForwardTorqueCurrent(TORQUE_CURRENT_LIMIT)
         .withPeakReverseTorqueCurrent(TORQUE_CURRENT_LIMIT.unaryMinus());
     beltMotor.getConfigurator().apply(beltTalonConfig);
-    indexerSpeed = beltMotor.getVelocity();
   }
 
   /**
@@ -85,7 +85,7 @@ public class IndexerSubsystem implements Subsystem {
   /**
    * Runs the indexer belt at any specific speed
    * 
-   * @param speed to run the belt in radians per second
+   * @param speed speed to run the belt
    */
   public void runBelt(AngularVelocity speed) {
     beltMotor.setControl(beltControl.withVelocity(speed));
@@ -120,11 +120,14 @@ public class IndexerSubsystem implements Subsystem {
   }
 
   /**
-   * Method to check if the indexer is spinning at the proper speed with a tolerance
+   * Checks if the indexer is spinning at the proper speed within a tolerance
    * 
-   * @return if its spinning at the proper speed as a boolean value
+   * @return true if the indexer is spinning at the proper speed
    */
   public boolean isIndexerAtSpeed() {
-    return (Math.abs(indexerSpeed.getValueAsDouble() - beltControl.Velocity) <= INDEXER_SPEED_TOLERANCE);
+    return beltVelocitySignal.refresh()
+        .getValue()
+        .minus(beltControl.getVelocityMeasure())
+        .abs(RotationsPerSecond) <= INDEXER_SPEED_TOLERANCE.in(RotationsPerSecond);
   }
 }
