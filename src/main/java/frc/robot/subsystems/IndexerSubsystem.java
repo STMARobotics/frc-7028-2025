@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import static com.ctre.phoenix6.signals.NeutralModeValue.Brake;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.CANIVORE_BUS_NAME;
@@ -35,7 +36,7 @@ public class IndexerSubsystem extends SubsystemBase {
   private final VelocityTorqueCurrentFOC beltControl = new VelocityTorqueCurrentFOC(0.0);
   private final TorqueCurrentFOC beltSysIdControl = new TorqueCurrentFOC(0.0);
 
-  private StatusSignal<AngularVelocity> indexerSpeed;
+  private final StatusSignal<AngularVelocity> beltVelocitySignal = beltMotor.getVelocity();
 
   private final SysIdRoutine beltSysIdRoutine = new SysIdRoutine(
       new SysIdRoutine.Config(
@@ -55,7 +56,6 @@ public class IndexerSubsystem extends SubsystemBase {
     beltTalonConfig.TorqueCurrent.withPeakForwardTorqueCurrent(TORQUE_CURRENT_LIMIT)
         .withPeakReverseTorqueCurrent(TORQUE_CURRENT_LIMIT.unaryMinus());
     beltMotor.getConfigurator().apply(beltTalonConfig);
-    indexerSpeed = beltMotor.getVelocity();
   }
 
   /**
@@ -85,7 +85,7 @@ public class IndexerSubsystem extends SubsystemBase {
   /**
    * Runs the indexer belt at any specific speed
    * 
-   * @param speed to run the belt in radians per second
+   * @param speed speed to run the belt
    */
   public void runBelt(AngularVelocity speed) {
     beltMotor.setControl(beltControl.withVelocity(speed));
@@ -120,11 +120,14 @@ public class IndexerSubsystem extends SubsystemBase {
   }
 
   /**
-   * Method to check if the indexer is spinning at the proper speed with a tolerance
+   * Checks if the indexer is spinning at the proper speed within a tolerance
    * 
-   * @return if its spinning at the proper speed as a boolean value
+   * @return true if the indexer is spinning at the proper speed
    */
   public boolean isIndexerAtSpeed() {
-    return (Math.abs(indexerSpeed.getValueAsDouble() - beltControl.Velocity) <= INDEXER_SPEED_TOLERANCE);
+    return beltVelocitySignal.refresh()
+        .getValue()
+        .minus(beltControl.getVelocityMeasure())
+        .abs(RotationsPerSecond) <= INDEXER_SPEED_TOLERANCE.in(RotationsPerSecond);
   }
 }

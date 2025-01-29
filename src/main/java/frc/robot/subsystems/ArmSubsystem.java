@@ -349,9 +349,10 @@ public class ArmSubsystem extends SubsystemBase {
    * @return true if the elevator is at the target position, within a tolerance
    */
   public boolean isElevatorAtPosition() {
-    return Math
-        .abs(elevatorControl.Position - elevatorPositionSignal.getValue().in(Rotations)) < ELEVATOR_POSITION_TOLERANCE
-            .in(Rotations);
+    return elevatorPositionSignal.refresh()
+        .getValue()
+        .minus(elevatorControl.getPositionMeasure())
+        .abs(Rotations) <= ELEVATOR_POSITION_TOLERANCE.in(Rotations);
   }
 
   /**
@@ -360,7 +361,9 @@ public class ArmSubsystem extends SubsystemBase {
    * @return true if the arm is at the target position, within a tolerance
    */
   public boolean isArmAtPosition() {
-    return Math.abs(armControl.Position - armPositionSignal.getValue().in(Rotations)) < ARM_POSITION_TOLERANCE
-        .in(Rotations);
+    return armPositionSignal.refresh()
+        .getValue()
+        .minus(armControl.getPositionMeasure())
+        .abs(Rotations) <= ARM_POSITION_TOLERANCE.in(Rotations);
   }
 }
