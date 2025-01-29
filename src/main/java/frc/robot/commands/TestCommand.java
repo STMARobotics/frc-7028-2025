@@ -29,11 +29,14 @@ public class TestCommand extends Command {
   private final ClimbSubsystem climbSubsystem;
   private final ArmSubsystem armSubsystem;
 
+  private final Timer timer = new Timer();
+
   private boolean hasStopped = false;
   private int teststate = 0;
 
-  private Timer timer = new Timer();
-
+  /**
+   * Creates a TestCommand
+   */
   public TestCommand(
       IndexerSubsystem indexersubsystem,
       GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem,
@@ -59,9 +62,6 @@ public class TestCommand extends Command {
   @Override
   public void execute() {
     switch (teststate) {
-      default:
-        break;
-
       case 0:
         if (!hasStopped) {
           indexersubsystem.runBelt(INDEXER_TESTING_SPEED);
@@ -247,6 +247,9 @@ public class TestCommand extends Command {
           hasStopped = false;
         }
         break;
+
+      default:
+        break;
     }
   }
 
@@ -261,7 +264,7 @@ public class TestCommand extends Command {
 
   @Override
   public boolean isFinished() {
-    return !RobotState.isTest();
+    return teststate > 10 || !RobotState.isTest();
   }
 
   @Override

@@ -4,6 +4,7 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.AlgaeConstants.ROLLER_SPEED_TOLERANCE;
@@ -69,21 +70,10 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
   private final VelocityTorqueCurrentFOC wheelControl = new VelocityTorqueCurrentFOC(0).withSlot(0);
   private final PositionVoltage holdControl = new PositionVoltage(0.0).withSlot(1);
 
-  private StatusSignal<AngularVelocity> manipulatorSpeed;
+  private final StatusSignal<AngularVelocity> wheelVelocity = wheelMotor.getVelocity();
 
   /** Creates a new Subsytem for the Game Pieace Manipulator. */
   public GamePieceManipulatorSubsystem() {
-
-    manipulatorSpeed = wheelMotor.getVelocity();
-  }
-
-  /**
-   * Runs the manipulator wheels at any specific speed
-   * 
-   * @param speed to run the belt in radians per second
-   */
-  public void runManipulatorWheels(AngularVelocity speed) {
-    wheelMotor.setControl(wheelControl.withVelocity(speed));
     var motorConfig = new TalonFXConfiguration();
     motorConfig.withSlot0(Slot0Configs.from(MANIPULATION_SLOT_CONFIGS)).withSlot1(Slot1Configs.from(HOLD_SLOT_CONFIGS));
     motorConfig.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
@@ -118,6 +108,15 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
     return manipulatorSysIdRoutine.quasistatic(direction)
         .withName("Game Piece Manipulator quasi " + direction)
         .finallyDo(this::stop);
+  }
+
+  /**
+   * Runs the manipulator wheels at any specific speed
+   * 
+   * @param speed speed to run the wheels
+   */
+  public void runManipulatorWheels(AngularVelocity speed) {
+    wheelMotor.setControl(wheelControl.withVelocity(speed));
   }
 
   /**
@@ -179,11 +178,14 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
   }
 
   /**
-   * Method to check if the manipulator is spinning at the proper speed with a tolerance
+   * Checks if the manipulator is spinning at the proper speed with a tolerance
    * 
-   * @return if its spinning at the proper speed as a boolean value
+   * @return true if the manipulator is spinning at the proper speed
    */
   public boolean isManipulatorAtSpeed() {
-    return (Math.abs(manipulatorSpeed.getValueAsDouble() - wheelControl.Velocity) <= ROLLER_SPEED_TOLERANCE);
+    return wheelVelocity.refresh()
+        .getValue()
+        .minus(wheelControl.getVelocityMeasure())
+        .abs(RotationsPerSecond) <= ROLLER_SPEED_TOLERANCE.in(RotationsPerSecond);
   }
 }
