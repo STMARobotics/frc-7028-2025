@@ -38,7 +38,8 @@
     "org.mockito.ArgumentMatchers.*",
     "org.mockito.Answers.*",
     "edu.wpi.first.units.Units.*",
-    "frc.robot.Constants.*"
+    "frc.robot.Constants.*",
+    "edu.wpi.first.wpilibj2.command.Commands.*"
   ],
   "java.completion.filteredTypes": [
     "java.awt.*",
