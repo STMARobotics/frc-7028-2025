@@ -82,6 +82,7 @@ public class Constants {
     public static final Angle RIGHT_CLIMB_MAGNETIC_OFFSET = Radians.of(0);
 
     public static final Voltage MAX_CLIMB_VOLTAGE = Volts.of(2);
+    public static final Voltage CLIMB_VOLTAGE_TOLERANCE = Volts.of(0.2);
 
   }
 

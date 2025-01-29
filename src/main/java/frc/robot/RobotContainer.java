@@ -49,6 +49,7 @@ public class RobotContainer {
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
   private final DrivetrainTelemetry drivetrainTelemetry = new DrivetrainTelemetry(MaxSpeed);
   private final PhotonVisionCommand visionCommand = new PhotonVisionCommand(drivetrain);
+  private final TestMode testMode = new TestMode();
 
   /* Path follower */
   private final SendableChooser<Command> autoChooser;
@@ -127,5 +128,21 @@ public class RobotContainer {
         .withPosition(columnIndex + 1, 2);
     tab.add("Elevator Dynam Reverse", armSubsystem.sysIdElevatorDynamicCommand(kReverse))
         .withPosition(columnIndex + 1, 3);
+  }
+
+  public void populateSysidDashboard() {
+    var tab = Shuffleboard.getTab("Testing");
+
+    tab.add("Run tests", testMode.testCommand());
+    tab.addBoolean("Indexer Fowards Test", () -> testMode.indexerForwardsTest);
+    tab.addBoolean("Indexer Backwards Test", () -> testMode.indexerBackwardsTest);
+    tab.addBoolean("Manipulator Forwards Test", () -> testMode.manipulatorForwardsTest);
+    tab.addBoolean("Manipulator Backwards Test", () -> testMode.manipulatorBackwardsTest);
+    tab.addBoolean("Algae Rollers Forwards Test", () -> testMode.algaeRollersForwardsTest);
+    tab.addBoolean("Algae Rollers Backwards Test", () -> testMode.algaeRollersBackwardsTest);
+    tab.addBoolean("Algae Intake Up Test", () -> testMode.algaeIntakeUpTest);
+    tab.addBoolean("Algae Intake Down Test", () -> testMode.algaeIntakeDownTest);
+    tab.addBoolean("Arm Elevator Test", () -> testMode.armElevatorTest);
+    tab.addBoolean("Arm Test", () -> testMode.armTest);
   }
 }

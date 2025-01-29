@@ -130,4 +130,11 @@ public class IndexerSubsystem extends SubsystemBase {
         .minus(beltControl.getVelocityMeasure())
         .abs(RotationsPerSecond) <= INDEXER_SPEED_TOLERANCE.in(RotationsPerSecond);
   }
+
+  public boolean updateIndexerTestResult() {
+    if (isIndexerAtSpeed()) {
+      return true;
+    }
+    return false;
+  }
 }
