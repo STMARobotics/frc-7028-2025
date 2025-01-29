@@ -111,6 +111,7 @@ public class Constants {
     // wrist constants
     public static final AngularVelocity WRIST_DOWN_SPEED = RadiansPerSecond.of(-5);
     public static final AngularVelocity WRIST_UP_SPEED = RadiansPerSecond.of(5);
+    public static final double ROLLER_SPEED_TOLERANCE = 0;
 
     // numbers are probably wonky here
     public static final Angle WRIST_DOWN_POSITION = Degrees.of(180);
@@ -145,6 +146,7 @@ public class Constants {
     public static final AngularVelocity INTAKE_VELOCITY = RadiansPerSecond.of(1);
     public static final AngularVelocity SCORE_VELOCITY_LEVEL_1 = RadiansPerSecond.of(-1);
     public static final AngularVelocity EJECT_VELOCITY = RadiansPerSecond.of(-2);
+    public static final double INDEXER_SPEED_TOLERANCE = 0;
 
     public static final Current TORQUE_CURRENT_LIMIT = Amps.of(100);
     public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(10); // Placeholder, will have to change
@@ -156,7 +158,7 @@ public class Constants {
         .withKA(0.0);
   }
 
-  /*
+  /**
    * Constants for the arm subsystem
    */
   public static class ArmConstants {
@@ -180,14 +182,18 @@ public class Constants {
 
     public static final Current ELEVATOR_SUPPLY_CURRENT_LIMIT = Amps.of(0); // Placeholder
 
-    public static final Distance ELEVATOR_METERS_PER_REVOLUTION = Meters.of(0); // Placeholder
+    public static final Distance ELEVATOR_METERS_PER_ROTATION = Meters.of(0); // Placeholder
 
     public static final Distance ELEVATOR_TOP_LIMIT = Meters.of(0); // Placeholder
     public static final Distance ELEVATOR_BOTTOM_LIMIT = Meters.of(0); // Placeholder
 
-    /*
-     * The position in meters the elevator has to arrive at in order to score with placeholder numbers for now
+    public static final Angle ELEVATOR_POSITION_TOLERANCE = Rotations.of(0); // Placeholder
+    public static final Angle ARM_POSITION_TOLERANCE = Rotations.of(0); // Placeholder
+
+    /**
+     * The positions in meters the elevator could travel to with placeholder numbers for now
      */
+    public static final Distance ELEVATOR_DEFAULT_HEIGHT = Meters.of(0);
     public static final Distance LEVEL_1_HEIGHT = Meters.of(0);
     public static final Distance LEVEL_2_HEIGHT = Meters.of(0);
     public static final Distance LEVEL_3_HEIGHT = Meters.of(0);
@@ -215,7 +221,7 @@ public class Constants {
         .withMotionMagicCruiseVelocity(0.01);
   }
 
-  /*
+  /**
    * Constants for the game piece manipulator
    */
   public static class GamePieceManipulatorConstants {
@@ -237,4 +243,24 @@ public class Constants {
     public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(10);
   }
 
+  /**
+   * Constants for test mode
+   */
+  public static class TestingConstants {
+    public static final AngularVelocity INDEXER_TESTING_SPEED = RadiansPerSecond.of(2);
+    public static final AngularVelocity INDEXER_BACKWARDS_TESTING_SPEED = RadiansPerSecond
+        .of(-(INDEXER_TESTING_SPEED.in(RadiansPerSecond)));
+    public static final double INDEXER_TESTING_TOLERANCE = 0;
+
+    public static final AngularVelocity MANIPULATOR_TESTING_SPEED = RadiansPerSecond.of(2);
+    public static final AngularVelocity MANIPULATOR_BACKWARDS_TESTING_SPEED = RadiansPerSecond
+        .of(-(MANIPULATOR_TESTING_SPEED.in(RadiansPerSecond)));
+    public static final double MANIPULATOR_TESTING_TOLERANCE = 0;
+
+    public static final AngularVelocity ROLLER_TESTING_SPEED = RadiansPerSecond.of(5);
+    public static final AngularVelocity ROLLER_BACKWARDS_TESTING_SPEED = RadiansPerSecond
+        .of(-(ROLLER_TESTING_SPEED.in(RadiansPerSecond)));
+
+    public static final Voltage CLIMB_TESTING_VOLTAGE = Volts.of(5);
+  }
 }
