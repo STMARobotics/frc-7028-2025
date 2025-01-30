@@ -43,6 +43,9 @@ public class Constants {
 
   public static final String CANIVORE_BUS_NAME = "canivore";
 
+  /**
+   * Constants for vision processing
+   */
   public static class VisionConstants {
     public static final String kCameraName = "YOUR CAMERA NAME";
     // Cam mounted facing forward, half a meter forward of center, half a meter up from center.
@@ -51,7 +54,7 @@ public class Constants {
         new Rotation3d(0, 0, 0));
 
     // The layout of the AprilTags on the field
-    public static final AprilTagFieldLayout kTagLayout = AprilTagFields.kDefaultField.loadAprilTagLayoutField();
+    public static final AprilTagFieldLayout kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
 
     // The standard deviations of our vision estimated poses, which affect correction rate
     // (Fake values. Experiment and determine estimation noise on an actual robot.)
