@@ -231,7 +231,7 @@ public class TestMode {
   public boolean getArmTestResult() {
     return armTest;
   }
-  
+
   private void testClimbMotors() {
     climbSubsystem.runFrontClimb(CLIMB_TESTING_VOLTAGE.in(Volts));
     climbSubsystem.runBackClimb(CLIMB_TESTING_VOLTAGE.in(Volts));
