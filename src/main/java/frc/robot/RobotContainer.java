@@ -137,15 +137,15 @@ public class RobotContainer {
     var tab = Shuffleboard.getTab("Testing");
 
     tab.add("Run tests", testMode.testCommand());
-    tab.addBoolean("Indexer Fowards Test", () -> testMode.indexerForwardsTest);
-    tab.addBoolean("Indexer Backwards Test", () -> testMode.indexerBackwardsTest);
-    tab.addBoolean("Manipulator Forwards Test", () -> testMode.manipulatorForwardsTest);
-    tab.addBoolean("Manipulator Backwards Test", () -> testMode.manipulatorBackwardsTest);
-    tab.addBoolean("Algae Rollers Forwards Test", () -> testMode.algaeRollersForwardsTest);
-    tab.addBoolean("Algae Rollers Backwards Test", () -> testMode.algaeRollersBackwardsTest);
-    tab.addBoolean("Algae Intake Up Test", () -> testMode.algaeIntakeUpTest);
-    tab.addBoolean("Algae Intake Down Test", () -> testMode.algaeIntakeDownTest);
-    tab.addBoolean("Arm Elevator Test", () -> testMode.armElevatorTest);
-    tab.addBoolean("Arm Test", () -> testMode.armTest);
+    tab.addBoolean("Indexer Fowards Test", () -> testMode.getIndexerForwardsTest());
+    tab.addBoolean("Indexer Backwards Test", () -> testMode.getIndexerBackwardsTest());
+    tab.addBoolean("Manipulator Forwards Test", () -> testMode.getManipulatorForwardsTest());
+    tab.addBoolean("Manipulator Backwards Test", () -> testMode.getManipulatorBackwardsTest());
+    tab.addBoolean("Algae Rollers Forwards Test", () -> testMode.getAlgaeRollersForwardsTest());
+    tab.addBoolean("Algae Rollers Backwards Test", () -> testMode.getAlgaeRollersBackwardsTest());
+    tab.addBoolean("Algae Intake Up Test", () -> testMode.getAlgaeIntakeUpTest());
+    tab.addBoolean("Algae Intake Down Test", () -> testMode.getAlgaeIntakeDownTest());
+    tab.addBoolean("Arm Elevator Test", () -> testMode.getArmElevatorTest());
+    tab.addBoolean("Arm Test", () -> testMode.getArmTest());
   }
 }
