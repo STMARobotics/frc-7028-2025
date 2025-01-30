@@ -248,7 +248,6 @@ public class Constants {
     public static final Current STATOR_CURRENT_LIMIT = Amps.of(20);
     public static final Current TORQUE_CURRENT_LIMIT = Amps.of(20);
     public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(10);
-
   }
 
   /**
