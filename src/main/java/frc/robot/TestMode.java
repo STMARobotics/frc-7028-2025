@@ -23,17 +23,17 @@ import frc.robot.subsystems.IndexerSubsystem;
  */
 public class TestMode {
 
-  public boolean indexerForwardsTest;
-  public boolean indexerBackwardsTest;
-  public boolean manipulatorForwardsTest;
-  public boolean manipulatorBackwardsTest;
-  public boolean climbTest;
-  public boolean algaeRollersForwardsTest;
-  public boolean algaeRollersBackwardsTest;
-  public boolean algaeIntakeUpTest;
-  public boolean algaeIntakeDownTest;
-  public boolean armElevatorTest;
-  public boolean armTest;
+  private boolean indexerForwardsTest;
+  private boolean indexerBackwardsTest;
+  private boolean manipulatorForwardsTest;
+  private boolean manipulatorBackwardsTest;
+  private boolean climbTest;
+  private boolean algaeRollersForwardsTest;
+  private boolean algaeRollersBackwardsTest;
+  private boolean algaeIntakeUpTest;
+  private boolean algaeIntakeDownTest;
+  private boolean armElevatorTest;
+  private boolean armTest;
   private final IndexerSubsystem indexerSubsystem = new IndexerSubsystem();
   private final GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem = new GamePieceManipulatorSubsystem();
   private final ClimbSubsystem climbSubsystem = new ClimbSubsystem();
@@ -188,6 +188,50 @@ public class TestMode {
     armTest = armSubsystem.isArmAtPosition();
   }
 
+  public boolean getIndexerForwardsTestResult() {
+    return indexerForwardsTest;
+  }
+
+  public boolean getIndexerBackwardsTestResult() {
+    return indexerBackwardsTest;
+  }
+
+  public boolean getManipulatorForwardsTestResult() {
+    return manipulatorForwardsTest;
+  }
+
+  public boolean getManipulatorBackwardsTestResult() {
+    return manipulatorBackwardsTest;
+  }
+
+  public boolean getClimbTestResult() {
+    return climbTest;
+  }
+
+  public boolean getAlgaeRollersForwardsTestResult() {
+    return algaeRollersForwardsTest;
+  }
+
+  public boolean getAlgaeRollersBackwardsTestResult() {
+    return algaeRollersBackwardsTest;
+  }
+
+  public boolean getAlgaeIntakeUpTestResult() {
+    return algaeIntakeUpTest;
+  }
+
+  public boolean getAlgaeIntakeDownTestResult() {
+    return algaeIntakeDownTest;
+  }
+
+  public boolean getArmElevatorTestResult() {
+    return armElevatorTest;
+  }
+
+  public boolean getArmTestResult() {
+    return armTest;
+  }
+  
   private void testClimbMotors() {
     climbSubsystem.runFrontClimb(CLIMB_TESTING_VOLTAGE.in(Volts));
     climbSubsystem.runBackClimb(CLIMB_TESTING_VOLTAGE.in(Volts));
