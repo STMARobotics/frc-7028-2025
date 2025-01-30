@@ -1,7 +1,7 @@
 package frc.robot.subsystems;
 
 import static com.ctre.phoenix6.signals.NeutralModeValue.Brake;
-import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.CANIVORE_BUS_NAME;
 import static frc.robot.Constants.ClimbConstants.CLIMB_MAGNETIC_OFFSET_BACK;
@@ -35,7 +35,8 @@ public class ClimbSubsystem extends SubsystemBase {
   private final VoltageOut climbControlFront = new VoltageOut(0.0).withEnableFOC(true);
   private final VoltageOut climbControlBack = new VoltageOut(0.0).withEnableFOC(true);
 
-  private final StatusSignal<Angle> climbFrontPositionSignal = frontMotor.getPosition();
+  private final StatusSignal<Velocity> climbFrontVelocitySignal = frontMotor.getVelocity();
+  private final StatusSignal<Velocity> climbBackVelocitySignal = backmotor.getVelocity();
 
   public ClimbSubsystem() {
     var frontClimbEncoder = new CANcoder(DEVICE_ID_CLIMB_ENCODER_FRONT, CANIVORE_BUS_NAME);
@@ -90,10 +91,11 @@ public class ClimbSubsystem extends SubsystemBase {
   /**
    * Method to determine if the climb motors are moving
    * 
-   * @return true if the motor has moved on rotation
+   * @return true if the motor has reached one rotation per second
    */
   public boolean areClimbMotorsMoving() {
-    return (climbFrontPositionSignal.refresh().getValue().in(Rotations) > 1);
+    return (climbFrontVelocitySignal.refresh().getValue().in(RotationsPerSecond) > 1 &&
+           climbBackVelocitySignal.refresh().getValue().in(RotationsPerSecond) > 1);
   }
 
 }
