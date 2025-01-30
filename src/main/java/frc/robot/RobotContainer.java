@@ -48,8 +48,8 @@ public class RobotContainer {
   private final IndexerSubsystem indexerSubsystem = new IndexerSubsystem();
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
   private final DrivetrainTelemetry drivetrainTelemetry = new DrivetrainTelemetry(MaxSpeed);
-  private final PhotonVisionCommand visionCommand = new PhotonVisionCommand(drivetrain);
   private final TestMode testMode = new TestMode();
+  private final PhotonVisionCommand visionCommand = new PhotonVisionCommand(drivetrain::addVisionMeasurement);
 
   /* Path follower */
   private final SendableChooser<Command> autoChooser;

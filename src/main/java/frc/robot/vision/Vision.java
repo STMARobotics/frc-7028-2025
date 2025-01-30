@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package frc.robot;
+package frc.robot.vision;
 
 import static frc.robot.Constants.VisionConstants.*;
 
@@ -47,6 +47,9 @@ public class Vision {
   private final PhotonPoseEstimator photonEstimator;
   private Matrix<N3, N1> curStdDevs;
 
+  /**
+   * Constructs a new Vision instance
+   */
   public Vision() {
     camera = new PhotonCamera(kCameraName);
 
