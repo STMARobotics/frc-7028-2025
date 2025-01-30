@@ -35,8 +35,8 @@ public class ClimbSubsystem extends SubsystemBase {
   private final VoltageOut climbControlFront = new VoltageOut(0.0).withEnableFOC(true);
   private final VoltageOut climbControlBack = new VoltageOut(0.0).withEnableFOC(true);
 
-  private final StatusSignal<Velocity> climbFrontVelocitySignal = frontMotor.getVelocity();
-  private final StatusSignal<Velocity> climbBackVelocitySignal = backmotor.getVelocity();
+  private final StatusSignal<AngularVelocity> climbFrontVelocitySignal = frontMotor.getVelocity();
+  private final StatusSignal<AngularVelocity> climbBackVelocitySignal = backmotor.getVelocity();
 
   public ClimbSubsystem() {
     var frontClimbEncoder = new CANcoder(DEVICE_ID_CLIMB_ENCODER_FRONT, CANIVORE_BUS_NAME);
@@ -95,7 +95,7 @@ public class ClimbSubsystem extends SubsystemBase {
    */
   public boolean areClimbMotorsMoving() {
     return (climbFrontVelocitySignal.refresh().getValue().in(RotationsPerSecond) > 1
-            && climbBackVelocitySignal.refresh().getValue().in(RotationsPerSecond) > 1);
+        && climbBackVelocitySignal.refresh().getValue().in(RotationsPerSecond) > 1);
   }
 
 }
