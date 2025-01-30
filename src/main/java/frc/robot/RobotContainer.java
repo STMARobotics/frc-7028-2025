@@ -130,6 +130,9 @@ public class RobotContainer {
         .withPosition(columnIndex + 1, 3);
   }
 
+  /**
+   * Creates the testing tab in Elastic along with all the test result displays
+   */
   public void populateTestingDashboard() {
     var tab = Shuffleboard.getTab("Testing");
 

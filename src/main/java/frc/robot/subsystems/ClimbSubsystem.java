@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import static com.ctre.phoenix6.signals.NeutralModeValue.Brake;
+import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.CANIVORE_BUS_NAME;
 import static frc.robot.Constants.ClimbConstants.CLIMB_MAGNETIC_OFFSET_BACK;
@@ -8,7 +9,6 @@ import static frc.robot.Constants.ClimbConstants.CLIMB_MAGNETIC_OFFSET_FRONT;
 import static frc.robot.Constants.ClimbConstants.CLIMB_ROTOR_TO_SENSOR_RATIO;
 import static frc.robot.Constants.ClimbConstants.CLIMB_STATOR_CURRENT_LIMIT;
 import static frc.robot.Constants.ClimbConstants.CLIMB_SUPPLY_CURRENT_LIMIT;
-import static frc.robot.Constants.ClimbConstants.CLIMB_VOLTAGE_TOLERANCE;
 import static frc.robot.Constants.ClimbConstants.DEVICE_ID_CLIMB_ENCODER_BACK;
 import static frc.robot.Constants.ClimbConstants.DEVICE_ID_CLIMB_ENCODER_FRONT;
 import static frc.robot.Constants.ClimbConstants.DEVICE_ID_CLIMB_MOTOR_BACK;
@@ -24,7 +24,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ClimbSubsystem extends SubsystemBase {
@@ -35,8 +35,7 @@ public class ClimbSubsystem extends SubsystemBase {
   private final VoltageOut climbControlFront = new VoltageOut(0.0).withEnableFOC(true);
   private final VoltageOut climbControlBack = new VoltageOut(0.0).withEnableFOC(true);
 
-  private final StatusSignal<Voltage> climbFrontVoltageSignal = frontMotor.getMotorVoltage();
-  private final StatusSignal<Voltage> climbBackVoltageSignal = backMotor.getMotorVoltage();
+  private final StatusSignal<Angle> climbFrontPositionSignal = frontMotor.getPosition();
 
   public ClimbSubsystem() {
     var frontClimbEncoder = new CANcoder(DEVICE_ID_CLIMB_ENCODER_FRONT, CANIVORE_BUS_NAME);
@@ -88,15 +87,13 @@ public class ClimbSubsystem extends SubsystemBase {
     backMotor.stopMotor();
   }
 
-  public boolean isAtClimbVoltage() {
-    return climbFrontVoltageSignal.refresh()
-        .getValue()
-        .minus(climbControlFront.getOutputMeasure())
-        .abs(Volts) <= CLIMB_VOLTAGE_TOLERANCE.in(Volts)
-        && climbBackVoltageSignal.refresh()
-            .getValue()
-            .minus(climbControlBack.getOutputMeasure())
-            .abs(Volts) <= CLIMB_VOLTAGE_TOLERANCE.in(Volts);
+  /**
+   * Method to determine if the climb motors are moving
+   * 
+   * @return true if the motor has moved on rotation
+   */
+  public boolean areClimbMotorsMoving() {
+    return (climbFrontPositionSignal.refresh().getValue().in(Rotations) > 1);
   }
 
 }

@@ -18,6 +18,9 @@ import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.GamePieceManipulatorSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 
+/**
+ * Command factory for TestMode
+ */
 public class TestMode {
 
   public boolean indexerForwardsTest;
@@ -37,10 +40,9 @@ public class TestMode {
   private final AlgaeSubsystem algaeSubsystem = new AlgaeSubsystem();
   private final ArmSubsystem armSubsystem = new ArmSubsystem();
 
-  public TestMode() {
-
-  }
-
+  /**
+   * Command to run all the tests in the TestMode routine
+   */
   public Command testCommand() {
     return testIndexerForwardsCommand().andThen(testIndexerBackwardsCommand())
         .andThen(testGamePieceManipulatorForwardsCommand())
@@ -92,7 +94,7 @@ public class TestMode {
   }
 
   private Command testClimbCommand() {
-    return run(() -> testClimbMotors(), climbSubsystem).until(climbSubsystem::isAtClimbVoltage)
+    return run(() -> testClimbMotors(), climbSubsystem).until(climbSubsystem::areClimbMotorsMoving)
         .withTimeout(Seconds.of(5))
         .andThen(this::updateClimbTestResult)
         .finallyDo(climbSubsystem::stopMotors);
@@ -159,7 +161,7 @@ public class TestMode {
   }
 
   private void updateClimbTestResult() {
-    climbTest = climbSubsystem.isAtClimbVoltage();
+    climbTest = climbSubsystem.areClimbMotorsMoving();
   }
 
   private void updateAlgaeRollersForwardsTestResult() {
