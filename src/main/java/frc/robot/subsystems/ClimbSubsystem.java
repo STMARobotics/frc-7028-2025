@@ -94,8 +94,8 @@ public class ClimbSubsystem extends SubsystemBase {
    * @return true if the motor has reached one rotation per second
    */
   public boolean areClimbMotorsMoving() {
-    return (climbFrontVelocitySignal.refresh().getValue().in(RotationsPerSecond) > 1 &&
-           climbBackVelocitySignal.refresh().getValue().in(RotationsPerSecond) > 1);
+    return (climbFrontVelocitySignal.refresh().getValue().in(RotationsPerSecond) > 1
+            && climbBackVelocitySignal.refresh().getValue().in(RotationsPerSecond) > 1);
   }
 
 }
