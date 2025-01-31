@@ -43,6 +43,9 @@ public class Constants {
 
   public static final String CANIVORE_BUS_NAME = "canivore";
 
+  /**
+   * Constants for vision processing
+   */
   public static class VisionConstants {
     public static final String kCameraName = "YOUR CAMERA NAME";
     // Cam mounted facing forward, half a meter forward of center, half a meter up from center.
@@ -51,7 +54,7 @@ public class Constants {
         new Rotation3d(0, 0, 0));
 
     // The layout of the AprilTags on the field
-    public static final AprilTagFieldLayout kTagLayout = AprilTagFields.kDefaultField.loadAprilTagLayoutField();
+    public static final AprilTagFieldLayout kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
 
     // The standard deviations of our vision estimated poses, which affect correction rate
     // (Fake values. Experiment and determine estimation noise on an actual robot.)
@@ -111,6 +114,7 @@ public class Constants {
     // wrist constants
     public static final AngularVelocity WRIST_DOWN_SPEED = RadiansPerSecond.of(-5);
     public static final AngularVelocity WRIST_UP_SPEED = RadiansPerSecond.of(5);
+    public static final AngularVelocity ROLLER_SPEED_TOLERANCE = RotationsPerSecond.of(3);
 
     // numbers are probably wonky here
     public static final Angle WRIST_DOWN_POSITION = Degrees.of(180);
@@ -145,6 +149,7 @@ public class Constants {
     public static final AngularVelocity INTAKE_VELOCITY = RadiansPerSecond.of(1);
     public static final AngularVelocity SCORE_VELOCITY_LEVEL_1 = RadiansPerSecond.of(-1);
     public static final AngularVelocity EJECT_VELOCITY = RadiansPerSecond.of(-2);
+    public static final AngularVelocity INDEXER_SPEED_TOLERANCE = RotationsPerSecond.of(3);
 
     public static final Current TORQUE_CURRENT_LIMIT = Amps.of(100);
     public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(10); // Placeholder, will have to change
@@ -156,7 +161,7 @@ public class Constants {
         .withKA(0.0);
   }
 
-  /*
+  /**
    * Constants for the arm subsystem
    */
   public static class ArmConstants {
@@ -169,10 +174,10 @@ public class Constants {
     public static final int DEVICE_ID_ARM_CANCODER = 47;
 
     public static final SlotConfigs ELEVATOR_SLOT_CONFIGS = new SlotConfigs().withKP(0.0)
-        .withKI(0.0)
         .withKD(0.0)
         .withKS(0.0)
-        .withKV(0.0);
+        .withKV(0.0)
+        .withKA(0.0);
 
     public static final MotionMagicConfigs ELEVATOR_MOTION_MAGIC_CONFIGS = new MotionMagicConfigs()
         .withMotionMagicAcceleration(0.01)
@@ -180,14 +185,18 @@ public class Constants {
 
     public static final Current ELEVATOR_SUPPLY_CURRENT_LIMIT = Amps.of(0); // Placeholder
 
-    public static final Distance ELEVATOR_METERS_PER_REVOLUTION = Meters.of(0); // Placeholder
+    public static final Distance ELEVATOR_DISTANCE_PER_ROTATION = Meters.of(0.25); // Placeholder
 
     public static final Distance ELEVATOR_TOP_LIMIT = Meters.of(0); // Placeholder
     public static final Distance ELEVATOR_BOTTOM_LIMIT = Meters.of(0); // Placeholder
 
-    /*
-     * The position in meters the elevator has to arrive at in order to score with placeholder numbers for now
+    public static final Angle ELEVATOR_POSITION_TOLERANCE = Rotations.of(3); // Placeholder
+    public static final Angle ARM_POSITION_TOLERANCE = Degrees.of(1); // Placeholder
+
+    /**
+     * The positions in meters the elevator could travel to with placeholder numbers for now
      */
+    public static final Distance ELEVATOR_DEFAULT_HEIGHT = Meters.of(0);
     public static final Distance LEVEL_1_HEIGHT = Meters.of(0);
     public static final Distance LEVEL_2_HEIGHT = Meters.of(0);
     public static final Distance LEVEL_3_HEIGHT = Meters.of(0);
@@ -213,9 +222,13 @@ public class Constants {
     public static final MotionMagicConfigs ARM_MOTION_MAGIC_CONFIGS = new MotionMagicConfigs()
         .withMotionMagicAcceleration(0.01)
         .withMotionMagicCruiseVelocity(0.01);
+
+    public static final Distance ARM_PIVOT_LENGTH = Meters.of(0.577);
+    public static final Distance ELEVATOR_BASE_HEIGHT = Meters.of(1.0);
+
   }
 
-  /*
+  /**
    * Constants for the game piece manipulator
    */
   public static class GamePieceManipulatorConstants {
@@ -238,4 +251,21 @@ public class Constants {
 
   }
 
+  /**
+   * Constants for test mode
+   */
+  public static class TestingConstants {
+    public static final AngularVelocity INDEXER_TESTING_SPEED = RadiansPerSecond.of(2);
+    public static final AngularVelocity INDEXER_BACKWARDS_TESTING_SPEED = INDEXER_TESTING_SPEED.unaryMinus();
+    public static final AngularVelocity INDEXER_TESTING_SPEED_TOLERANCE = RotationsPerSecond.of(3);
+
+    public static final AngularVelocity MANIPULATOR_TESTING_SPEED = RadiansPerSecond.of(2);
+    public static final AngularVelocity MANIPULATOR_BACKWARDS_TESTING_SPEED = MANIPULATOR_TESTING_SPEED.unaryMinus();
+    public static final AngularVelocity MANIPULATOR_TESTING_SPEED_TOLERANCE = RotationsPerSecond.of(3);
+
+    public static final AngularVelocity ROLLER_TESTING_SPEED = RadiansPerSecond.of(5);
+    public static final AngularVelocity ROLLER_BACKWARDS_TESTING_SPEED = ROLLER_TESTING_SPEED.unaryMinus();
+
+    public static final Voltage CLIMB_TESTING_VOLTAGE = Volts.of(5);
+  }
 }
