@@ -4,8 +4,10 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
+import static frc.robot.Constants.AlgaeConstants.ROLLER_SPEED_TOLERANCE;
 import static frc.robot.Constants.CANIVORE_BUS_NAME;
 import static frc.robot.Constants.GamePieceManipulatorConstants.DEVICE_ID_MANIPULATOR_MOTOR;
 import static frc.robot.Constants.GamePieceManipulatorConstants.EJECT_ALGAE_VELOCITY;
@@ -68,6 +70,8 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
   private final VelocityTorqueCurrentFOC wheelControl = new VelocityTorqueCurrentFOC(0).withSlot(0);
   private final PositionVoltage holdControl = new PositionVoltage(0.0).withSlot(1);
 
+  private final StatusSignal<AngularVelocity> wheelVelocity = wheelMotor.getVelocity();
+
   /** Creates a new Subsytem for the Game Pieace Manipulator. */
   public GamePieceManipulatorSubsystem() {
     var motorConfig = new TalonFXConfiguration();
@@ -104,6 +108,15 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
     return manipulatorSysIdRoutine.quasistatic(direction)
         .withName("Game Piece Manipulator quasi " + direction)
         .finallyDo(this::stop);
+  }
+
+  /**
+   * Runs the manipulator wheels at any specific speed
+   * 
+   * @param speed speed to run the wheels
+   */
+  public void runManipulatorWheels(AngularVelocity speed) {
+    wheelMotor.setControl(wheelControl.withVelocity(speed));
   }
 
   /**
@@ -162,5 +175,17 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
    */
   public void stop() {
     wheelMotor.stopMotor();
+  }
+
+  /**
+   * Checks if the manipulator is spinning at the proper speed with a tolerance
+   * 
+   * @return true if the manipulator is spinning at the proper speed
+   */
+  public boolean isManipulatorAtSpeed() {
+    return wheelVelocity.refresh()
+        .getValue()
+        .minus(wheelControl.getVelocityMeasure())
+        .abs(RotationsPerSecond) <= ROLLER_SPEED_TOLERANCE.in(RotationsPerSecond);
   }
 }

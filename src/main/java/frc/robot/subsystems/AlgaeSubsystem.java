@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import static com.ctre.phoenix6.signals.NeutralModeValue.Brake;
 import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.AlgaeConstants.DEVICE_ID_CANCODER;
@@ -14,6 +15,7 @@ import static frc.robot.Constants.AlgaeConstants.DEVICE_ID_ROLLERMOTOR;
 import static frc.robot.Constants.AlgaeConstants.DEVICE_ID_WRISTMOTOR;
 import static frc.robot.Constants.AlgaeConstants.EJECT_SPEED;
 import static frc.robot.Constants.AlgaeConstants.INTAKE_SPEED;
+import static frc.robot.Constants.AlgaeConstants.ROLLER_SPEED_TOLERANCE;
 import static frc.robot.Constants.AlgaeConstants.ROLLER_STATOR_CURRENT_LIMIT;
 import static frc.robot.Constants.AlgaeConstants.ROLLER_SUPPLY_CURRENT_LIMIT;
 import static frc.robot.Constants.AlgaeConstants.SCORE_SPEED;
@@ -178,6 +180,15 @@ public class AlgaeSubsystem extends SubsystemBase {
   }
 
   /**
+   * Runs the rollers at any specific speed
+   * 
+   * @param speed speed to run the rollers
+   */
+  public void runRollers(AngularVelocity speed) {
+    rollerMotor.setControl(rollerControl.withVelocity(speed));
+  }
+
+  /**
    * Activates motor to activate rollers and intake algae
    */
   public void intake() {
@@ -237,5 +248,17 @@ public class AlgaeSubsystem extends SubsystemBase {
    */
   public void moveIntakeUp() {
     wristMotor.setControl(wristControl.withPosition(WRIST_UP_POSITION));
+  }
+
+  /**
+   * Method to check if the rollers are spinning at the proper speed with a tolerance
+   * 
+   * @return if its spinning at the proper speed as a boolean value
+   */
+  public boolean isAtRollerSpeed() {
+    return wristVelocity.refresh()
+        .getValue()
+        .minus(rollerControl.getVelocityMeasure())
+        .abs(RotationsPerSecond) <= ROLLER_SPEED_TOLERANCE.in(RotationsPerSecond);
   }
 }
