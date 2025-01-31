@@ -144,90 +144,178 @@ public class TestMode {
         .finallyDo(armSubsystem::moveArmToIntake);
   }
 
+  /**
+  * Checks if the indexer forwards test has succeeded and updates the variable accordingly
+  */
   private void updateIndexerForwardsTestResult() {
     indexerForwardsTest = indexerSubsystem.isIndexerAtSpeed();
   }
 
+  /**
+  * Checks if the indexer backwards test has succeeded and updates the variable accordingly
+  */
   private void updateIndexerBackwardsTestResult() {
     indexerBackwardsTest = indexerSubsystem.isIndexerAtSpeed();
   }
 
+  /**
+  * Checks if the manipulator forwards test has succeeded and updates the variable accordingly
+  */
   private void updateManipulatorForwardsTestResult() {
     manipulatorForwardsTest = gamePieceManipulatorSubsystem.isManipulatorAtSpeed();
   }
 
+  /**
+  * Checks if the manipulator backwards test has succeeded and updates the variable accordingly
+  */
   private void updateManipulatorBackwardsTestResult() {
     manipulatorBackwardsTest = gamePieceManipulatorSubsystem.isManipulatorAtSpeed();
   }
 
+  /**
+  * Checks if the climb test has succeeded and updates the variable accordingly
+  */
   private void updateClimbTestResult() {
     climbTest = climbSubsystem.areClimbMotorsMoving();
   }
 
+  /**
+  * Checks if the algae rollers forwards test has succeeded and updates the variable accordingly
+  */
   private void updateAlgaeRollersForwardsTestResult() {
     algaeRollersForwardsTest = algaeSubsystem.isAtRollerSpeed();
   }
 
+  /**
+  * Checks if the algae rollers backwards test has succeeded and updates the variable accordingly
+  */
   private void updateAlgaeRollersBackwardsTestResult() {
     algaeRollersBackwardsTest = algaeSubsystem.isAtRollerSpeed();
   }
 
+  /**
+  * Checks if the algae intake up test has succeeded and updates the variable accordingly
+  */
   private void updateAlgaeIntakeUpTestResult() {
     algaeIntakeUpTest = algaeSubsystem.isWristAtPosition();
   }
 
+  /**
+  * Checks if the algae intake down test has succeeded and updates the variable accordingly
+  */
   private void updateAlgaeIntakeDownTestResult() {
     algaeIntakeDownTest = algaeSubsystem.isWristAtPosition();
   }
 
+  /**
+  * Checks if the elevator test has succeeded and updates the variable accordingly
+  */
   private void updateElevatorTestResult() {
     armElevatorTest = armSubsystem.isElevatorAtPosition();
   }
 
+  /**
+  * Checks if the arm test has succeeded and updates the variable accordingly
+  */
   private void updateArmTestResults() {
     armTest = armSubsystem.isArmAtPosition();
   }
 
+  /**
+  * Method to return the result of the indexer forwards test
+  *
+  * @return the test result as a boolean value
+  */
   public boolean getIndexerForwardsTestResult() {
     return indexerForwardsTest;
   }
 
+  /**
+  * Method to return the result of the indexer backwards test
+  *
+  * @return the test result as a boolean value
+  */
   public boolean getIndexerBackwardsTestResult() {
     return indexerBackwardsTest;
   }
 
+  /**
+  * Method to return the result of the manipulator forwards test
+  *
+  * @return the test result as a boolean value
+  */
   public boolean getManipulatorForwardsTestResult() {
     return manipulatorForwardsTest;
   }
 
+  /**
+  * Method to return the result of the manipulator backwards test
+  *
+  * @return the test result as a boolean value
+  */
   public boolean getManipulatorBackwardsTestResult() {
     return manipulatorBackwardsTest;
   }
 
+  /**
+  * Method to return the result of the climb test
+  *
+  * @return the test result as a boolean value
+  */
   public boolean getClimbTestResult() {
     return climbTest;
   }
 
+  /**
+  * Method to return the result of the algae rollers forwards test
+  *
+  * @return the test result as a boolean value
+  */
   public boolean getAlgaeRollersForwardsTestResult() {
     return algaeRollersForwardsTest;
   }
 
+  /**
+  * Method to return the result of the algae rollers backwards test
+  *
+  * @return the test result as a boolean value
+  */
   public boolean getAlgaeRollersBackwardsTestResult() {
     return algaeRollersBackwardsTest;
   }
 
+  /**
+  * Method to return the result of the algae intake up test
+  *
+  * @return the test result as a boolean value
+  */
   public boolean getAlgaeIntakeUpTestResult() {
     return algaeIntakeUpTest;
   }
 
+  /**
+  * Method to return the result of the algae intake down test
+  *
+  * @return the test result as a boolean value
+  */
   public boolean getAlgaeIntakeDownTestResult() {
     return algaeIntakeDownTest;
   }
 
+  /**
+  * Method to return the result of the elevator test
+  *
+  * @return the test result as a boolean value
+  */
   public boolean getArmElevatorTestResult() {
     return armElevatorTest;
   }
 
+  /**
+  * Method to return the result of the arm test
+  *
+  * @return the test result as a boolean value
+  */
   public boolean getArmTestResult() {
     return armTest;
   }
