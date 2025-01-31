@@ -33,14 +33,12 @@ public class DrivetrainTelemetry {
 
   /**
    * Construct a telemetry object, with the specified max speed of the robot
-   *
-   * @param maxSpeed Maximum speed in meters per second
    */
-  public DrivetrainTelemetry(double maxSpeed) {
+  public DrivetrainTelemetry() {
     frequencyTimer.start();
   }
 
-  /* Accept the swerve drive state and telemeterize it to smartdashboard */
+  /* Accept the swerve drive state and telemeterize it to NetworkTables */
   public void telemeterize(SwerveDriveState state) {
     if (frequencyTimer.advanceIfElapsed(PUBLISH_FREQUENCY)) {
       /* Telemeterize the pose */

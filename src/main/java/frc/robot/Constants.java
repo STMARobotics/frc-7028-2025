@@ -28,7 +28,9 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Voltage;
+import frc.robot.generated.TunerConstants;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -42,6 +44,16 @@ import edu.wpi.first.units.measure.Voltage;
 public class Constants {
 
   public static final String CANIVORE_BUS_NAME = "canivore";
+
+  /**
+   * Constants for teleoperated driver control
+   */
+  public static class TeleopDriveConstants {
+    /** Max velocity the driver can request */
+    public static final LinearVelocity MAX_TELEOP_VELOCITY = TunerConstants.kSpeedAt12Volts;
+    /** Max angular velicity the driver can request */
+    public static final AngularVelocity MAX_TELEOP_ANGULAR_VELOCITY = RotationsPerSecond.of(1.25);
+  }
 
   /**
    * Constants for vision processing
