@@ -91,8 +91,13 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         SignalLogger.writeDouble("Rotational_Rate", output.in(Volts));
       }, null, this));
 
-  /* The SysId routine to test */
-  private SysIdRoutine m_sysIdRoutineToApply = m_sysIdRoutineTranslation;
+  private final SysIdRoutine slipSysIdRoutine = new SysIdRoutine(
+      new SysIdRoutine.Config(
+          Volts.of(0.25).per(Second),
+          null,
+          null,
+          state -> SignalLogger.writeString("SysIdSlip_State", state.toString())),
+      new SysIdRoutine.Mechanism((volts) -> setControl(m_translationCharacterization.withVolts(volts)), null, this));
 
   /**
    * Constructs a CTRE SwerveDrivetrain using the specified constants.
@@ -208,25 +213,72 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   }
 
   /**
-   * Runs the SysId Quasistatic test in the given direction for the routine
-   * specified by {@link #m_sysIdRoutineToApply}.
+   * Runs the SysId Quasistatic test in the given direction for the translation routine
    *
    * @param direction Direction of the SysId Quasistatic test
    * @return Command to run
    */
-  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-    return m_sysIdRoutineToApply.quasistatic(direction);
+  public Command sysIdTranslationQuasiCommand(SysIdRoutine.Direction direction) {
+    return m_sysIdRoutineTranslation.quasistatic(direction).withName("Translation dynam " + direction);
   }
 
   /**
-   * Runs the SysId Dynamic test in the given direction for the routine
-   * specified by {@link #m_sysIdRoutineToApply}.
+   * Runs the SysId Dynamic test in the given direction for the translation routine
    *
    * @param direction Direction of the SysId Dynamic test
    * @return Command to run
    */
-  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-    return m_sysIdRoutineToApply.dynamic(direction);
+  public Command sysIdTranslationDynamCommand(SysIdRoutine.Direction direction) {
+    return m_sysIdRoutineTranslation.dynamic(direction).withName("Translation dynam " + direction);
+  }
+
+  /**
+   * Runs the SysId Quasistatic test in the given direction for the steer routine
+   *
+   * @param direction Direction of the SysId Quasistatic test
+   * @return Command to run
+   */
+  public Command sysIdSteerQuasiCommand(SysIdRoutine.Direction direction) {
+    return m_sysIdRoutineSteer.quasistatic(direction).withName("Steer dynam " + direction);
+  }
+
+  /**
+   * Runs the SysId Dynamic test in the given direction for the steer routine
+   *
+   * @param direction Direction of the SysId Dynamic test
+   * @return Command to run
+   */
+  public Command sysIdSteerDynamCommand(SysIdRoutine.Direction direction) {
+    return m_sysIdRoutineSteer.dynamic(direction).withName("Steer dynam " + direction);
+  }
+
+  /**
+   * Runs the SysId Quasistatic test in the given direction for the rotation routine
+   *
+   * @param direction Direction of the SysId Quasistatic test
+   * @return Command to run
+   */
+  public Command sysIdRotationQuasiCommand(SysIdRoutine.Direction direction) {
+    return m_sysIdRoutineRotation.quasistatic(direction).withName("Rotation dynam " + direction);
+  }
+
+  /**
+   * Runs the SysId Dynamic test in the given direction for the rotation routine
+   *
+   * @param direction Direction of the SysId Dynamic test
+   * @return Command to run
+   */
+  public Command sysIdRotationDynamCommand(SysIdRoutine.Direction direction) {
+    return m_sysIdRoutineRotation.dynamic(direction).withName("Rotation dynam " + direction);
+  }
+
+  /**
+   * Runs the SysId test for the slip routine
+   *
+   * @return Command to run
+   */
+  public Command sysIdDriveSlipCommand() {
+    return slipSysIdRoutine.quasistatic(SysIdRoutine.Direction.kForward).withName("SysId Drive Slip");
   }
 
   @Override
