@@ -222,99 +222,99 @@ public class TestMode {
   }
 
   /**
-   * Method to return the result of the indexer forwards test
+   * Gets the result of the indexer forwards test
    *
-   * @return the test result as a boolean value
+   * @return true if the indexer forwards test has been run successfully, otherwise false
    */
   public boolean getIndexerForwardsTestResult() {
     return indexerForwardsTest;
   }
 
   /**
-   * Method to return the result of the indexer backwards test
+   * Gets the result of the indexer backwards test
    *
-   * @return the test result as a boolean value
+   * @return true if the indexer backwards test has been run successfully, otherwise false
    */
   public boolean getIndexerBackwardsTestResult() {
     return indexerBackwardsTest;
   }
 
   /**
-   * Method to return the result of the manipulator forwards test
+   * Gets the result of the manipulator forwards test
    *
-   * @return the test result as a boolean value
+   * @return true if the manipulator forwards test has been run successfully, otherwise false
    */
   public boolean getManipulatorForwardsTestResult() {
     return manipulatorForwardsTest;
   }
 
   /**
-   * Method to return the result of the manipulator backwards test
+   * Gets the result of the manipulator backwards test
    *
-   * @return the test result as a boolean value
+   * @return true if the manipulator backwards test has been run successfully, otherwise false
    */
   public boolean getManipulatorBackwardsTestResult() {
     return manipulatorBackwardsTest;
   }
 
   /**
-   * Method to return the result of the climb test
+   * Gets the result of the climb test
    *
-   * @return the test result as a boolean value
+   * @return true if the climb test has been run successfully, otherwise false
    */
   public boolean getClimbTestResult() {
     return climbTest;
   }
 
   /**
-   * Method to return the result of the algae rollers forwards test
+   * Gets the result of the algae rollers forwards test
    *
-   * @return the test result as a boolean value
+   * @return true if the algae rollers forwards test has been run successfully, otherwise false
    */
   public boolean getAlgaeRollersForwardsTestResult() {
     return algaeRollersForwardsTest;
   }
 
   /**
-   * Method to return the result of the algae rollers backwards test
+   * Gets the result of the algae rollers backwards test
    *
-   * @return the test result as a boolean value
+   * @return true if the algae rollers backwards test has been run successfully, otherwise false
    */
   public boolean getAlgaeRollersBackwardsTestResult() {
     return algaeRollersBackwardsTest;
   }
 
   /**
-   * Method to return the result of the algae intake up test
+   * Gets the result of the algae intake up test
    *
-   * @return the test result as a boolean value
+   * @return true if the algae intake up test has been run successfully, otherwise false
    */
   public boolean getAlgaeIntakeUpTestResult() {
     return algaeIntakeUpTest;
   }
 
   /**
-   * Method to return the result of the algae intake down test
+   * Gets the result of the algae intake down test
    *
-   * @return the test result as a boolean value
+   * @return true if the algae intake down test has been run successfully, otherwise false
    */
   public boolean getAlgaeIntakeDownTestResult() {
     return algaeIntakeDownTest;
   }
 
   /**
-   * Method to return the result of the elevator test
+   * Gets the result of the elevator test
    *
-   * @return the test result as a boolean value
+   * @return true if the elevator test has been run successfully, otherwise false
    */
   public boolean getArmElevatorTestResult() {
     return armElevatorTest;
   }
 
   /**
-   * Method to return the result of the arm test
+   * Gets the result of the arm test
    *
-   * @return the test result as a boolean value
+   * @return true if the arm test has been run successfully, otherwise false
    */
   public boolean getArmTestResult() {
     return armTest;
