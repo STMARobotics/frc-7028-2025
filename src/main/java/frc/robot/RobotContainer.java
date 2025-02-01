@@ -42,6 +42,7 @@ public class RobotContainer {
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
   private final DrivetrainTelemetry drivetrainTelemetry = new DrivetrainTelemetry();
   private final PhotonVisionCommand visionCommand = new PhotonVisionCommand(drivetrain::addVisionMeasurement);
+  private final TestMode testMode = new TestMode();
 
   /* Path follower */
   private final SendableChooser<Command> autoChooser;
@@ -122,5 +123,25 @@ public class RobotContainer {
     tab.add("Manipulator Quasi Reverse", gamePieceManipulatorSubsystem.sysIdManipulatorQuasistaticCommand(kReverse));
     tab.add("Manipulator Dynam Forward", gamePieceManipulatorSubsystem.sysIdManipulatorDynamicCommand(kForward));
     tab.add("Manipulator Dynam Reverse", gamePieceManipulatorSubsystem.sysIdManipulatorDynamicCommand(kReverse));
+  }
+
+  /**
+   * Creates the testing tab in Elastic along with all the test result displays
+   */
+  public void populateTestingDashboard() {
+    var tab = Shuffleboard.getTab("Testing");
+
+    tab.add("Run Tests", testMode.testCommand());
+
+    tab.addBoolean("Indexer Fowards Test", () -> testMode.getIndexerForwardsTestResult());
+    tab.addBoolean("Indexer Backwards Test", () -> testMode.getIndexerBackwardsTestResult());
+    tab.addBoolean("Manipulator Forwards Test", () -> testMode.getManipulatorForwardsTestResult());
+    tab.addBoolean("Manipulator Backwards Test", () -> testMode.getManipulatorBackwardsTestResult());
+    tab.addBoolean("Algae Rollers Forwards Test", () -> testMode.getAlgaeRollersForwardsTestResult());
+    tab.addBoolean("Algae Rollers Backwards Test", () -> testMode.getAlgaeRollersBackwardsTestResult());
+    tab.addBoolean("Algae Intake Up Test", () -> testMode.getAlgaeIntakeUpTestResult());
+    tab.addBoolean("Algae Intake Down Test", () -> testMode.getAlgaeIntakeDownTestResult());
+    tab.addBoolean("Arm Elevator Test", () -> testMode.getArmElevatorTestResult());
+    tab.addBoolean("Arm Test", () -> testMode.getArmTestResult());
   }
 }

@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
   private boolean hasPopulatedSysIdDashboard = false;
+  private boolean hasPopulatedTestingDashboard = false;
 
   @Logged
   private final RobotContainer m_robotContainer;
@@ -86,6 +87,10 @@ public class Robot extends TimedRobot {
     if (!hasPopulatedSysIdDashboard) {
       m_robotContainer.populateSysIdDashboard();
       hasPopulatedSysIdDashboard = true;
+    }
+    if (!hasPopulatedTestingDashboard) {
+      m_robotContainer.populateTestingDashboard();
+      hasPopulatedTestingDashboard = true;
     }
   }
 
