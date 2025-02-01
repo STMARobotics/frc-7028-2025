@@ -23,6 +23,7 @@ import frc.robot.controls.XBoxControlBindings;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.GamePieceManipulatorSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 
 @Logged(strategy = Logged.Strategy.OPT_IN)
@@ -35,6 +36,7 @@ public class RobotContainer {
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
 
+  private final GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem = new GamePieceManipulatorSubsystem();
   private final ArmSubsystem armSubsystem = new ArmSubsystem();
   private final IndexerSubsystem indexerSubsystem = new IndexerSubsystem();
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
@@ -76,32 +78,51 @@ public class RobotContainer {
     return autoChooser.getSelected();
   }
 
-  public void indexerPopulateDashboard() {
-    var tab = Shuffleboard.getTab("Indexer SysId");
-    int columnIndex = 0;
+  public void populateSysIdDashboard() {
+    var tab = Shuffleboard.getTab("SysId");
 
-    // Column 0 indexer
-    tab.add("Indexer Quasi Forward", indexerSubsystem.sysIdBeltQuasistaticCommand(kForward))
-        .withPosition(columnIndex, 0);
-    tab.add("Indexer Quasi Reverse", indexerSubsystem.sysIdBeltQuasistaticCommand(kReverse))
-        .withPosition(columnIndex, 1);
-    tab.add("Indexer Dynam Forward", indexerSubsystem.sysIdBeltDynamicCommand(kForward)).withPosition(columnIndex, 2);
-    tab.add("Indexer Dynam Reverse", indexerSubsystem.sysIdBeltDynamicCommand(kReverse)).withPosition(columnIndex, 3);
-  }
+    // Drive
+    tab.add("Drive Quasi Fwd", drivetrain.sysIdTranslationQuasiCommand(kForward));
+    tab.add("Drive Quasi Rev", drivetrain.sysIdTranslationQuasiCommand(kReverse));
+    tab.add("Drive Dynam Fwd", drivetrain.sysIdTranslationDynamCommand(kForward));
+    tab.add("Drive Dynam Rev", drivetrain.sysIdTranslationDynamCommand(kReverse));
+    tab.add("Slip Test", drivetrain.sysIdDriveSlipCommand());
 
-  public void elevatorPopulateDashboard() {
-    var tab = Shuffleboard.getTab("Elevator SysId");
-    int columnIndex = 0;
+    // Steer
+    tab.add("Steer Quasi Fwd", drivetrain.sysIdSteerQuasiCommand(kForward));
+    tab.add("Steer Quasi Rev", drivetrain.sysIdSteerQuasiCommand(kReverse));
+    tab.add("Steer Dynam Fwd", drivetrain.sysIdSteerDynamCommand(kForward));
+    tab.add("Steer Dynam Rev", drivetrain.sysIdSteerDynamCommand(kReverse));
 
-    // Column 1 Elevator motor 1
-    tab.add("Elevator Quasi Forward", armSubsystem.sysIdElevatorQuasistaticCommand(kForward))
-        .withPosition(columnIndex + 1, 0);
-    tab.add("Elevator Quasi Reverse", armSubsystem.sysIdElevatorQuasistaticCommand(kReverse))
-        .withPosition(columnIndex + 1, 1);
-    tab.add("Elevator Dynam Forward", armSubsystem.sysIdElevatorDynamicCommand(kForward))
-        .withPosition(columnIndex + 1, 2);
-    tab.add("Elevator Dynam Reverse", armSubsystem.sysIdElevatorDynamicCommand(kReverse))
-        .withPosition(columnIndex + 1, 3);
+    // Rotation
+    tab.add("Rotate Quasi Fwd", drivetrain.sysIdRotationQuasiCommand(kForward));
+    tab.add("Rotate Quasi Rev", drivetrain.sysIdRotationQuasiCommand(kReverse));
+    tab.add("Rotate Dynam Fwd", drivetrain.sysIdRotationDynamCommand(kForward));
+    tab.add("Rotate Dynam Rev", drivetrain.sysIdRotationDynamCommand(kReverse));
+
+    // Indexer
+    tab.add("Indexer Quasi Forward", indexerSubsystem.sysIdBeltQuasistaticCommand(kForward));
+    tab.add("Indexer Quasi Reverse", indexerSubsystem.sysIdBeltQuasistaticCommand(kReverse));
+    tab.add("Indexer Dynam Forward", indexerSubsystem.sysIdBeltDynamicCommand(kForward));
+    tab.add("Indexer Dynam Reverse", indexerSubsystem.sysIdBeltDynamicCommand(kReverse));
+
+    // Elevator
+    tab.add("Elevator Quasi Forward", armSubsystem.sysIdElevatorQuasistaticCommand(kForward));
+    tab.add("Elevator Quasi Reverse", armSubsystem.sysIdElevatorQuasistaticCommand(kReverse));
+    tab.add("Elevator Dynam Forward", armSubsystem.sysIdElevatorDynamicCommand(kForward));
+    tab.add("Elevator Dynam Reverse", armSubsystem.sysIdElevatorDynamicCommand(kReverse));
+
+    // Arm
+    tab.add("Arm Quasi Forward", armSubsystem.sysIdArmQuasistaticCommand(kForward));
+    tab.add("Arm Quasi Reverse", armSubsystem.sysIdArmQuasistaticCommand(kReverse));
+    tab.add("Arm Dynam Forward", armSubsystem.sysIdArmDynamicCommand(kForward));
+    tab.add("Arm Dynam Reverse", armSubsystem.sysIdArmDynamicCommand(kReverse));
+
+    // Manipulator
+    tab.add("Manipulator Quasi Forward", gamePieceManipulatorSubsystem.sysIdManipulatorQuasistaticCommand(kForward));
+    tab.add("Manipulator Quasi Reverse", gamePieceManipulatorSubsystem.sysIdManipulatorQuasistaticCommand(kReverse));
+    tab.add("Manipulator Dynam Forward", gamePieceManipulatorSubsystem.sysIdManipulatorDynamicCommand(kForward));
+    tab.add("Manipulator Dynam Reverse", gamePieceManipulatorSubsystem.sysIdManipulatorDynamicCommand(kReverse));
   }
 
   /**
