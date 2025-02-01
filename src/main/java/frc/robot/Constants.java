@@ -3,6 +3,7 @@ package frc.robot;
 import static com.ctre.phoenix6.signals.GravityTypeValue.Arm_Cosine;
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Millimeters;
 import static edu.wpi.first.units.Units.Radian;
@@ -188,16 +189,21 @@ public class Constants {
     public static final SlotConfigs ELEVATOR_SLOT_CONFIGS = new SlotConfigs().withKP(0.0)
         .withKD(0.0)
         .withKS(0.0)
-        .withKV(0.0)
-        .withKA(0.0);
+        .withKG(0.34) // Volts
+        .withKV(2.22) // V*s/m
+        .withKA(0.05); // V*s^2/m
 
     public static final MotionMagicConfigs ELEVATOR_MOTION_MAGIC_CONFIGS = new MotionMagicConfigs()
         .withMotionMagicAcceleration(0.01)
         .withMotionMagicCruiseVelocity(0.01);
 
-    public static final Current ELEVATOR_SUPPLY_CURRENT_LIMIT = Amps.of(0); // Placeholder
+    public static final Current ELEVATOR_SUPPLY_CURRENT_LIMIT = Amps.of(80);
 
-    public static final Distance ELEVATOR_DISTANCE_PER_ROTATION = Meters.of(0.25); // Placeholder
+    public static final double ELEVATOR_ROTOR_GEAR_RATIO = 2.85714286;
+    public static final Distance ELEVATOR_GEAR_DIAMETER = Inches.of(2);
+    public static final Distance ELEVATOR_GEAR_CIRCUMFERENCE = ELEVATOR_GEAR_DIAMETER.times(Math.PI);
+    public static final Distance ELEVATOR_DISTANCE_PER_ROTATION = ELEVATOR_GEAR_CIRCUMFERENCE
+        .div(ELEVATOR_ROTOR_GEAR_RATIO);
 
     public static final Distance ELEVATOR_TOP_LIMIT = Meters.of(0); // Placeholder
     public static final Distance ELEVATOR_BOTTOM_LIMIT = Meters.of(0); // Placeholder
@@ -221,15 +227,16 @@ public class Constants {
 
     public static final Current ARM_STATOR_CURRENT_LIMIT = Amps.of(0);
     public static final Current ARM_SUPPLY_CURRENT_LIMIT = Amps.of(0);
-    public static final double ARM_ROTOR_TO_SENSOR_RATIO = 0;
+    public static final double ARM_ROTOR_TO_SENSOR_RATIO = 45;
 
     public static final Angle ARM_MAGNETIC_OFFSET = Rotations.of(0.0);
 
     public static final SlotConfigs ARM_SLOT_CONFIGS = new SlotConfigs().withKP(0.0)
         .withKD(0.0)
         .withKS(0.0)
-        .withKV(0.0)
-        .withKA(0.0);
+        .withKG(0.12) // Volts
+        .withKV(5.59) // V*s/rotation
+        .withKA(0.03); // V*s^2/rotation
 
     public static final MotionMagicConfigs ARM_MOTION_MAGIC_CONFIGS = new MotionMagicConfigs()
         .withMotionMagicAcceleration(0.01)
