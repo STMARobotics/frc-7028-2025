@@ -134,9 +134,8 @@ public class RobotContainer {
    * Creates the testing tab in Elastic along with all the test result displays
    */
   public void populateTestingDashboard() {
-    var tab = Shuffleboard.getTab("Testing");
+    SmartDashboard.putData("Run Tests", testMode.testCommand());
 
-    tab.add("Run tests", testMode.testCommand());
     SmartDashboard.putBoolean("Indexer Fowards Test", testMode.getIndexerForwardsTestResult());
     SmartDashboard.putBoolean("Indexer Backwards Test", testMode.getIndexerBackwardsTestResult());
     SmartDashboard.putBoolean("Manipulator Forwards Test", testMode.getManipulatorForwardsTestResult());
