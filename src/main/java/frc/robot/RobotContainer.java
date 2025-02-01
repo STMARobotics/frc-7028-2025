@@ -15,7 +15,6 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -25,6 +24,7 @@ import frc.robot.commands.PhotonVisionCommand;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.GamePieceManipulatorSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 
 @Logged(strategy = Logged.Strategy.OPT_IN)
@@ -44,6 +44,7 @@ public class RobotContainer {
 
   private final CommandXboxController joystick = new CommandXboxController(0);
 
+  private final GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem = new GamePieceManipulatorSubsystem();
   private final ArmSubsystem armSubsystem = new ArmSubsystem();
   private final IndexerSubsystem indexerSubsystem = new IndexerSubsystem();
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
@@ -101,31 +102,36 @@ public class RobotContainer {
     return autoChooser.getSelected();
   }
 
-  public void indexerPopulateDashboard() {
-    var tab = Shuffleboard.getTab("Indexer SysId");
-    int columnIndex = 0;
+  public void populateSysIdDashboard() {
 
-    // Column 0 indexer
-    tab.add("Indexer Quasi Forward", indexerSubsystem.sysIdBeltQuasistaticCommand(kForward))
-        .withPosition(columnIndex, 0);
-    tab.add("Indexer Quasi Reverse", indexerSubsystem.sysIdBeltQuasistaticCommand(kReverse))
-        .withPosition(columnIndex, 1);
-    tab.add("Indexer Dynam Forward", indexerSubsystem.sysIdBeltDynamicCommand(kForward)).withPosition(columnIndex, 2);
-    tab.add("Indexer Dynam Reverse", indexerSubsystem.sysIdBeltDynamicCommand(kReverse)).withPosition(columnIndex, 3);
-  }
+    // Indexer
+    SmartDashboard.putData("Indexer Quasi Forward", indexerSubsystem.sysIdBeltQuasistaticCommand(kForward));
+    SmartDashboard.putData("Indexer Quasi Reverse", indexerSubsystem.sysIdBeltQuasistaticCommand(kReverse));
+    SmartDashboard.putData("Indexer Dynam Forward", indexerSubsystem.sysIdBeltDynamicCommand(kForward));
+    SmartDashboard.putData("Indexer Dynam Reverse", indexerSubsystem.sysIdBeltDynamicCommand(kReverse));
 
-  public void elevatorPopulateDashboard() {
-    var tab = Shuffleboard.getTab("Elevator SysId");
-    int columnIndex = 0;
+    // Elevator
+    SmartDashboard.putData("Elevator Quasi Forward", armSubsystem.sysIdElevatorQuasistaticCommand(kForward));
+    SmartDashboard.putData("Elevator Quasi Reverse", armSubsystem.sysIdElevatorQuasistaticCommand(kReverse));
+    SmartDashboard.putData("Elevator Dynam Forward", armSubsystem.sysIdElevatorDynamicCommand(kForward));
+    SmartDashboard.putData("Elevator Dynam Reverse", armSubsystem.sysIdElevatorDynamicCommand(kReverse));
 
-    // Column 1 Elevator motor 1
-    tab.add("Elevator Quasi Forward", armSubsystem.sysIdElevatorQuasistaticCommand(kForward))
-        .withPosition(columnIndex + 1, 0);
-    tab.add("Elevator Quasi Reverse", armSubsystem.sysIdElevatorQuasistaticCommand(kReverse))
-        .withPosition(columnIndex + 1, 1);
-    tab.add("Elevator Dynam Forward", armSubsystem.sysIdElevatorDynamicCommand(kForward))
-        .withPosition(columnIndex + 1, 2);
-    tab.add("Elevator Dynam Reverse", armSubsystem.sysIdElevatorDynamicCommand(kReverse))
-        .withPosition(columnIndex + 1, 3);
+    // Arm
+    SmartDashboard.putData("Arm Quasi Forward", armSubsystem.sysIdArmQuasistaticCommand(kForward));
+    SmartDashboard.putData("Arm Quasi Reverse", armSubsystem.sysIdArmQuasistaticCommand(kReverse));
+    SmartDashboard.putData("Arm Dynam Forward", armSubsystem.sysIdArmDynamicCommand(kForward));
+    SmartDashboard.putData("Arm Dynam Reverse", armSubsystem.sysIdArmDynamicCommand(kReverse));
+
+    // Manipulator
+    SmartDashboard.putData(
+        "Manipulator Quasi Forward",
+          gamePieceManipulatorSubsystem.sysIdManipulatorQuasistaticCommand(kForward));
+    SmartDashboard.putData(
+        "Manipulator Quasi Reverse",
+          gamePieceManipulatorSubsystem.sysIdManipulatorQuasistaticCommand(kReverse));
+    SmartDashboard
+        .putData("Manipulator Dynam Forward", gamePieceManipulatorSubsystem.sysIdManipulatorDynamicCommand(kForward));
+    SmartDashboard
+        .putData("Manipulator Dynam Reverse", gamePieceManipulatorSubsystem.sysIdManipulatorDynamicCommand(kReverse));
   }
 }
