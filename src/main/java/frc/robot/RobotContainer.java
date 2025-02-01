@@ -96,7 +96,7 @@ public class RobotContainer {
 
   public void populateSysIdDashboard() {
 
-    // Translation
+    // Drive
     SmartDashboard.putData("Drive Quasi Fwd", drivetrain.sysIdTranslationQuasiCommand(kForward));
     SmartDashboard.putData("Drive Quasi Rev", drivetrain.sysIdTranslationQuasiCommand(kReverse));
     SmartDashboard.putData("Drive Dynam Fwd", drivetrain.sysIdTranslationDynamCommand(kForward));
