@@ -137,15 +137,15 @@ public class RobotContainer {
     var tab = Shuffleboard.getTab("Testing");
 
     tab.add("Run tests", testMode.testCommand());
-    tab.addBoolean("Indexer Fowards Test", () -> testMode.getIndexerForwardsTestResult());
-    tab.addBoolean("Indexer Backwards Test", () -> testMode.getIndexerBackwardsTestResult());
-    tab.addBoolean("Manipulator Forwards Test", () -> testMode.getManipulatorForwardsTestResult());
-    tab.addBoolean("Manipulator Backwards Test", () -> testMode.getManipulatorBackwardsTestResult());
-    tab.addBoolean("Algae Rollers Forwards Test", () -> testMode.getAlgaeRollersForwardsTestResult());
-    tab.addBoolean("Algae Rollers Backwards Test", () -> testMode.getAlgaeRollersBackwardsTestResult());
-    tab.addBoolean("Algae Intake Up Test", () -> testMode.getAlgaeIntakeUpTestResult());
-    tab.addBoolean("Algae Intake Down Test", () -> testMode.getAlgaeIntakeDownTestResult());
-    tab.addBoolean("Arm Elevator Test", () -> testMode.getArmElevatorTestResult());
-    tab.addBoolean("Arm Test", () -> testMode.getArmTestResult());
+    SmartDashboard.putBoolean("Indexer Fowards Test", testMode.getIndexerForwardsTestResult());
+    SmartDashboard.putBoolean("Indexer Backwards Test", testMode.getIndexerBackwardsTestResult());
+    SmartDashboard.putBoolean("Manipulator Forwards Test", testMode.getManipulatorForwardsTestResult());
+    SmartDashboard.putBoolean("Manipulator Backwards Test", testMode.getManipulatorBackwardsTestResult());
+    SmartDashboard.putBoolean("Algae Rollers Forwards Test", testMode.getAlgaeRollersForwardsTestResult());
+    SmartDashboard.putBoolean("Algae Rollers Backwards Test", testMode.getAlgaeRollersBackwardsTestResult());
+    SmartDashboard.putBoolean("Algae Intake Up Test", testMode.getAlgaeIntakeUpTestResult());
+    SmartDashboard.putBoolean("Algae Intake Down Test", testMode.getAlgaeIntakeDownTestResult());
+    SmartDashboard.putBoolean("Arm Elevator Test", testMode.getArmElevatorTestResult());
+    SmartDashboard.putBoolean("Arm Test", testMode.getArmTestResult());
   }
 }
