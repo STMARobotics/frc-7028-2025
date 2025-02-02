@@ -24,7 +24,6 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.GamePieceManipulatorSubsystem;
-import frc.robot.subsystems.IndexerSubsystem;
 
 @Logged(strategy = Logged.Strategy.OPT_IN)
 public class RobotContainer {
@@ -38,7 +37,6 @@ public class RobotContainer {
 
   private final GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem = new GamePieceManipulatorSubsystem();
   private final ArmSubsystem armSubsystem = new ArmSubsystem();
-  private final IndexerSubsystem indexerSubsystem = new IndexerSubsystem();
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
   private final DrivetrainTelemetry drivetrainTelemetry = new DrivetrainTelemetry();
   private final PhotonVisionCommand visionCommand = new PhotonVisionCommand(drivetrain::addVisionMeasurement);
@@ -100,12 +98,6 @@ public class RobotContainer {
     tab.add("Rotate Dynam Fwd", drivetrain.sysIdRotationDynamCommand(kForward));
     tab.add("Rotate Dynam Rev", drivetrain.sysIdRotationDynamCommand(kReverse));
 
-    // Indexer
-    tab.add("Indexer Quasi Forward", indexerSubsystem.sysIdBeltQuasistaticCommand(kForward));
-    tab.add("Indexer Quasi Reverse", indexerSubsystem.sysIdBeltQuasistaticCommand(kReverse));
-    tab.add("Indexer Dynam Forward", indexerSubsystem.sysIdBeltDynamicCommand(kForward));
-    tab.add("Indexer Dynam Reverse", indexerSubsystem.sysIdBeltDynamicCommand(kReverse));
-
     // Elevator
     tab.add("Elevator Quasi Forward", armSubsystem.sysIdElevatorQuasistaticCommand(kForward));
     tab.add("Elevator Quasi Reverse", armSubsystem.sysIdElevatorQuasistaticCommand(kReverse));
@@ -133,14 +125,8 @@ public class RobotContainer {
 
     tab.add("Run Tests", testMode.testCommand());
 
-    tab.addBoolean("Indexer Fowards Test", () -> testMode.getIndexerForwardsTestResult());
-    tab.addBoolean("Indexer Backwards Test", () -> testMode.getIndexerBackwardsTestResult());
     tab.addBoolean("Manipulator Forwards Test", () -> testMode.getManipulatorForwardsTestResult());
     tab.addBoolean("Manipulator Backwards Test", () -> testMode.getManipulatorBackwardsTestResult());
-    tab.addBoolean("Algae Rollers Forwards Test", () -> testMode.getAlgaeRollersForwardsTestResult());
-    tab.addBoolean("Algae Rollers Backwards Test", () -> testMode.getAlgaeRollersBackwardsTestResult());
-    tab.addBoolean("Algae Intake Up Test", () -> testMode.getAlgaeIntakeUpTestResult());
-    tab.addBoolean("Algae Intake Down Test", () -> testMode.getAlgaeIntakeDownTestResult());
     tab.addBoolean("Arm Elevator Test", () -> testMode.getArmElevatorTestResult());
     tab.addBoolean("Arm Test", () -> testMode.getArmTestResult());
   }

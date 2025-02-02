@@ -1,6 +1,5 @@
 package frc.robot;
 
-import static com.ctre.phoenix6.signals.GravityTypeValue.Arm_Cosine;
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
@@ -11,7 +10,6 @@ import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
-import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
@@ -102,79 +100,6 @@ public class Constants {
   }
 
   /**
-   * Constants for the algae subsystem
-   */
-  public static class AlgaeConstants {
-    public static final int DEVICE_ID_ROLLERMOTOR = 40;
-    public static final int DEVICE_ID_WRISTMOTOR = 45;
-    public static final int DEVICE_ID_CANRANGE = 46;
-    public static final int DEVICE_ID_CANCODER = 47;
-
-    public static final Angle WRIST_ENCODER_OFFSET = Rotations.of(0.0);
-
-    public static final Current WRIST_STATOR_CURRENT_LIMIT = Amps.of(100);
-    public static final Current WRIST_SUPPLY_CURRENT_LIMIT = Amps.of(40);
-    public static final double WRIST_ROTOR_TO_SENSOR_RATIO = 1; // TODO Need to get this from design team
-
-    public static final Angle WRIST_SOFT_LIMIT_FORWARD = Rotations.of(0.4);
-    public static final Angle WRIST_SOFT_LIMIT_REVERSE = Rotations.of(0.0);
-
-    // roller constants
-    public static final AngularVelocity INTAKE_SPEED = RadiansPerSecond.of(5); // 5 is probably a wonky number
-    public static final AngularVelocity EJECT_SPEED = RadiansPerSecond.of(-5);
-    public static final AngularVelocity SCORE_SPEED = RadiansPerSecond.of(-5); // score speed probably lower number
-
-    // wrist constants
-    public static final AngularVelocity WRIST_DOWN_SPEED = RadiansPerSecond.of(-5);
-    public static final AngularVelocity WRIST_UP_SPEED = RadiansPerSecond.of(5);
-    public static final AngularVelocity ROLLER_SPEED_TOLERANCE = RotationsPerSecond.of(3);
-
-    // numbers are probably wonky here
-    public static final Angle WRIST_DOWN_POSITION = Degrees.of(180);
-    public static final Angle WRIST_UP_POSITION = Degrees.of(90);
-    public static final Angle WRIST_PROCESSOR_POSITION = Rotations.of(0.2);
-    public static final Angle WRIST_TOLERANCE = Degrees.of(1);
-
-    public static final SlotConfigs WRIST_SLOT_CONFIGS = new SlotConfigs().withGravityType(Arm_Cosine)
-        .withKP(0.0)
-        .withKD(0.0)
-        .withKS(0.0)
-        .withKV(0.0)
-        .withKA(0.0);
-
-    public static final SlotConfigs ROLLER_SLOT_CONFIGS = new SlotConfigs().withKP(0.0).withKD(0.0).withKS(0.0);
-
-    public static final MotionMagicConfigs WRIST_MOTION_MAGIC_CONFIGS = new MotionMagicConfigs()
-        .withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(5))
-        .withMotionMagicCruiseVelocity(RotationsPerSecond.of(5));
-
-    public static final Current ROLLER_STATOR_CURRENT_LIMIT = Amps.of(100);
-    public static final Current ROLLER_SUPPLY_CURRENT_LIMIT = Amps.of(40);
-
-  }
-
-  /**
-   * Constants for the indexer subsystem
-   */
-  public static class IndexerConstants {
-    public static final int DEVICE_ID_BELT = 70;
-
-    public static final AngularVelocity INTAKE_VELOCITY = RadiansPerSecond.of(1);
-    public static final AngularVelocity SCORE_VELOCITY_LEVEL_1 = RadiansPerSecond.of(-1);
-    public static final AngularVelocity EJECT_VELOCITY = RadiansPerSecond.of(-2);
-    public static final AngularVelocity INDEXER_SPEED_TOLERANCE = RotationsPerSecond.of(3);
-
-    public static final Current TORQUE_CURRENT_LIMIT = Amps.of(100);
-    public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(10); // Placeholder, will have to change
-
-    public static final SlotConfigs SLOT_CONFIGS = new SlotConfigs().withKP(0.0)
-        .withKD(0.0)
-        .withKS(0.0)
-        .withKV(0.0)
-        .withKA(0.0);
-  }
-
-  /**
    * Constants for the arm subsystem
    */
   public static class ArmConstants {
@@ -258,6 +183,8 @@ public class Constants {
     public static final AngularVelocity INTAKE_ALGAE_VELOCITY = RadiansPerSecond.of(5);
     public static final AngularVelocity EJECT_ALGAE_VELOCITY = RadiansPerSecond.of(-5);
     public static final AngularVelocity SCORE_ALGAE_VELOCITY = RadiansPerSecond.of(-5);
+
+    public static final AngularVelocity ROLLER_SPEED_TOLERANCE = RotationsPerSecond.of(3);
 
     public static final int DEVICE_ID_MANIPULATOR_MOTOR = 50;
 
