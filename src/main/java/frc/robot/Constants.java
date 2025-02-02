@@ -3,6 +3,7 @@ package frc.robot;
 import static com.ctre.phoenix6.signals.GravityTypeValue.Arm_Cosine;
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Millimeters;
 import static edu.wpi.first.units.Units.Radian;
@@ -28,7 +29,9 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Voltage;
+import frc.robot.generated.TunerConstants;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -43,6 +46,19 @@ public class Constants {
 
   public static final String CANIVORE_BUS_NAME = "canivore";
 
+  /**
+   * Constants for teleoperated driver control
+   */
+  public static class TeleopDriveConstants {
+    /** Max velocity the driver can request */
+    public static final LinearVelocity MAX_TELEOP_VELOCITY = TunerConstants.kSpeedAt12Volts;
+    /** Max angular velicity the driver can request */
+    public static final AngularVelocity MAX_TELEOP_ANGULAR_VELOCITY = RotationsPerSecond.of(1.25);
+  }
+
+  /**
+   * Constants for vision processing
+   */
   public static class VisionConstants {
     public static final String kCameraName = "YOUR CAMERA NAME";
     // Cam mounted facing forward, half a meter forward of center, half a meter up from center.
@@ -51,7 +67,7 @@ public class Constants {
         new Rotation3d(0, 0, 0));
 
     // The layout of the AprilTags on the field
-    public static final AprilTagFieldLayout kTagLayout = AprilTagFields.kDefaultField.loadAprilTagLayoutField();
+    public static final AprilTagFieldLayout kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
 
     // The standard deviations of our vision estimated poses, which affect correction rate
     // (Fake values. Experiment and determine estimation noise on an actual robot.)
@@ -173,16 +189,21 @@ public class Constants {
     public static final SlotConfigs ELEVATOR_SLOT_CONFIGS = new SlotConfigs().withKP(0.0)
         .withKD(0.0)
         .withKS(0.0)
-        .withKV(0.0)
-        .withKA(0.0);
+        .withKG(0.34) // Volts
+        .withKV(2.22) // V*s/m
+        .withKA(0.05); // V*s^2/m
 
     public static final MotionMagicConfigs ELEVATOR_MOTION_MAGIC_CONFIGS = new MotionMagicConfigs()
         .withMotionMagicAcceleration(0.01)
         .withMotionMagicCruiseVelocity(0.01);
 
-    public static final Current ELEVATOR_SUPPLY_CURRENT_LIMIT = Amps.of(0); // Placeholder
+    public static final Current ELEVATOR_SUPPLY_CURRENT_LIMIT = Amps.of(80);
 
-    public static final Distance ELEVATOR_DISTANCE_PER_ROTATION = Meters.of(0.25); // Placeholder
+    public static final double ELEVATOR_ROTOR_GEAR_RATIO = 2.85714286;
+    public static final Distance ELEVATOR_GEAR_DIAMETER = Inches.of(2);
+    public static final Distance ELEVATOR_GEAR_CIRCUMFERENCE = ELEVATOR_GEAR_DIAMETER.times(Math.PI);
+    public static final Distance ELEVATOR_DISTANCE_PER_ROTATION = ELEVATOR_GEAR_CIRCUMFERENCE
+        .div(ELEVATOR_ROTOR_GEAR_RATIO);
 
     public static final Distance ELEVATOR_TOP_LIMIT = Meters.of(0); // Placeholder
     public static final Distance ELEVATOR_BOTTOM_LIMIT = Meters.of(0); // Placeholder
@@ -206,15 +227,16 @@ public class Constants {
 
     public static final Current ARM_STATOR_CURRENT_LIMIT = Amps.of(0);
     public static final Current ARM_SUPPLY_CURRENT_LIMIT = Amps.of(0);
-    public static final double ARM_ROTOR_TO_SENSOR_RATIO = 0;
+    public static final double ARM_ROTOR_TO_SENSOR_RATIO = 45;
 
     public static final Angle ARM_MAGNETIC_OFFSET = Rotations.of(0.0);
 
     public static final SlotConfigs ARM_SLOT_CONFIGS = new SlotConfigs().withKP(0.0)
         .withKD(0.0)
         .withKS(0.0)
-        .withKV(0.0)
-        .withKA(0.0);
+        .withKG(0.12) // Volts
+        .withKV(5.59) // V*s/rotation
+        .withKA(0.03); // V*s^2/rotation
 
     public static final MotionMagicConfigs ARM_MOTION_MAGIC_CONFIGS = new MotionMagicConfigs()
         .withMotionMagicAcceleration(0.01)

@@ -104,7 +104,7 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
    * @param direction direction to run the sysid routine
    * @return command to run the sysid routine
    */
-  public Command sysIdSManipulatorQuasistaticCommand(Direction direction) {
+  public Command sysIdManipulatorQuasistaticCommand(Direction direction) {
     return manipulatorSysIdRoutine.quasistatic(direction)
         .withName("Game Piece Manipulator quasi " + direction)
         .finallyDo(this::stop);
