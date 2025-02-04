@@ -12,6 +12,7 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -90,8 +91,13 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         SignalLogger.writeDouble("Rotational_Rate", output.in(Volts));
       }, null, this));
 
-  /* The SysId routine to test */
-  private SysIdRoutine m_sysIdRoutineToApply = m_sysIdRoutineTranslation;
+  private final SysIdRoutine slipSysIdRoutine = new SysIdRoutine(
+      new SysIdRoutine.Config(
+          Volts.of(0.25).per(Second),
+          null,
+          null,
+          state -> SignalLogger.writeString("SysIdSlip_State", state.toString())),
+      new SysIdRoutine.Mechanism((volts) -> setControl(m_translationCharacterization.withVolts(volts)), null, this));
 
   /**
    * Constructs a CTRE SwerveDrivetrain using the specified constants.
@@ -207,25 +213,72 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   }
 
   /**
-   * Runs the SysId Quasistatic test in the given direction for the routine
-   * specified by {@link #m_sysIdRoutineToApply}.
+   * Runs the SysId Quasistatic test in the given direction for the translation routine
    *
    * @param direction Direction of the SysId Quasistatic test
    * @return Command to run
    */
-  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-    return m_sysIdRoutineToApply.quasistatic(direction);
+  public Command sysIdTranslationQuasiCommand(SysIdRoutine.Direction direction) {
+    return m_sysIdRoutineTranslation.quasistatic(direction).withName("Translation dynam " + direction);
   }
 
   /**
-   * Runs the SysId Dynamic test in the given direction for the routine
-   * specified by {@link #m_sysIdRoutineToApply}.
+   * Runs the SysId Dynamic test in the given direction for the translation routine
    *
    * @param direction Direction of the SysId Dynamic test
    * @return Command to run
    */
-  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-    return m_sysIdRoutineToApply.dynamic(direction);
+  public Command sysIdTranslationDynamCommand(SysIdRoutine.Direction direction) {
+    return m_sysIdRoutineTranslation.dynamic(direction).withName("Translation dynam " + direction);
+  }
+
+  /**
+   * Runs the SysId Quasistatic test in the given direction for the steer routine
+   *
+   * @param direction Direction of the SysId Quasistatic test
+   * @return Command to run
+   */
+  public Command sysIdSteerQuasiCommand(SysIdRoutine.Direction direction) {
+    return m_sysIdRoutineSteer.quasistatic(direction).withName("Steer dynam " + direction);
+  }
+
+  /**
+   * Runs the SysId Dynamic test in the given direction for the steer routine
+   *
+   * @param direction Direction of the SysId Dynamic test
+   * @return Command to run
+   */
+  public Command sysIdSteerDynamCommand(SysIdRoutine.Direction direction) {
+    return m_sysIdRoutineSteer.dynamic(direction).withName("Steer dynam " + direction);
+  }
+
+  /**
+   * Runs the SysId Quasistatic test in the given direction for the rotation routine
+   *
+   * @param direction Direction of the SysId Quasistatic test
+   * @return Command to run
+   */
+  public Command sysIdRotationQuasiCommand(SysIdRoutine.Direction direction) {
+    return m_sysIdRoutineRotation.quasistatic(direction).withName("Rotation dynam " + direction);
+  }
+
+  /**
+   * Runs the SysId Dynamic test in the given direction for the rotation routine
+   *
+   * @param direction Direction of the SysId Dynamic test
+   * @return Command to run
+   */
+  public Command sysIdRotationDynamCommand(SysIdRoutine.Direction direction) {
+    return m_sysIdRoutineRotation.dynamic(direction).withName("Rotation dynam " + direction);
+  }
+
+  /**
+   * Runs the SysId test for the slip routine
+   *
+   * @return Command to run
+   */
+  public Command sysIdDriveSlipCommand() {
+    return slipSysIdRoutine.quasistatic(SysIdRoutine.Direction.kForward).withName("SysId Drive Slip");
   }
 
   @Override
@@ -259,5 +312,41 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       updateSimState(deltaTime, RobotController.getBatteryVoltage());
     });
     m_simNotifier.startPeriodic(kSimLoopPeriod);
+  }
+
+  /**
+   * Adds a vision measurement to the Kalman Filter. This will correct the odometry pose estimate
+   * while still accounting for measurement noise.
+   *
+   * @param visionRobotPoseMeters The pose of the robot as measured by the vision camera.
+   * @param timestampSeconds The timestamp of the vision measurement in seconds.
+   */
+  @Override
+  public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds) {
+    super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds));
+  }
+
+  /**
+   * Adds a vision measurement to the Kalman Filter. This will correct the odometry pose estimate
+   * while still accounting for measurement noise.
+   * <p>
+   * Note that the vision measurement standard deviations passed into this method
+   * will continue to apply to future measurements until a subsequent call to
+   * {@link #setVisionMeasurementStdDevs(Matrix)} or this method.
+   *
+   * @param visionRobotPoseMeters The pose of the robot as measured by the vision camera.
+   * @param timestampSeconds The timestamp of the vision measurement in seconds.
+   * @param visionMeasurementStdDevs Standard deviations of the vision pose measurement
+   *          in the form [x, y, theta]ᵀ, with units in meters and radians.
+   */
+  @Override
+  public void addVisionMeasurement(
+      Pose2d visionRobotPoseMeters,
+      double timestampSeconds,
+      Matrix<N3, N1> visionMeasurementStdDevs) {
+    super.addVisionMeasurement(
+        visionRobotPoseMeters,
+          Utils.fpgaToCurrentTime(timestampSeconds),
+          visionMeasurementStdDevs);
   }
 }
