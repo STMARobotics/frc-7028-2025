@@ -90,13 +90,10 @@ public class Constants {
     public static final Current CLIMB_SUPPLY_CURRENT_LIMIT = Amps.of(40);
     public static final double CLIMB_ROTOR_TO_SENSOR_RATIO = (25 / 1); // 25 rotor turns = 1 mechanism turn
 
-    public static final Distance CAGE_DETECTION_THRESHOLD_DISTANCE = Millimeters.of(0); // TODO determine distance
-
     public static final Angle LEFT_CLIMB_MAGNETIC_OFFSET = Radians.of(0);
     public static final Angle RIGHT_CLIMB_MAGNETIC_OFFSET = Radians.of(0);
 
     public static final Voltage MAX_CLIMB_VOLTAGE = Volts.of(2);
-
   }
 
   /**
@@ -107,9 +104,8 @@ public class Constants {
     public static final int DEVICE_ID_ELEVATOR_MOTOR_FOLLOWER = 81;
     public static final int DEVICE_ID_ELEVATOR_CANDI = 85;
 
-    public static final int DEVICE_ID_ARM_MOTOR = 45;
-    public static final int DEVICE_ID_ARM_LASERCAN = 46;
-    public static final int DEVICE_ID_ARM_CANCODER = 47;
+    public static final int DEVICE_ID_ARM_MOTOR = 90;
+    public static final int DEVICE_ID_ARM_CANDI = 95;
 
     public static final SlotConfigs ELEVATOR_SLOT_CONFIGS = new SlotConfigs().withKP(0.0)
         .withKD(0.0)
@@ -123,6 +119,7 @@ public class Constants {
         .withMotionMagicCruiseVelocity(0.01);
 
     public static final Current ELEVATOR_SUPPLY_CURRENT_LIMIT = Amps.of(80);
+    public static final Current ELEVATOR_STATOR_CURRENT_LIMIT = Amps.of(100);
 
     public static final double ELEVATOR_ROTOR_GEAR_RATIO = 2.85714286;
     public static final Distance ELEVATOR_GEAR_DIAMETER = Inches.of(2);
@@ -130,31 +127,19 @@ public class Constants {
     public static final Distance ELEVATOR_DISTANCE_PER_ROTATION = ELEVATOR_GEAR_CIRCUMFERENCE
         .div(ELEVATOR_ROTOR_GEAR_RATIO);
 
-    public static final Distance ELEVATOR_TOP_LIMIT = Meters.of(0); // Placeholder
-    public static final Distance ELEVATOR_BOTTOM_LIMIT = Meters.of(0); // Placeholder
+    public static final Distance ELEVATOR_TOP_LIMIT = Meters.of(1.0); // Placeholder
+    public static final Distance ELEVATOR_BOTTOM_LIMIT = Meters.of(0.0);
 
-    public static final Angle ELEVATOR_POSITION_TOLERANCE = Rotations.of(3); // Placeholder
-    public static final Angle ARM_POSITION_TOLERANCE = Degrees.of(1); // Placeholder
+    public static final Distance ELEVATOR_POSITION_TOLERANCE = Inches.of(0.5);
+    public static final Angle ARM_POSITION_TOLERANCE = Degrees.of(1);
 
-    /**
-     * The positions in meters the elevator could travel to with placeholder numbers for now
-     */
     public static final Distance ELEVATOR_DEFAULT_HEIGHT = Meters.of(0);
-    public static final Distance LEVEL_1_HEIGHT = Meters.of(0);
-    public static final Distance LEVEL_2_HEIGHT = Meters.of(0);
-    public static final Distance LEVEL_3_HEIGHT = Meters.of(0);
-    public static final Distance LEVEL_4_HEIGHT = Meters.of(0);
 
-    public static final Angle LEVEL_2_ANGLE = Radian.of(0);
-    public static final Angle LEVEL_3_ANGLE = Radian.of(0);
-    public static final Angle LEVEL_4_ANGLE = Radian.of(0);
-    public static final Angle INTAKE_ANGLE = Radian.of(0);
-
-    public static final Current ARM_STATOR_CURRENT_LIMIT = Amps.of(0);
-    public static final Current ARM_SUPPLY_CURRENT_LIMIT = Amps.of(0);
+    public static final Current ARM_STATOR_CURRENT_LIMIT = Amps.of(40);
+    public static final Current ARM_SUPPLY_CURRENT_LIMIT = Amps.of(40);
     public static final double ARM_ROTOR_TO_SENSOR_RATIO = 45;
-
     public static final Angle ARM_MAGNETIC_OFFSET = Rotations.of(0.0);
+    public static final double ARM_SENSOR_TO_MECHANISM_RATIO = 1.0;
 
     public static final SlotConfigs ARM_SLOT_CONFIGS = new SlotConfigs().withKP(0.0)
         .withKD(0.0)
@@ -167,9 +152,19 @@ public class Constants {
         .withMotionMagicAcceleration(0.01)
         .withMotionMagicCruiseVelocity(0.01);
 
+    public static final Distance LEVEL_1_HEIGHT = Meters.of(0);
+    public static final Distance LEVEL_2_HEIGHT = Meters.of(0);
+    public static final Distance LEVEL_3_HEIGHT = Meters.of(0);
+    public static final Distance LEVEL_4_HEIGHT = Meters.of(0);
+
+    public static final Angle LEVEL_2_ANGLE = Radian.of(0);
+    public static final Angle LEVEL_3_ANGLE = Radian.of(0);
+    public static final Angle LEVEL_4_ANGLE = Radian.of(0);
+    public static final Angle INTAKE_ANGLE = Radian.of(0);
+
+    // Values for Mechanism2d visualization
     public static final Distance ARM_PIVOT_LENGTH = Meters.of(0.577);
     public static final Distance ELEVATOR_BASE_HEIGHT = Meters.of(1.0);
-
   }
 
   /**
@@ -177,13 +172,8 @@ public class Constants {
    */
   public static class GamePieceManipulatorConstants {
 
-    public static final AngularVelocity INAKE_VELOCITY = RadiansPerSecond.of(5);
-    public static final AngularVelocity EJECT_VELOCITY = RadiansPerSecond.of(-5);
-    public static final AngularVelocity SCORE_VELOCITY = RadiansPerSecond.of(-5);
-
-    public static final AngularVelocity WHEEL_SPEED_TOLERANCE = RotationsPerSecond.of(3);
-
     public static final int DEVICE_ID_MANIPULATOR_MOTOR = 50;
+    public static final int DEVICE_ID_GAME_PIECE_CANRANGE = 71;
 
     public static final SlotConfigs MANIPULATION_SLOT_CONFIGS = new SlotConfigs().withKP(0.0).withKD(0.0).withKS(0.0);
     public static final SlotConfigs HOLD_SLOT_CONFIGS = new SlotConfigs().withKP(0.0).withKD(0.0);
@@ -191,6 +181,14 @@ public class Constants {
     public static final Current STATOR_CURRENT_LIMIT = Amps.of(20);
     public static final Current TORQUE_CURRENT_LIMIT = Amps.of(20);
     public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(10);
+
+    public static final Distance CORAL_DETECTION_THRESHOLD = Millimeters.of(2);
+
+    public static final AngularVelocity INAKE_VELOCITY = RadiansPerSecond.of(5);
+    public static final AngularVelocity EJECT_VELOCITY = RadiansPerSecond.of(-5);
+    public static final AngularVelocity SCORE_VELOCITY = RadiansPerSecond.of(-5);
+
+    public static final AngularVelocity WHEEL_SPEED_TOLERANCE = RotationsPerSecond.of(3);
 
   }
 
