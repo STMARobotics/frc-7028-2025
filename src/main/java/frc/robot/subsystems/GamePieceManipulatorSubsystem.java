@@ -7,20 +7,17 @@ import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
-import static frc.robot.Constants.AlgaeConstants.ROLLER_SPEED_TOLERANCE;
 import static frc.robot.Constants.CANIVORE_BUS_NAME;
 import static frc.robot.Constants.GamePieceManipulatorConstants.DEVICE_ID_MANIPULATOR_MOTOR;
-import static frc.robot.Constants.GamePieceManipulatorConstants.EJECT_ALGAE_VELOCITY;
-import static frc.robot.Constants.GamePieceManipulatorConstants.EJECT_SPEED;
+import static frc.robot.Constants.GamePieceManipulatorConstants.EJECT_VELOCITY;
 import static frc.robot.Constants.GamePieceManipulatorConstants.HOLD_SLOT_CONFIGS;
-import static frc.robot.Constants.GamePieceManipulatorConstants.INTAKE_ALGAE_VELOCITY;
-import static frc.robot.Constants.GamePieceManipulatorConstants.INTAKE_SPEED;
+import static frc.robot.Constants.GamePieceManipulatorConstants.INAKE_VELOCITY;
 import static frc.robot.Constants.GamePieceManipulatorConstants.MANIPULATION_SLOT_CONFIGS;
-import static frc.robot.Constants.GamePieceManipulatorConstants.SCORE_ALGAE_VELOCITY;
-import static frc.robot.Constants.GamePieceManipulatorConstants.SCORE_SPEED;
+import static frc.robot.Constants.GamePieceManipulatorConstants.SCORE_VELOCITY;
 import static frc.robot.Constants.GamePieceManipulatorConstants.STATOR_CURRENT_LIMIT;
-import static frc.robot.Constants.IndexerConstants.SUPPLY_CURRENT_LIMIT;
-import static frc.robot.Constants.IndexerConstants.TORQUE_CURRENT_LIMIT;
+import static frc.robot.Constants.GamePieceManipulatorConstants.SUPPLY_CURRENT_LIMIT;
+import static frc.robot.Constants.GamePieceManipulatorConstants.TORQUE_CURRENT_LIMIT;
+import static frc.robot.Constants.GamePieceManipulatorConstants.WHEEL_SPEED_TOLERANCE;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.SignalLogger;
@@ -72,7 +69,9 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
 
   private final StatusSignal<AngularVelocity> wheelVelocity = wheelMotor.getVelocity();
 
-  /** Creates a new Subsytem for the Game Pieace Manipulator. */
+  /**
+   * Creates a new Subsytem for the Game Pieace Manipulator
+   */
   public GamePieceManipulatorSubsystem() {
     var motorConfig = new TalonFXConfiguration();
     motorConfig.withSlot0(Slot0Configs.from(MANIPULATION_SLOT_CONFIGS)).withSlot1(Slot1Configs.from(HOLD_SLOT_CONFIGS));
@@ -120,45 +119,24 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
   }
 
   /**
-   * Allow the wheels to move forward so they can grab the coral from the inside.
+   * Allow the wheels to move forward so they can grab the coral from the inside
    */
   public void intakeCoral() {
-    wheelMotor.setControl(wheelControl.withVelocity(INTAKE_SPEED));
+    wheelMotor.setControl(wheelControl.withVelocity(INAKE_VELOCITY));
   }
 
   /**
-   * Allow the wheel to go backward do the the coral can go on the reef.
+   * Allow the wheel to go backward do the the coral can go on the reef
    */
   public void ejectCoral() {
-    wheelMotor.setControl(wheelControl.withVelocity(EJECT_SPEED));
+    wheelMotor.setControl(wheelControl.withVelocity(EJECT_VELOCITY));
   }
 
   /**
-   * score spped to put the coral onto the reef.
+   * Score speed to put the coral onto the reef
    */
   public void scoreCoral() {
-    wheelMotor.setControl(wheelControl.withVelocity(SCORE_SPEED));
-  }
-
-  /**
-   * Intake algae
-   */
-  public void intakeAlgae() {
-    wheelMotor.setControl(wheelControl.withVelocity(INTAKE_ALGAE_VELOCITY));
-  }
-
-  /**
-   * Eject algae
-   */
-  public void ejectAlgae() {
-    wheelMotor.setControl(wheelControl.withVelocity(EJECT_ALGAE_VELOCITY));
-  }
-
-  /**
-   * Score algae in the net
-   */
-  public void scoreAlgae() {
-    wheelMotor.setControl(wheelControl.withVelocity(SCORE_ALGAE_VELOCITY));
+    wheelMotor.setControl(wheelControl.withVelocity(SCORE_VELOCITY));
   }
 
   /**
@@ -186,6 +164,6 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
     return wheelVelocity.refresh()
         .getValue()
         .minus(wheelControl.getVelocityMeasure())
-        .abs(RotationsPerSecond) <= ROLLER_SPEED_TOLERANCE.in(RotationsPerSecond);
+        .abs(RotationsPerSecond) <= WHEEL_SPEED_TOLERANCE.in(RotationsPerSecond);
   }
 }
