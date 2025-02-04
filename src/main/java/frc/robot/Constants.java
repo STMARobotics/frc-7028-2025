@@ -176,15 +176,12 @@ public class Constants {
    * Constants for the game piece manipulator
    */
   public static class GamePieceManipulatorConstants {
-    public static final AngularVelocity INTAKE_SPEED = RadiansPerSecond.of(5);
-    public static final AngularVelocity EJECT_SPEED = RadiansPerSecond.of(-5);
-    public static final AngularVelocity SCORE_SPEED = RadiansPerSecond.of(-5);
 
-    public static final AngularVelocity INTAKE_ALGAE_VELOCITY = RadiansPerSecond.of(5);
-    public static final AngularVelocity EJECT_ALGAE_VELOCITY = RadiansPerSecond.of(-5);
-    public static final AngularVelocity SCORE_ALGAE_VELOCITY = RadiansPerSecond.of(-5);
+    public static final AngularVelocity INAKE_VELOCITY = RadiansPerSecond.of(5);
+    public static final AngularVelocity EJECT_VELOCITY = RadiansPerSecond.of(-5);
+    public static final AngularVelocity SCORE_VELOCITY = RadiansPerSecond.of(-5);
 
-    public static final AngularVelocity ROLLER_SPEED_TOLERANCE = RotationsPerSecond.of(3);
+    public static final AngularVelocity WHEEL_SPEED_TOLERANCE = RotationsPerSecond.of(3);
 
     public static final int DEVICE_ID_MANIPULATOR_MOTOR = 50;
 

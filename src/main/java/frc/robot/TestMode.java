@@ -17,15 +17,9 @@ import frc.robot.subsystems.GamePieceManipulatorSubsystem;
  */
 public class TestMode {
 
-  private boolean indexerForwardsTest;
-  private boolean indexerBackwardsTest;
   private boolean manipulatorForwardsTest;
   private boolean manipulatorBackwardsTest;
   private boolean climbTest;
-  private boolean algaeRollersForwardsTest;
-  private boolean algaeRollersBackwardsTest;
-  private boolean algaeIntakeUpTest;
-  private boolean algaeIntakeDownTest;
   private boolean armElevatorTest;
   private boolean armTest;
   private final GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem = new GamePieceManipulatorSubsystem();
@@ -120,24 +114,6 @@ public class TestMode {
   }
 
   /**
-   * Gets the result of the indexer forwards test
-   *
-   * @return true if the indexer forwards test has been run successfully, otherwise false
-   */
-  public boolean getIndexerForwardsTestResult() {
-    return indexerForwardsTest;
-  }
-
-  /**
-   * Gets the result of the indexer backwards test
-   *
-   * @return true if the indexer backwards test has been run successfully, otherwise false
-   */
-  public boolean getIndexerBackwardsTestResult() {
-    return indexerBackwardsTest;
-  }
-
-  /**
    * Gets the result of the manipulator forwards test
    *
    * @return true if the manipulator forwards test has been run successfully, otherwise false
@@ -162,42 +138,6 @@ public class TestMode {
    */
   public boolean getClimbTestResult() {
     return climbTest;
-  }
-
-  /**
-   * Gets the result of the algae rollers forwards test
-   *
-   * @return true if the algae rollers forwards test has been run successfully, otherwise false
-   */
-  public boolean getAlgaeRollersForwardsTestResult() {
-    return algaeRollersForwardsTest;
-  }
-
-  /**
-   * Gets the result of the algae rollers backwards test
-   *
-   * @return true if the algae rollers backwards test has been run successfully, otherwise false
-   */
-  public boolean getAlgaeRollersBackwardsTestResult() {
-    return algaeRollersBackwardsTest;
-  }
-
-  /**
-   * Gets the result of the algae intake up test
-   *
-   * @return true if the algae intake up test has been run successfully, otherwise false
-   */
-  public boolean getAlgaeIntakeUpTestResult() {
-    return algaeIntakeUpTest;
-  }
-
-  /**
-   * Gets the result of the algae intake down test
-   *
-   * @return true if the algae intake down test has been run successfully, otherwise false
-   */
-  public boolean getAlgaeIntakeDownTestResult() {
-    return algaeIntakeDownTest;
   }
 
   /**
