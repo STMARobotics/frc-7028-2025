@@ -139,7 +139,9 @@ public class ArmSubsystem extends SubsystemBase {
     elevatorTalonConfig.HardwareLimitSwitch.withForwardLimitRemoteSensorID(canDiElevator.getDeviceID())
         .withForwardLimitSource(RemoteCANdiS1)
         .withReverseLimitRemoteSensorID(canDiElevator.getDeviceID())
-        .withReverseLimitSource(RemoteCANdiS2);
+        .withReverseLimitSource(RemoteCANdiS2)
+        .withReverseLimitAutosetPositionEnable(true)
+        .withReverseLimitAutosetPositionValue(Rotations.of(0));
     elevatorTalonConfig.SoftwareLimitSwitch.withForwardSoftLimitEnable(true)
         .withForwardSoftLimitThreshold(ELEVATOR_TOP_LIMIT.in(Meters) / ELEVATOR_DISTANCE_PER_ROTATION.in(Meters))
         .withReverseSoftLimitEnable(true)
