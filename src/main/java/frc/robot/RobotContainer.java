@@ -80,7 +80,7 @@ public class RobotContainer {
                 .withVelocityY(controlBindings.translationY().get())
                 .withRotationalRate(controlBindings.omega().get())));
 
-    controlBindings.wheelsToX().ifPresent(trigger -> trigger.onTrue(drivetrain.applyRequest(() -> brake)));
+    controlBindings.wheelsToX().ifPresent(trigger -> trigger.whileTrue(drivetrain.applyRequest(() -> brake)));
     controlBindings.seedFieldCentric()
         .ifPresent(trigger -> trigger.onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric)));
 
