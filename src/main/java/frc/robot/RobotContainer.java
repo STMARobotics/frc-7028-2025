@@ -88,7 +88,7 @@ public class RobotContainer {
 
     controlBindings.intakeCoral()
         .ifPresent(
-            trigger -> trigger.whileTrue(new IntakeCoralCommand(indexerSubsystem, gamePieceManipulatorSubsystem)));
+            trigger -> trigger.toggleOnTrue(new IntakeCoralCommand(indexerSubsystem, gamePieceManipulatorSubsystem)));
   }
 
   public Command getAutonomousCommand() {
