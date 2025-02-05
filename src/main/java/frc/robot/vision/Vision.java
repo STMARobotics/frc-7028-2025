@@ -24,10 +24,13 @@
 
 package frc.robot.vision;
 
-import static frc.robot.Constants.VisionConstants.*;
+import static frc.robot.Constants.VisionConstants.APRILTAG_FIELD_LAYOUT;
+import static frc.robot.Constants.VisionConstants.MULTI_TAG_STD_DEVS;
+import static frc.robot.Constants.VisionConstants.SINGLE_TAG_STD_DEVS;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import java.util.List;
@@ -50,10 +53,13 @@ public class Vision {
   /**
    * Constructs a new Vision instance
    */
-  public Vision() {
-    camera = new PhotonCamera(kCameraName);
+  public Vision(String cameraName, Transform3d robotToCameraTransform) {
+    camera = new PhotonCamera(cameraName);
 
-    photonEstimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, kRobotToCam);
+    photonEstimator = new PhotonPoseEstimator(
+        APRILTAG_FIELD_LAYOUT,
+        PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+        robotToCameraTransform);
     photonEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
   }
 
@@ -87,11 +93,11 @@ public class Vision {
   private void updateEstimationStdDevs(Optional<EstimatedRobotPose> estimatedPose, List<PhotonTrackedTarget> targets) {
     if (estimatedPose.isEmpty()) {
       // No pose input. Default to single-tag std devs
-      curStdDevs = kSingleTagStdDevs;
+      curStdDevs = SINGLE_TAG_STD_DEVS;
 
     } else {
       // Pose present. Start running Heuristic
-      var estStdDevs = kSingleTagStdDevs;
+      var estStdDevs = SINGLE_TAG_STD_DEVS;
       int numTags = 0;
       double avgDist = 0;
 
@@ -110,13 +116,13 @@ public class Vision {
 
       if (numTags == 0) {
         // No tags visible. Default to single-tag std devs
-        curStdDevs = kSingleTagStdDevs;
+        curStdDevs = SINGLE_TAG_STD_DEVS;
       } else {
         // One or more tags visible, run the full heuristic.
         avgDist /= numTags;
         // Decrease std devs if multiple targets are visible
         if (numTags > 1)
-          estStdDevs = kMultiTagStdDevs;
+          estStdDevs = MULTI_TAG_STD_DEVS;
         // Increase std devs based on (average) distance
         if (numTags == 1 && avgDist > 4) {
           estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
