@@ -23,8 +23,10 @@ import frc.robot.controls.ControlBindings;
 import frc.robot.controls.XBoxControlBindings;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.GamePieceManipulatorSubsystem;
+import frc.robot.subsystems.MitoCANdriaSubsytem;
 
 @Logged(strategy = Logged.Strategy.OPT_IN)
 public class RobotContainer {
@@ -39,10 +41,15 @@ public class RobotContainer {
 
   private final GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem = new GamePieceManipulatorSubsystem();
   private final ArmSubsystem armSubsystem = new ArmSubsystem();
+  private final ClimbSubsystem climbSubsystem = new ClimbSubsystem();
+  @Logged
+  private final MitoCANdriaSubsytem mitoCANdriaSubsytem = new MitoCANdriaSubsytem();
+
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
   private final DrivetrainTelemetry drivetrainTelemetry = new DrivetrainTelemetry();
   private final PhotonVisionCommand visionCommand = new PhotonVisionCommand(drivetrain::addVisionMeasurement);
-  private final TestMode testMode = new TestMode();
+
+  private final TestMode testMode = new TestMode(gamePieceManipulatorSubsystem, climbSubsystem, armSubsystem);
 
   /* Path follower */
   private final SendableChooser<Command> autoChooser;

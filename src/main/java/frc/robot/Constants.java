@@ -209,4 +209,8 @@ public class Constants {
 
     public static final Voltage CLIMB_TESTING_VOLTAGE = Volts.of(5);
   }
+
+  public static class MitoCANDriaConstants {
+    public static final int DEVICE_ID_MITOCANDRIA = 0;
+  }
 }
