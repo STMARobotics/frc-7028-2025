@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.commands.IntakeCoralCommand;
 import frc.robot.commands.PhotonVisionCommand;
 import frc.robot.controls.ControlBindings;
 import frc.robot.controls.XBoxControlBindings;
@@ -79,11 +80,15 @@ public class RobotContainer {
                 .withVelocityY(controlBindings.translationY().get())
                 .withRotationalRate(controlBindings.omega().get())));
 
-    controlBindings.wheelsToX().ifPresent(trigger -> trigger.whileTrue(drivetrain.applyRequest(() -> brake)));
+    controlBindings.wheelsToX().ifPresent(trigger -> trigger.onTrue(drivetrain.applyRequest(() -> brake)));
     controlBindings.seedFieldCentric()
         .ifPresent(trigger -> trigger.onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric)));
 
     drivetrain.registerTelemetry(drivetrainTelemetry::telemeterize);
+
+    controlBindings.intakeCoral()
+        .ifPresent(
+            trigger -> trigger.whileTrue(new IntakeCoralCommand(indexerSubsystem, gamePieceManipulatorSubsystem)));
   }
 
   public Command getAutonomousCommand() {
