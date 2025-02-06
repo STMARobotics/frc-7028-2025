@@ -5,8 +5,8 @@ import frc.robot.subsystems.GamePieceManipulatorSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 
 /**
-  * Runs the indexer belt and the manipulator wheels to transport the coral to the manipulator
-  */
+ * Runs the indexer belt and the manipulator wheels to transport the coral to the manipulator
+ */
 public class IntakeCoralCommand extends Command {
 
   private final IndexerSubsystem indexerSubsystem;
