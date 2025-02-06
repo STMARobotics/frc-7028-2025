@@ -54,4 +54,42 @@ public abstract class ControlBindings {
     return Optional.empty();
   }
 
+  public interface InnerControlBindings {
+
+    /**
+     * Intakes the Coral from the reef.
+     * 
+     * @return
+     */
+    public static Optional<Trigger> intakeCoralCommand() {
+      return Optional.empty();
+    }
+
+    /**
+     * Eject the Coral from the arm and Game Pieace Manipulator.
+     * 
+     * @return
+     */
+    public static Optional<Trigger> ejectCoralCommand() {
+      return Optional.empty();
+    }
+
+    /**
+     * Make sure the the Coral is in the right postion and allowes the arm to hold it.
+     * 
+     * @return
+     */
+    public static Optional<Trigger> activeHoldCoralComammand() {
+      return Optional.empty();
+    }
+
+    /**
+     * Allows the Game Piece Manipultor to score accurately.
+     * 
+     * @return
+     */
+    public static Optional<Trigger> scoreCoralCommand() {
+      return Optional.empty();
+    }
+  }
 }

@@ -17,7 +17,11 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.commands.ActiveHoldCoralCommand;
+import frc.robot.commands.EjectCoralCommand;
+import frc.robot.commands.IntakeCoralCommand;
 import frc.robot.commands.PhotonVisionCommand;
+import frc.robot.commands.ScoreCoralCommand;
 import frc.robot.controls.ControlBindings;
 import frc.robot.controls.XBoxControlBindings;
 import frc.robot.generated.TunerConstants;
@@ -129,5 +133,23 @@ public class RobotContainer {
     tab.addBoolean("Manipulator Backwards Test", () -> testMode.getManipulatorBackwardsTestResult());
     tab.addBoolean("Arm Elevator Test", () -> testMode.getArmElevatorTestResult());
     tab.addBoolean("Arm Test", () -> testMode.getArmTestResult());
+  }
+
+  // Affector
+  private void configureButtonBinding() {
+    ControlBindings.InnerControlBindings.intakeCoralCommand()
+        .ifPresent(trigger -> trigger.onTrue(new IntakeCoralCommand(gamePieceManipulatorSubsystem, armSubsystem)));
+
+    ControlBindings.InnerControlBindings.ejectCoralCommand()
+        .ifPresent(trigger -> trigger.onTrue(new EjectCoralCommand(gamePieceManipulatorSubsystem, armSubsystem)));
+
+    ControlBindings.InnerControlBindings.activeHoldCoralComammand()
+        .ifPresent(trigger -> trigger.onTrue(new ActiveHoldCoralCommand(gamePieceManipulatorSubsystem, armSubsystem)));
+
+    ControlBindings.InnerControlBindings.scoreCoralCommand()
+        .ifPresent(
+            trigger -> trigger.onTrue(
+                new ScoreCoralCommand(gamePieceManipulatorSubsystem, armSubsystem, drivetrain, null, null, null, 0)));
+    // The null represnts angle/pose supplieer and might be filled in with something else.
   }
 }
