@@ -48,6 +48,9 @@ public class IndexerSubsystem extends SubsystemBase {
         beltMotor.setControl(beltSysIdControl.withOutput(amps.in(Volts)));
       }, null, this));
 
+  /**
+   * Creates a new IndexerSubsystem.
+   */
   public IndexerSubsystem() {
     var beltTalonConfig = new TalonFXConfiguration();
     beltTalonConfig.MotorOutput.withNeutralMode(Brake);
