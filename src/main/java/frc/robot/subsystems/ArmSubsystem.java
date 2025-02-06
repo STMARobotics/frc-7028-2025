@@ -79,10 +79,10 @@ public class ArmSubsystem extends SubsystemBase {
   private final TalonFX armMotor = new TalonFX(DEVICE_ID_ARM_MOTOR, CANIVORE_BUS_NAME);
   private final CANdi armCanDi = new CANdi(DEVICE_ID_ARM_CANDI, CANIVORE_BUS_NAME);
 
-  private final MotionMagicVoltage elevatorControl = new MotionMagicVoltage(0.0);
-  private final MotionMagicVoltage armControl = new MotionMagicVoltage(0.0);
-  private final VoltageOut sysIdElevatorControl = new VoltageOut(0.0);
-  private final VoltageOut sysIdArmControl = new VoltageOut(0.0);
+  private final MotionMagicVoltage elevatorControl = new MotionMagicVoltage(0.0).withEnableFOC(true);
+  private final MotionMagicVoltage armControl = new MotionMagicVoltage(0.0).withEnableFOC(true);
+  private final VoltageOut sysIdElevatorControl = new VoltageOut(0.0).withEnableFOC(true);
+  private final VoltageOut sysIdArmControl = new VoltageOut(0.0).withEnableFOC(true);
 
   private final SysIdRoutine elevatorSysIdRoutine = new SysIdRoutine(
       new SysIdRoutine.Config(
@@ -139,7 +139,9 @@ public class ArmSubsystem extends SubsystemBase {
     elevatorTalonConfig.HardwareLimitSwitch.withForwardLimitRemoteSensorID(canDiElevator.getDeviceID())
         .withForwardLimitSource(RemoteCANdiS1)
         .withReverseLimitRemoteSensorID(canDiElevator.getDeviceID())
-        .withReverseLimitSource(RemoteCANdiS2);
+        .withReverseLimitSource(RemoteCANdiS2)
+        .withReverseLimitAutosetPositionEnable(true)
+        .withReverseLimitAutosetPositionValue(Rotations.of(0));
     elevatorTalonConfig.SoftwareLimitSwitch.withForwardSoftLimitEnable(true)
         .withForwardSoftLimitThreshold(ELEVATOR_TOP_LIMIT.in(Meters) / ELEVATOR_DISTANCE_PER_ROTATION.in(Meters))
         .withReverseSoftLimitEnable(true)

@@ -22,9 +22,25 @@ public class TestMode {
   private boolean climbTest;
   private boolean armElevatorTest;
   private boolean armTest;
-  private final GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem = new GamePieceManipulatorSubsystem();
-  private final ClimbSubsystem climbSubsystem = new ClimbSubsystem();
-  private final ArmSubsystem armSubsystem = new ArmSubsystem();
+  private final GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem;
+  private final ClimbSubsystem climbSubsystem;
+  private final ArmSubsystem armSubsystem;
+
+  /**
+   * Constructs a test mode
+   * 
+   * @param gamePieceManipulatorSubsystem game piece manipulator subsystem
+   * @param climbSubsystem climb subsystem
+   * @param armSubsystem arm subsystem
+   */
+  public TestMode(
+      GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem,
+      ClimbSubsystem climbSubsystem,
+      ArmSubsystem armSubsystem) {
+    this.gamePieceManipulatorSubsystem = gamePieceManipulatorSubsystem;
+    this.climbSubsystem = climbSubsystem;
+    this.armSubsystem = armSubsystem;
+  }
 
   /**
    * Command to run all the tests in the TestMode routine

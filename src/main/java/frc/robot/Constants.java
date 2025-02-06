@@ -58,19 +58,19 @@ public class Constants {
    * Constants for vision processing
    */
   public static class VisionConstants {
-    public static final String kCameraName = "YOUR CAMERA NAME";
-    // Cam mounted facing forward, half a meter forward of center, half a meter up from center.
-    public static final Transform3d kRobotToCam = new Transform3d(
-        new Translation3d(0.5, 0.0, 0.5),
-        new Rotation3d(0, 0, 0));
+    public static final String[] CAMERA_NAMES = new String[] { "FrontLeft", "FrontRight", "BackLeft", "BackRight" };
+    public static final Transform3d[] ROBOT_TO_CAMERA_TRANSFORMS = new Transform3d[] {
+        new Transform3d(new Translation3d(0.5, 0.5, 0.5), new Rotation3d(0, 0, 0)),
+        new Transform3d(new Translation3d(0.5, -0.5, 0.5), new Rotation3d(0, 0, 0)),
+        new Transform3d(new Translation3d(-0.5, 0.5, 0.5), new Rotation3d(0, 0, 0)),
+        new Transform3d(new Translation3d(-0.5, -0.5, 0.5), new Rotation3d(0, 0, 0)) };
 
-    // The layout of the AprilTags on the field
-    public static final AprilTagFieldLayout kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
+    public static final AprilTagFieldLayout APRILTAG_FIELD_LAYOUT = AprilTagFieldLayout
+        .loadField(AprilTagFields.k2025Reefscape);
 
     // The standard deviations of our vision estimated poses, which affect correction rate
-    // (Fake values. Experiment and determine estimation noise on an actual robot.)
-    public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
-    public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
+    public static final Matrix<N3, N1> SINGLE_TAG_STD_DEVS = VecBuilder.fill(4, 4, 8);
+    public static final Matrix<N3, N1> MULTI_TAG_STD_DEVS = VecBuilder.fill(0.5, 0.5, 1);
   }
 
   /**
@@ -208,5 +208,9 @@ public class Constants {
     public static final AngularVelocity ROLLER_BACKWARDS_TESTING_SPEED = ROLLER_TESTING_SPEED.unaryMinus();
 
     public static final Voltage CLIMB_TESTING_VOLTAGE = Volts.of(5);
+  }
+
+  public static class MitoCANDriaConstants {
+    public static final int DEVICE_ID_MITOCANDRIA = 0;
   }
 }
