@@ -74,6 +74,27 @@ public class Constants {
   }
 
   /**
+   * Constants for the indexer subsystem
+   */
+  public static class IndexerConstants {
+    public static final int DEVICE_ID_BELT = 70;
+
+    public static final AngularVelocity INTAKE_VELOCITY = RadiansPerSecond.of(1);
+    public static final AngularVelocity SCORE_VELOCITY_LEVEL_1 = RadiansPerSecond.of(-1);
+    public static final AngularVelocity EJECT_VELOCITY = RadiansPerSecond.of(-2);
+    public static final AngularVelocity INDEXER_SPEED_TOLERANCE = RotationsPerSecond.of(3);
+
+    public static final Current TORQUE_CURRENT_LIMIT = Amps.of(100);
+    public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(10); // Placeholder, will have to change
+
+    public static final SlotConfigs SLOT_CONFIGS = new SlotConfigs().withKP(0.0)
+        .withKD(0.0)
+        .withKS(0.0)
+        .withKV(0.0)
+        .withKA(0.0);
+  }
+
+  /**
    * Constants for the climb subsystem
    */
   public static class ClimbConstants {

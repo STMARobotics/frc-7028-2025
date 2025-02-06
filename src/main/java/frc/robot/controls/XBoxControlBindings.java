@@ -54,4 +54,9 @@ public class XBoxControlBindings extends ControlBindings {
     return Optional.of(driverController.back());
   }
 
+  @Override
+  public Optional<Trigger> intakeCoral() {
+    return Optional.empty();
+  }
+
 }
