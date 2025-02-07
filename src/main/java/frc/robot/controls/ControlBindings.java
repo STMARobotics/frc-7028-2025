@@ -4,6 +4,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.Optional;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 /**
@@ -51,6 +52,24 @@ public abstract class ControlBindings {
    * @return optional trigger
    */
   public Optional<Trigger> seedFieldCentric() {
+    return Optional.empty();
+  }
+
+  /**
+   * Supplier for the front climb duty cycle
+   *
+   * @return duty cycle supplier
+   */
+  public Optional<DoubleSupplier> frontClimb() {
+    return Optional.empty();
+  }
+
+  /**
+   * Supplier for the front climb duty cycle
+   *
+   * @return duty cycle supplier
+   */
+  public Optional<DoubleSupplier> backClimb() {
     return Optional.empty();
   }
 

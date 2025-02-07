@@ -111,9 +111,8 @@ public class Constants {
    */
   public static class ClimbConstants {
     public static final int DEVICE_ID_CLIMB_MOTOR_FRONT = 60;
-    public static final int DEVICE_ID_CLIMB_MOTOR_BACK = 65;
-    public static final int DEVICE_ID_CLIMB_ENCODER_FRONT = 61;
-    public static final int DEVICE_ID_CLIMB_ENCODER_BACK = 66;
+    public static final int DEVICE_ID_CLIMB_MOTOR_BACK = 61;
+    public static final int DEVICE_ID_CLIMB_CANDI = 62;
 
     public static final Angle CLIMB_MAGNETIC_OFFSET_FRONT = Rotations.of(0.0);
     public static final Angle CLIMB_MAGNETIC_OFFSET_BACK = Rotations.of(0.0);
