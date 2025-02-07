@@ -35,6 +35,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Voltage;
+import frc.robot.commands.DriveToPoseCommand;
 import frc.robot.generated.TunerConstants;
 
 /**
@@ -60,6 +61,11 @@ public class Constants {
     public static final AngularVelocity MAX_TELEOP_ANGULAR_VELOCITY = RotationsPerSecond.of(1.25);
   }
 
+  /**
+   * Constants for automatically driving to a pose
+   * 
+   * @see DriveToPoseCommand
+   */
   public static class DriveToPoseConstants {
     public static final LinearVelocity MAX_DRIVE_TO_POSE_TRANSLATION_VELOCITY = MAX_TELEOP_VELOCITY.div(2.0);
     public static final LinearAcceleration MAX_DRIVE_TO_POSE_TRANSLATION_ACCELERATION = MetersPerSecondPerSecond
@@ -237,6 +243,9 @@ public class Constants {
     public static final Voltage CLIMB_TESTING_VOLTAGE = Volts.of(5);
   }
 
+  /**
+   * Constants for the MitoCANDria
+   */
   public static class MitoCANDriaConstants {
     public static final int DEVICE_ID_MITOCANDRIA = 0;
   }
