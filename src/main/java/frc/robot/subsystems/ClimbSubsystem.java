@@ -10,7 +10,7 @@ import static frc.robot.Constants.ClimbConstants.CLIMB_MAGNETIC_OFFSET_FRONT;
 import static frc.robot.Constants.ClimbConstants.CLIMB_ROTOR_TO_SENSOR_RATIO;
 import static frc.robot.Constants.ClimbConstants.CLIMB_STATOR_CURRENT_LIMIT;
 import static frc.robot.Constants.ClimbConstants.CLIMB_SUPPLY_CURRENT_LIMIT;
-import static frc.robot.Constants.ClimbConstants.DEVICE_ID_CLIMB_ENCODER_FRONT;
+import static frc.robot.Constants.ClimbConstants.DEVICE_ID_CLIMB_CANDI;
 import static frc.robot.Constants.ClimbConstants.DEVICE_ID_CLIMB_MOTOR_BACK;
 import static frc.robot.Constants.ClimbConstants.DEVICE_ID_CLIMB_MOTOR_FRONT;
 import static frc.robot.Constants.ClimbConstants.MAX_CLIMB_VOLTAGE;
@@ -30,7 +30,7 @@ public class ClimbSubsystem extends SubsystemBase {
 
   private final TalonFX frontMotor = new TalonFX(DEVICE_ID_CLIMB_MOTOR_FRONT, CANIVORE_BUS_NAME);
   private final TalonFX backMotor = new TalonFX(DEVICE_ID_CLIMB_MOTOR_BACK, CANIVORE_BUS_NAME);
-  private final CANdi climbCANdi = new CANdi(DEVICE_ID_CLIMB_ENCODER_FRONT, CANIVORE_BUS_NAME);
+  private final CANdi climbCANdi = new CANdi(DEVICE_ID_CLIMB_CANDI, CANIVORE_BUS_NAME);
 
   private final VoltageOut climbControlFront = new VoltageOut(0.0).withEnableFOC(true);
   private final VoltageOut climbControlBack = new VoltageOut(0.0).withEnableFOC(true);

@@ -110,10 +110,9 @@ public class Constants {
    * Constants for the climb subsystem
    */
   public static class ClimbConstants {
-    public static final int DEVICE_ID_CLIMB_MOTOR_FRONT = 60;
-    public static final int DEVICE_ID_CLIMB_MOTOR_BACK = 65;
-    public static final int DEVICE_ID_CLIMB_ENCODER_FRONT = 61;
-    public static final int DEVICE_ID_CLIMB_ENCODER_BACK = 66;
+    public static final int DEVICE_ID_CLIMB_MOTOR_FRONT = 30;
+    public static final int DEVICE_ID_CLIMB_MOTOR_BACK = 31;
+    public static final int DEVICE_ID_CLIMB_CANDI = 32;
 
     public static final Angle CLIMB_MAGNETIC_OFFSET_FRONT = Rotations.of(0.0);
     public static final Angle CLIMB_MAGNETIC_OFFSET_BACK = Rotations.of(0.0);
@@ -133,12 +132,12 @@ public class Constants {
    * Constants for the arm subsystem
    */
   public static class ArmConstants {
-    public static final int DEVICE_ID_ELEVATOR_MOTOR_LEADER = 80;
-    public static final int DEVICE_ID_ELEVATOR_MOTOR_FOLLOWER = 81;
-    public static final int DEVICE_ID_ELEVATOR_CANDI = 85;
+    public static final int DEVICE_ID_ELEVATOR_MOTOR_LEADER = 40;
+    public static final int DEVICE_ID_ELEVATOR_MOTOR_FOLLOWER = 41;
+    public static final int DEVICE_ID_ELEVATOR_CANDI = 42;
 
-    public static final int DEVICE_ID_ARM_MOTOR = 90;
-    public static final int DEVICE_ID_ARM_CANDI = 95;
+    public static final int DEVICE_ID_ARM_MOTOR = 45;
+    public static final int DEVICE_ID_ARM_CANDI = 46;
 
     public static final SlotConfigs ELEVATOR_SLOT_CONFIGS = new SlotConfigs().withKP(0.0)
         .withKD(0.0)
@@ -205,8 +204,8 @@ public class Constants {
    */
   public static class GamePieceManipulatorConstants {
 
-    public static final int DEVICE_ID_MANIPULATOR_MOTOR = 50;
-    public static final int DEVICE_ID_GAME_PIECE_CANRANGE = 71;
+    public static final int DEVICE_ID_MANIPULATOR_MOTOR = 20;
+    public static final int DEVICE_ID_GAME_PIECE_CANRANGE = 36;
 
     public static final SlotConfigs MANIPULATION_SLOT_CONFIGS = new SlotConfigs().withKP(0.0).withKD(0.0).withKS(0.0);
     public static final SlotConfigs HOLD_SLOT_CONFIGS = new SlotConfigs().withKP(0.0).withKD(0.0);
