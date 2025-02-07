@@ -5,7 +5,7 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.GamePieceManipulatorSubsystem;
 
 /**
- * A GamePieceManipulatorCommands uses the GamepieceMainpulatorSubsytems to grab the coral.
+ * Intakes the coral.
  */
 public class IntakeCoralCommand extends Command {
   // The Subsystem the command runs on.
@@ -44,7 +44,7 @@ public class IntakeCoralCommand extends Command {
 
   @Override
   public boolean isFinished() {
-    return false;
+    return gamePieceManipulatorSubsystem.isCoralInPickupPosition();
   }
 
   /**

@@ -5,7 +5,7 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.GamePieceManipulatorSubsystem;
 
 /**
- * A GamePieceManipulatorCommands uses the GamepieceMainpulatorSubsytems and hold the coral in postion or fixes position
+ * Runs the motor enough to secure the coral.
  */
 public class ActiveHoldCoralCommand extends Command {
   // The Subsystem the command runs on.
@@ -15,7 +15,7 @@ public class ActiveHoldCoralCommand extends Command {
   /**
    * The construcnter of the command and tell the perimeteres.
    * 
-   * @param manipulator
+   * @param manipulator manipulator subsystem
    */
   public ActiveHoldCoralCommand(GamePieceManipulatorSubsystem manipulator, ArmSubsystem arm) {
     this.gamePieceManipulatorSubsystem = manipulator;
@@ -42,7 +42,8 @@ public class ActiveHoldCoralCommand extends Command {
 
   @Override
   public boolean isFinished() {
-    return false;
+    return gamePieceManipulatorSubsystem.isCoralInPickupPosition();
+
   }
 
   /**

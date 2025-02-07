@@ -1,10 +1,6 @@
 package frc.robot.commands;
 
-import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -15,18 +11,16 @@ import java.util.function.Supplier;
  * A GamePieceManipulatorCommands uses the GamepieceMainpulatorSubsytems to score the coral.
  */
 public class ScoreCoralCommand extends Command {
-  // The Subsystem the command runs on.
+
   private final GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem;
   private final ArmSubsystem armSubsystem;
   private final CommandSwerveDrivetrain swerveDrivetrain;
 
-  private final Supplier<Rotation2d> robotAngleSupplier;
   private final Supplier<Pose2d> poseSupplier;
-  private final Supplier<ChassisSpeeds> chassSupplier;
   private final int levelToScore;
 
   /**
-   * The construcnter of the command and tell the perimeteres.
+   * Construcnter define subsytems, Pose Estimator, and all varibles needed.
    * 
    * @param manipulator
    * @param arm
@@ -41,8 +35,6 @@ public class ScoreCoralCommand extends Command {
       ArmSubsystem arm,
       CommandSwerveDrivetrain drive,
       Supplier<Pose2d> poseSupplier,
-      Supplier<Rotation2d> robotAngleSupplier,
-      Supplier<ChassisSpeeds> chassSupplier,
       int levelToScore) {
     this.gamePieceManipulatorSubsystem = manipulator;
     this.armSubsystem = arm;
@@ -51,8 +43,7 @@ public class ScoreCoralCommand extends Command {
     addRequirements(swerveDrivetrain, armSubsystem, gamePieceManipulatorSubsystem);
 
     this.poseSupplier = poseSupplier;
-    this.robotAngleSupplier = robotAngleSupplier;
-    this.chassSupplier = chassSupplier;
+
   }
 
   /**
@@ -60,24 +51,21 @@ public class ScoreCoralCommand extends Command {
    */
   @Override
   public void initialize() {
-    var robotPose = poseSupplier.get();
-    var robotAngle = robotAngleSupplier.get();
-    final SwerveRequest.FieldCentric _drive = new SwerveRequest.FieldCentric();
-    var fieldSpeeds = new Translation2d().rotateBy(robotAngle);
+    // Will replace with better drive to pose.
+    // var robotPose = poseSupplier.get();
+    // final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric();
+    // var fieldSpeeds = new Translation2d().rotateBy(robotPose.getRotation());
     switch (levelToScore) {
+      // The case the numbers refere to leaves of the reef with the trench being 0.
       case 1:
-        armSubsystem.moveElevatorLevel1();
-        armSubsystem.moveArmToIntake();
-        break;
-      case 2:
         armSubsystem.moveElevatorLevel2();
         armSubsystem.moveArmToLevel2();
         break;
-      case 3:
+      case 2:
         armSubsystem.moveElevatorLevel3();
         armSubsystem.moveArmToLevel3();
         break;
-      case 4:
+      case 3:
         armSubsystem.moveElevatorLevel4();
         armSubsystem.moveArmToLevel4();
         break;
@@ -85,7 +73,7 @@ public class ScoreCoralCommand extends Command {
         break;
     }
     // The Number are way oof and X and Y are probaly near 0 and were more worried about rotanioanl rate.
-    swerveDrivetrain.setControl(_drive.withVelocityX(50).withVelocityY(50).withRotationalRate(50));
+    // swerveDrivetrain.setControl(drive.withVelocityX(50).withVelocityY(50).withRotationalRate(50));
   }
 
   /**
@@ -96,6 +84,8 @@ public class ScoreCoralCommand extends Command {
     var isElevatorAtPosition = armSubsystem.isElevatorAtPosition();
     var isArmAtPosition = armSubsystem.isArmAtPosition();
     if (isElevatorAtPosition && isArmAtPosition) {
+      armSubsystem.stopArm();
+      armSubsystem.stopElevator();
       gamePieceManipulatorSubsystem.scoreCoral();
     } else {
       gamePieceManipulatorSubsystem.activeHoldGamePiece();
@@ -103,7 +93,7 @@ public class ScoreCoralCommand extends Command {
   }
 
   public boolean isFinished() {
-    return false;
+    return !gamePieceManipulatorSubsystem.isCoralInPickupPosition();
   }
 
   /**

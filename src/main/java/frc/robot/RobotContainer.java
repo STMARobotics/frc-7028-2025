@@ -82,6 +82,25 @@ public class RobotContainer {
         .ifPresent(trigger -> trigger.onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric)));
 
     drivetrain.registerTelemetry(drivetrainTelemetry::telemeterize);
+
+    // Affector
+    controlBindings.intakeCoral()
+        .ifPresent(trigger -> trigger.onTrue(new IntakeCoralCommand(gamePieceManipulatorSubsystem, armSubsystem)));
+    controlBindings.ejectCoral()
+        .ifPresent(trigger -> trigger.onTrue(new EjectCoralCommand(gamePieceManipulatorSubsystem, armSubsystem)));
+    controlBindings.holdCoral()
+        .ifPresent(trigger -> trigger.onTrue(new ActiveHoldCoralCommand(gamePieceManipulatorSubsystem, armSubsystem)));
+    controlBindings.scoreCoral()
+        .ifPresent(
+            trigger -> trigger.onTrue(
+                new ScoreCoralCommand(
+                    gamePieceManipulatorSubsystem,
+                    armSubsystem,
+                    drivetrain,
+                    () -> drivetrain.getState().Pose,
+                    0)));
+    // The null represnts angle/pose supplieer and might be filled in with something else.
+
   }
 
   public Command getAutonomousCommand() {
@@ -142,23 +161,5 @@ public class RobotContainer {
     tab.addBoolean("Manipulator Backwards Test", () -> testMode.getManipulatorBackwardsTestResult());
     tab.addBoolean("Arm Elevator Test", () -> testMode.getArmElevatorTestResult());
     tab.addBoolean("Arm Test", () -> testMode.getArmTestResult());
-  }
-
-  // Affector
-  private void configureButtonBinding() {
-    ControlBindings.InnerControlBindings.intakeCoralCommand()
-        .ifPresent(trigger -> trigger.onTrue(new IntakeCoralCommand(gamePieceManipulatorSubsystem, armSubsystem)));
-
-    ControlBindings.InnerControlBindings.ejectCoralCommand()
-        .ifPresent(trigger -> trigger.onTrue(new EjectCoralCommand(gamePieceManipulatorSubsystem, armSubsystem)));
-
-    ControlBindings.InnerControlBindings.activeHoldCoralComammand()
-        .ifPresent(trigger -> trigger.onTrue(new ActiveHoldCoralCommand(gamePieceManipulatorSubsystem, armSubsystem)));
-
-    ControlBindings.InnerControlBindings.scoreCoralCommand()
-        .ifPresent(
-            trigger -> trigger.onTrue(
-                new ScoreCoralCommand(gamePieceManipulatorSubsystem, armSubsystem, drivetrain, null, null, null, 0)));
-    // The null represnts angle/pose supplieer and might be filled in with something else.
   }
 }

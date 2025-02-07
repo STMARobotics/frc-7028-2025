@@ -5,7 +5,7 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.GamePieceManipulatorSubsystem;
 
 /**
- * A GamePieceManipulatorCommands uses the GamepieceMainpulatorSubsytems and ejcets the coral.
+ * Eject the coral.
  */
 public class EjectCoralCommand extends Command {
   // The Subsystem the command runs on.
@@ -36,7 +36,7 @@ public class EjectCoralCommand extends Command {
 
   @Override
   public boolean isFinished() {
-    return false;
+    return !gamePieceManipulatorSubsystem.isCoralInPickupPosition();
   }
 
   /**

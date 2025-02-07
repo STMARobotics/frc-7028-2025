@@ -50,46 +50,43 @@ public abstract class ControlBindings {
    *
    * @return optional trigger
    */
-  public Optional<Trigger> seedFieldCentric() {
+  public static Optional<Trigger> seedFieldCentric() {
     return Optional.empty();
   }
 
-  public interface InnerControlBindings {
+  /**
+   * Intakes the Coral .
+   * 
+   * @return Optional Trigger
+   */
+  public Optional<Trigger> intakeCoral() {
+    return Optional.empty();
+  }
 
-    /**
-     * Intakes the Coral from the reef.
-     * 
-     * @return
-     */
-    public static Optional<Trigger> intakeCoralCommand() {
-      return Optional.empty();
-    }
+  /**
+   * Eject the Coral and put it on the
+   * 
+   * @return Optional Trigger
+   */
+  public Optional<Trigger> ejectCoral() {
+    return Optional.empty();
+  }
 
-    /**
-     * Eject the Coral from the arm and Game Pieace Manipulator.
-     * 
-     * @return
-     */
-    public static Optional<Trigger> ejectCoralCommand() {
-      return Optional.empty();
-    }
+  /**
+   * Make sure the the Coral is in the right postion and allowes the arm to hold it.
+   * 
+   * @return Optional Trigger
+   */
+  public Optional<Trigger> holdCoral() {
+    return Optional.empty();
+  }
 
-    /**
-     * Make sure the the Coral is in the right postion and allowes the arm to hold it.
-     * 
-     * @return
-     */
-    public static Optional<Trigger> activeHoldCoralComammand() {
-      return Optional.empty();
-    }
-
-    /**
-     * Allows the Game Piece Manipultor to score accurately.
-     * 
-     * @return
-     */
-    public static Optional<Trigger> scoreCoralCommand() {
-      return Optional.empty();
-    }
+  /**
+   * Allows the Game Piece Manipultor to score accurately.
+   * 
+   * @return Optional Trigger
+   */
+  public Optional<Trigger> scoreCoral() {
+    return Optional.empty();
   }
 }
