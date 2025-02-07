@@ -21,7 +21,6 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANdi;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -56,12 +55,10 @@ public class ClimbSubsystem extends SubsystemBase {
         .withStatorCurrentLimitEnable(true)
         .withSupplyCurrentLimit(CLIMB_SUPPLY_CURRENT_LIMIT)
         .withSupplyCurrentLimitEnable(true);
-    climbTalonConfig.Feedback.withRotorToSensorRatio(CLIMB_ROTOR_TO_SENSOR_RATIO);
-    climbTalonConfig.Feedback.FeedbackRemoteSensorID = climbCANdi.getDeviceID();
-    climbTalonConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANdiPWM1;
+    climbTalonConfig.Feedback.withRotorToSensorRatio(CLIMB_ROTOR_TO_SENSOR_RATIO).withFusedCANdiPwm1(climbCANdi);
 
     frontMotor.getConfigurator().apply(climbTalonConfig);
-    climbTalonConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANdiPWM2;
+    climbTalonConfig.Feedback.withFusedCANdiPwm2(climbCANdi);
     backMotor.getConfigurator().apply(climbTalonConfig);
   }
 
