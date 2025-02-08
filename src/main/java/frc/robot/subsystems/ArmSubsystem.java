@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import static com.ctre.phoenix6.signals.FeedbackSensorSourceValue.FusedCANdiPWM1;
 import static com.ctre.phoenix6.signals.ForwardLimitSourceValue.RemoteCANdiS1;
 import static com.ctre.phoenix6.signals.NeutralModeValue.Brake;
 import static com.ctre.phoenix6.signals.ReverseLimitSourceValue.RemoteCANdiS2;
@@ -165,9 +164,7 @@ public class ArmSubsystem extends SubsystemBase {
         .withStatorCurrentLimit(ARM_STATOR_CURRENT_LIMIT)
         .withStatorCurrentLimitEnable(true);
     armTalonConfig.withMotionMagic(ARM_MOTION_MAGIC_CONFIGS);
-    armTalonConfig.Feedback.withSensorToMechanismRatio(ARM_SENSOR_TO_MECHANISM_RATIO);
-    armTalonConfig.Feedback.FeedbackRemoteSensorID = armCanDi.getDeviceID();
-    armTalonConfig.Feedback.FeedbackSensorSource = FusedCANdiPWM1;
+    armTalonConfig.Feedback.withSensorToMechanismRatio(ARM_SENSOR_TO_MECHANISM_RATIO).withFusedCANdiPwm1(armCanDi);
 
     armMotor.getConfigurator().apply(armTalonConfig);
     SmartDashboard.putData("Arm", armMechanism);

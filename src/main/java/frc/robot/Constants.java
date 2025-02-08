@@ -4,13 +4,17 @@ import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Millimeters;
 import static edu.wpi.first.units.Units.Radian;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
+import static frc.robot.Constants.TeleopDriveConstants.MAX_TELEOP_ANGULAR_VELOCITY;
+import static frc.robot.Constants.TeleopDriveConstants.MAX_TELEOP_VELOCITY;
 
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.SlotConfigs;
@@ -24,11 +28,14 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Voltage;
+import frc.robot.commands.DriveToPoseCommand;
 import frc.robot.generated.TunerConstants;
 
 /**
@@ -52,6 +59,32 @@ public class Constants {
     public static final LinearVelocity MAX_TELEOP_VELOCITY = TunerConstants.kSpeedAt12Volts;
     /** Max angular velicity the driver can request */
     public static final AngularVelocity MAX_TELEOP_ANGULAR_VELOCITY = RotationsPerSecond.of(1.25);
+  }
+
+  /**
+   * Constants for automatically driving to a pose
+   * 
+   * @see DriveToPoseCommand
+   */
+  public static class DriveToPoseConstants {
+    public static final LinearVelocity MAX_DRIVE_TO_POSE_TRANSLATION_VELOCITY = MAX_TELEOP_VELOCITY.div(2.0);
+    public static final LinearAcceleration MAX_DRIVE_TO_POSE_TRANSLATION_ACCELERATION = MetersPerSecondPerSecond
+        .of(2.0);
+    public static final AngularVelocity MAX_DRIVE_TO_POSE_ANGULAR_VELOCITY = MAX_TELEOP_ANGULAR_VELOCITY.times(0.75);
+    public static final AngularAcceleration MAX_DRIVE_TO_POSE_ANGULAR_ACCELERATION = RadiansPerSecondPerSecond
+        .of(6.0 * Math.PI);
+
+    public static final double THETA_kP = 3.0;
+    public static final double THETA_kI = 0.0;
+    public static final double THETA_kD = 0.0;
+
+    public static final double X_kP = 5.0;
+    public static final double X_kI = 0.0;
+    public static final double X_kD = 0.0;
+
+    public static final double Y_kP = 5.0;
+    public static final double Y_kI = 0.0;
+    public static final double Y_kD = 0.0;
   }
 
   /**
@@ -98,10 +131,9 @@ public class Constants {
    * Constants for the climb subsystem
    */
   public static class ClimbConstants {
-    public static final int DEVICE_ID_CLIMB_MOTOR_FRONT = 60;
-    public static final int DEVICE_ID_CLIMB_MOTOR_BACK = 65;
-    public static final int DEVICE_ID_CLIMB_ENCODER_FRONT = 61;
-    public static final int DEVICE_ID_CLIMB_ENCODER_BACK = 66;
+    public static final int DEVICE_ID_CLIMB_MOTOR_FRONT = 30;
+    public static final int DEVICE_ID_CLIMB_MOTOR_BACK = 31;
+    public static final int DEVICE_ID_CLIMB_CANDI = 32;
 
     public static final Angle CLIMB_MAGNETIC_OFFSET_FRONT = Rotations.of(0.0);
     public static final Angle CLIMB_MAGNETIC_OFFSET_BACK = Rotations.of(0.0);
@@ -121,12 +153,12 @@ public class Constants {
    * Constants for the arm subsystem
    */
   public static class ArmConstants {
-    public static final int DEVICE_ID_ELEVATOR_MOTOR_LEADER = 80;
-    public static final int DEVICE_ID_ELEVATOR_MOTOR_FOLLOWER = 81;
-    public static final int DEVICE_ID_ELEVATOR_CANDI = 85;
+    public static final int DEVICE_ID_ELEVATOR_MOTOR_LEADER = 40;
+    public static final int DEVICE_ID_ELEVATOR_MOTOR_FOLLOWER = 41;
+    public static final int DEVICE_ID_ELEVATOR_CANDI = 42;
 
-    public static final int DEVICE_ID_ARM_MOTOR = 90;
-    public static final int DEVICE_ID_ARM_CANDI = 95;
+    public static final int DEVICE_ID_ARM_MOTOR = 45;
+    public static final int DEVICE_ID_ARM_CANDI = 46;
 
     public static final SlotConfigs ELEVATOR_SLOT_CONFIGS = new SlotConfigs().withKP(0.0)
         .withKD(0.0)
@@ -193,8 +225,8 @@ public class Constants {
    */
   public static class GamePieceManipulatorConstants {
 
-    public static final int DEVICE_ID_MANIPULATOR_MOTOR = 50;
-    public static final int DEVICE_ID_GAME_PIECE_CANRANGE = 71;
+    public static final int DEVICE_ID_MANIPULATOR_MOTOR = 20;
+    public static final int DEVICE_ID_GAME_PIECE_CANRANGE = 36;
 
     public static final SlotConfigs MANIPULATION_SLOT_CONFIGS = new SlotConfigs().withKP(0.0).withKD(0.0).withKS(0.0);
     public static final SlotConfigs HOLD_SLOT_CONFIGS = new SlotConfigs().withKP(0.0).withKD(0.0);
@@ -231,6 +263,9 @@ public class Constants {
     public static final Voltage CLIMB_TESTING_VOLTAGE = Volts.of(5);
   }
 
+  /**
+   * Constants for the MitoCANDria
+   */
   public static class MitoCANDriaConstants {
     public static final int DEVICE_ID_MITOCANDRIA = 0;
   }

@@ -9,6 +9,8 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class DrivetrainTelemetry {
   // Limit telemetry updates to prevent flooding network and Shuffleboard
@@ -28,6 +30,7 @@ public class DrivetrainTelemetry {
       .getStructArrayTopic("Module Targets", SwerveModuleState.struct)
       .publish();
   private final DoublePublisher periodPublisher = driveStats.getDoubleTopic("Period").publish();
+  private final Field2d field2d = new Field2d();
 
   private final Timer frequencyTimer = new Timer();
 
@@ -36,6 +39,7 @@ public class DrivetrainTelemetry {
    */
   public DrivetrainTelemetry() {
     frequencyTimer.start();
+    SmartDashboard.putData(field2d);
   }
 
   /* Accept the swerve drive state and telemeterize it to NetworkTables */
@@ -48,6 +52,7 @@ public class DrivetrainTelemetry {
       moduleStatePublisher.set(state.ModuleStates);
       moduleTargetsPublisher.set(state.ModuleTargets);
       periodPublisher.accept(state.OdometryPeriod);
+      field2d.setRobotPose(state.Pose);
     }
   }
 
