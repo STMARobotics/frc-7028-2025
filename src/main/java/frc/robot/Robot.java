@@ -8,8 +8,10 @@ import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.Logged.Strategy;
+import edu.wpi.first.net.WebServer;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -30,6 +32,13 @@ public class Robot extends TimedRobot {
     DataLogManager.start(); // WPILib logger
     DriverStation.startDataLog(DataLogManager.getLog()); // Record both DS control and joystick data
     Epilogue.bind(this);
+  }
+
+  @Override
+  public void robotInit() {
+    // Webserver for Elastic layout
+    // See https://frc-elastic.gitbook.io/docs/additional-features-and-references/remote-layout-downloading
+    WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
   }
 
   @Override
