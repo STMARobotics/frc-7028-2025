@@ -67,7 +67,10 @@ public class TunerConstants {
           .withStatorCurrentLimitEnable(true));
   private static final CANcoderConfiguration encoderInitialConfigs = new CANcoderConfiguration();
   // Configs for the Pigeon 2; leave this null to skip applying Pigeon 2 configs
-  private static final Pigeon2Configuration pigeonConfigs = null;
+  private static final Pigeon2Configuration pigeonConfigs = new Pigeon2Configuration().withMountPose(
+      new MountPoseConfigs().withMountPoseYaw(Degrees.of(-89.06888580322266))
+          .withMountPosePitch(Degrees.of(-12.711926460266113))
+          .withMountPoseRoll(Degrees.of(-0.6565248370170593)));
 
   // CAN bus that the devices are located on;
   // All swerve devices must share the same CAN bus
