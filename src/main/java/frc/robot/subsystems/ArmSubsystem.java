@@ -8,6 +8,8 @@ import static com.ctre.phoenix6.signals.ReverseLimitSourceValue.RemoteCANdiS2;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.ArmConstants.ARM_MOTION_MAGIC_CONFIGS;
 import static frc.robot.Constants.ArmConstants.ARM_PIVOT_LENGTH;
@@ -88,9 +90,9 @@ public class ArmSubsystem extends SubsystemBase {
 
   private final SysIdRoutine elevatorSysIdRoutine = new SysIdRoutine(
       new SysIdRoutine.Config(
-          null,
-          null,
-          null,
+          Volts.per(Second).of(.25),
+          Volts.of(1),
+          Seconds.of(5),
           state -> SignalLogger.writeString("Elevator Motor SysId", state.toString())),
       new SysIdRoutine.Mechanism((voltage) -> {
         elevatorMotorLeader.setControl(sysIdElevatorControl.withOutput(voltage.in(Volts)));
