@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import static com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive;
 import static com.ctre.phoenix6.signals.NeutralModeValue.Brake;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
@@ -53,7 +54,7 @@ public class IndexerSubsystem extends SubsystemBase {
    */
   public IndexerSubsystem() {
     var beltTalonConfig = new TalonFXConfiguration();
-    beltTalonConfig.MotorOutput.withNeutralMode(Brake);
+    beltTalonConfig.MotorOutput.withNeutralMode(Brake).withInverted(Clockwise_Positive);
     beltTalonConfig.withSlot0(Slot0Configs.from(SLOT_CONFIGS));
     beltTalonConfig.CurrentLimits.withSupplyCurrentLimit(SUPPLY_CURRENT_LIMIT).withSupplyCurrentLimitEnable(true);
     beltTalonConfig.TorqueCurrent.withPeakForwardTorqueCurrent(TORQUE_CURRENT_LIMIT)

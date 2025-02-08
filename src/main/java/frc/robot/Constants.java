@@ -175,12 +175,9 @@ public class Constants {
     public static final Current ELEVATOR_STATOR_CURRENT_LIMIT = Amps.of(100);
 
     public static final double ELEVATOR_ROTOR_GEAR_RATIO = 2.85714286;
-    public static final Distance ELEVATOR_GEAR_DIAMETER = Inches.of(2);
-    public static final Distance ELEVATOR_GEAR_CIRCUMFERENCE = ELEVATOR_GEAR_DIAMETER.times(Math.PI);
-    public static final Distance ELEVATOR_DISTANCE_PER_ROTATION = ELEVATOR_GEAR_CIRCUMFERENCE
-        .div(ELEVATOR_ROTOR_GEAR_RATIO);
+    public static final Distance ELEVATOR_DISTANCE_PER_ROTATION = Meters.of(0.05489);
 
-    public static final Distance ELEVATOR_TOP_LIMIT = Meters.of(1.0); // Placeholder
+    public static final Distance ELEVATOR_TOP_LIMIT = Meters.of(0.727075);
     public static final Distance ELEVATOR_BOTTOM_LIMIT = Meters.of(0.0);
 
     public static final Distance ELEVATOR_POSITION_TOLERANCE = Inches.of(0.5);
@@ -192,7 +189,6 @@ public class Constants {
     public static final Current ARM_SUPPLY_CURRENT_LIMIT = Amps.of(40);
     public static final double ARM_ROTOR_TO_SENSOR_RATIO = 45;
     public static final Angle ARM_MAGNETIC_OFFSET = Rotations.of(0.0);
-    public static final double ARM_SENSOR_TO_MECHANISM_RATIO = 1.0;
 
     public static final SlotConfigs ARM_SLOT_CONFIGS = new SlotConfigs().withKP(0.0)
         .withKD(0.0)
