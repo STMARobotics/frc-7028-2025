@@ -73,4 +73,13 @@ public abstract class ControlBindings {
     return Optional.empty();
   }
 
+  /**
+   * Run the indexer belt and the manipulator wheels to intake coral
+   * 
+   * @return optional trigger
+   */
+  public Optional<Trigger> intakeCoral() {
+    return Optional.empty();
+  }
+
 }

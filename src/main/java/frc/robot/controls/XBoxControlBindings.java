@@ -65,4 +65,9 @@ public class XBoxControlBindings extends ControlBindings {
     return Optional.of(driverController::getRightTriggerAxis);
   }
 
+  @Override
+  public Optional<Trigger> intakeCoral() {
+    return Optional.empty();
+  }
+
 }

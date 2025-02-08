@@ -1,17 +1,20 @@
 package frc.robot.subsystems;
 
 import static com.ctre.phoenix6.signals.ForwardLimitSourceValue.RemoteCANdiS1;
+import static com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive;
+import static com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
 import static com.ctre.phoenix6.signals.NeutralModeValue.Brake;
 import static com.ctre.phoenix6.signals.ReverseLimitSourceValue.RemoteCANdiS2;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
-import static frc.robot.Constants.ArmConstants.ARM_MAGNETIC_OFFSET;
 import static frc.robot.Constants.ArmConstants.ARM_MOTION_MAGIC_CONFIGS;
 import static frc.robot.Constants.ArmConstants.ARM_PIVOT_LENGTH;
 import static frc.robot.Constants.ArmConstants.ARM_POSITION_TOLERANCE;
-import static frc.robot.Constants.ArmConstants.ARM_SENSOR_TO_MECHANISM_RATIO;
+import static frc.robot.Constants.ArmConstants.ARM_ROTOR_TO_SENSOR_RATIO;
 import static frc.robot.Constants.ArmConstants.ARM_SLOT_CONFIGS;
 import static frc.robot.Constants.ArmConstants.ARM_STATOR_CURRENT_LIMIT;
 import static frc.robot.Constants.ArmConstants.ARM_SUPPLY_CURRENT_LIMIT;
@@ -51,6 +54,8 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANdi;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.S1CloseStateValue;
+import com.ctre.phoenix6.signals.S2CloseStateValue;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
@@ -73,7 +78,7 @@ public class ArmSubsystem extends SubsystemBase {
 
   private final TalonFX elevatorMotorLeader = new TalonFX(DEVICE_ID_ELEVATOR_MOTOR_LEADER, CANIVORE_BUS_NAME);
   private final TalonFX elevatorMotorFollower = new TalonFX(DEVICE_ID_ELEVATOR_MOTOR_FOLLOWER, CANIVORE_BUS_NAME);
-  private final CANdi canDiElevator = new CANdi(DEVICE_ID_ELEVATOR_CANDI, CANIVORE_BUS_NAME);
+  private final CANdi elevatorCanDi = new CANdi(DEVICE_ID_ELEVATOR_CANDI, CANIVORE_BUS_NAME);
 
   private final TalonFX armMotor = new TalonFX(DEVICE_ID_ARM_MOTOR, CANIVORE_BUS_NAME);
   private final CANdi armCanDi = new CANdi(DEVICE_ID_ARM_CANDI, CANIVORE_BUS_NAME);
@@ -85,9 +90,9 @@ public class ArmSubsystem extends SubsystemBase {
 
   private final SysIdRoutine elevatorSysIdRoutine = new SysIdRoutine(
       new SysIdRoutine.Config(
-          null,
-          null,
-          null,
+          Volts.per(Second).of(.25),
+          Volts.of(1),
+          Seconds.of(5),
           state -> SignalLogger.writeString("Elevator Motor SysId", state.toString())),
       new SysIdRoutine.Mechanism((voltage) -> {
         elevatorMotorLeader.setControl(sysIdElevatorControl.withOutput(voltage.in(Volts)));
@@ -99,8 +104,8 @@ public class ArmSubsystem extends SubsystemBase {
         elevatorMotorLeader.setControl(sysIdArmControl.withOutput(voltage.in(Volts)));
       }, null, this));
 
-  private final StatusSignal<Boolean> atTopLimitSignal = canDiElevator.getS1Closed();
-  private final StatusSignal<Boolean> atBottomLimitSignal = canDiElevator.getS2Closed();
+  private final StatusSignal<Boolean> atTopLimitSignal = elevatorCanDi.getS1Closed();
+  private final StatusSignal<Boolean> atBottomLimitSignal = elevatorCanDi.getS2Closed();
   private final StatusSignal<Angle> elevatorPositionSignal = elevatorMotorLeader.getPosition();
   private final StatusSignal<Angle> armPositionSignal = armMotor.getPosition();
   private final StatusSignal<AngularVelocity> armVelocitySignal = armMotor.getVelocity();
@@ -127,17 +132,22 @@ public class ArmSubsystem extends SubsystemBase {
    * Creates a new ArmSubsystem.
    */
   public ArmSubsystem() {
+    var elevatorCanDiConfiguration = new CANdiConfiguration();
+    elevatorCanDiConfiguration.DigitalInputs.withS1CloseState(S1CloseStateValue.CloseWhenLow)
+        .withS2CloseState(S2CloseStateValue.CloseWhenLow);
+    elevatorCanDi.getConfigurator().apply(elevatorCanDiConfiguration);
+
     var elevatorTalonConfig = new TalonFXConfiguration();
-    elevatorTalonConfig.MotorOutput.withNeutralMode(Brake);
+    elevatorTalonConfig.MotorOutput.withNeutralMode(Brake).withInverted(CounterClockwise_Positive);
     elevatorTalonConfig.withSlot0(Slot0Configs.from(ELEVATOR_SLOT_CONFIGS));
     elevatorTalonConfig.CurrentLimits.withSupplyCurrentLimit(ELEVATOR_SUPPLY_CURRENT_LIMIT)
         .withSupplyCurrentLimitEnable(true)
         .withStatorCurrentLimit(ELEVATOR_STATOR_CURRENT_LIMIT)
         .withStatorCurrentLimitEnable(true);
     elevatorTalonConfig.withMotionMagic(ELEVATOR_MOTION_MAGIC_CONFIGS);
-    elevatorTalonConfig.HardwareLimitSwitch.withForwardLimitRemoteSensorID(canDiElevator.getDeviceID())
+    elevatorTalonConfig.HardwareLimitSwitch.withForwardLimitRemoteSensorID(elevatorCanDi.getDeviceID())
         .withForwardLimitSource(RemoteCANdiS1)
-        .withReverseLimitRemoteSensorID(canDiElevator.getDeviceID())
+        .withReverseLimitRemoteSensorID(elevatorCanDi.getDeviceID())
         .withReverseLimitSource(RemoteCANdiS2)
         .withReverseLimitAutosetPositionEnable(true)
         .withReverseLimitAutosetPositionValue(Rotations.of(0));
@@ -150,21 +160,15 @@ public class ArmSubsystem extends SubsystemBase {
     elevatorMotorFollower.getConfigurator().apply(elevatorTalonConfig);
     elevatorMotorFollower.setControl(new Follower(elevatorMotorLeader.getDeviceID(), false));
 
-    var armCanDiConfig = new CANdiConfiguration();
-    armCanDiConfig.PWM1.withAbsoluteSensorDiscontinuityPoint(Rotations.of(0.5))
-        .withAbsoluteSensorOffset(ARM_MAGNETIC_OFFSET)
-        .withSensorDirection(true);
-    armCanDi.getConfigurator().apply(armCanDiConfig);
-
     var armTalonConfig = new TalonFXConfiguration();
-    armTalonConfig.MotorOutput.withNeutralMode(Brake);
+    armTalonConfig.MotorOutput.withNeutralMode(Brake).withInverted(Clockwise_Positive);
     armTalonConfig.withSlot0(Slot0Configs.from(ARM_SLOT_CONFIGS));
     armTalonConfig.CurrentLimits.withSupplyCurrentLimit(ARM_SUPPLY_CURRENT_LIMIT)
         .withSupplyCurrentLimitEnable(true)
         .withStatorCurrentLimit(ARM_STATOR_CURRENT_LIMIT)
         .withStatorCurrentLimitEnable(true);
     armTalonConfig.withMotionMagic(ARM_MOTION_MAGIC_CONFIGS);
-    armTalonConfig.Feedback.withSensorToMechanismRatio(ARM_SENSOR_TO_MECHANISM_RATIO).withFusedCANdiPwm1(armCanDi);
+    armTalonConfig.Feedback.withSensorToMechanismRatio(ARM_ROTOR_TO_SENSOR_RATIO).withFusedCANdiPwm1(armCanDi);
 
     armMotor.getConfigurator().apply(armTalonConfig);
     SmartDashboard.putData("Arm", armMechanism);
