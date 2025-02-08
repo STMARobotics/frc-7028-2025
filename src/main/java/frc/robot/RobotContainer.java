@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.commands.IntakeCoralCommand;
 import frc.robot.commands.PhotonVisionCommand;
 import frc.robot.controls.ControlBindings;
 import frc.robot.controls.XBoxControlBindings;
@@ -26,6 +27,7 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.GamePieceManipulatorSubsystem;
+import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.MitoCANdriaSubsytem;
 
 @Logged(strategy = Logged.Strategy.OPT_IN)
@@ -39,6 +41,7 @@ public class RobotContainer {
       .withSteerRequestType(SteerRequestType.MotionMagicExpo);
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
 
+  private final IndexerSubsystem indexerSubsystem = new IndexerSubsystem();
   private final GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem = new GamePieceManipulatorSubsystem();
   private final ArmSubsystem armSubsystem = new ArmSubsystem();
   private final ClimbSubsystem climbSubsystem = new ClimbSubsystem();
@@ -49,7 +52,11 @@ public class RobotContainer {
   private final DrivetrainTelemetry drivetrainTelemetry = new DrivetrainTelemetry();
   private final PhotonVisionCommand visionCommand = new PhotonVisionCommand(drivetrain::addVisionMeasurement);
 
-  private final TestMode testMode = new TestMode(gamePieceManipulatorSubsystem, climbSubsystem, armSubsystem);
+  private final TestMode testMode = new TestMode(
+      gamePieceManipulatorSubsystem,
+      climbSubsystem,
+      armSubsystem,
+      indexerSubsystem);
 
   /* Path follower */
   private final SendableChooser<Command> autoChooser;
@@ -78,6 +85,10 @@ public class RobotContainer {
         .ifPresent(trigger -> trigger.onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric)));
 
     drivetrain.registerTelemetry(drivetrainTelemetry::telemeterize);
+
+    controlBindings.intakeCoral()
+        .ifPresent(
+            trigger -> trigger.toggleOnTrue(new IntakeCoralCommand(indexerSubsystem, gamePieceManipulatorSubsystem)));
   }
 
   public Command getAutonomousCommand() {
@@ -107,6 +118,12 @@ public class RobotContainer {
     tab.add("Rotate Dynam Fwd", drivetrain.sysIdRotationDynamCommand(kForward));
     tab.add("Rotate Dynam Rev", drivetrain.sysIdRotationDynamCommand(kReverse));
 
+    // Indexer
+    tab.add("Indexer Quasi Forward", indexerSubsystem.sysIdBeltQuasistaticCommand(kForward));
+    tab.add("Indexer Quasi Reverse", indexerSubsystem.sysIdBeltQuasistaticCommand(kReverse));
+    tab.add("Indexer Dynam Forward", indexerSubsystem.sysIdBeltDynamicCommand(kForward));
+    tab.add("Indexer Dynam Reverse", indexerSubsystem.sysIdBeltDynamicCommand(kReverse));
+
     // Elevator
     tab.add("Elevator Quasi Forward", armSubsystem.sysIdElevatorQuasistaticCommand(kForward));
     tab.add("Elevator Quasi Reverse", armSubsystem.sysIdElevatorQuasistaticCommand(kReverse));
@@ -133,7 +150,8 @@ public class RobotContainer {
     var tab = Shuffleboard.getTab("Testing");
 
     tab.add("Run Tests", testMode.testCommand());
-
+    tab.addBoolean("Indexer Fowards Test", () -> testMode.getIndexerForwardsTestResult());
+    tab.addBoolean("Indexer Backwards Test", () -> testMode.getIndexerBackwardsTestResult());
     tab.addBoolean("Manipulator Forwards Test", () -> testMode.getManipulatorForwardsTestResult());
     tab.addBoolean("Manipulator Backwards Test", () -> testMode.getManipulatorBackwardsTestResult());
     tab.addBoolean("Arm Elevator Test", () -> testMode.getArmElevatorTestResult());
