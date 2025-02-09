@@ -256,7 +256,7 @@ public class Constants {
     public static final AngularVelocity ROLLER_TESTING_SPEED = RadiansPerSecond.of(5);
     public static final AngularVelocity ROLLER_BACKWARDS_TESTING_SPEED = ROLLER_TESTING_SPEED.unaryMinus();
 
-    public static final Voltage CLIMB_TESTING_VOLTAGE = Volts.of(5);
+    public static final Voltage CLIMB_TESTING_VOLTAGE = Volts.of(2);
   }
 
   /**
