@@ -3,6 +3,7 @@
 // the WPILib BSD license file in the root directory of this project.
 package frc.robot.subsystems;
 
+import static com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
@@ -80,7 +81,7 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
   public GamePieceManipulatorSubsystem() {
     var motorConfig = new TalonFXConfiguration();
     motorConfig.withSlot0(Slot0Configs.from(MANIPULATION_SLOT_CONFIGS)).withSlot1(Slot1Configs.from(HOLD_SLOT_CONFIGS));
-    motorConfig.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
+    motorConfig.MotorOutput.withNeutralMode(NeutralModeValue.Brake).withInverted(Clockwise_Positive);
     motorConfig.TorqueCurrent.withPeakForwardTorqueCurrent(TORQUE_CURRENT_LIMIT)
         .withPeakReverseTorqueCurrent(TORQUE_CURRENT_LIMIT.unaryMinus());
     motorConfig.CurrentLimits.withStatorCurrentLimit(STATOR_CURRENT_LIMIT)
