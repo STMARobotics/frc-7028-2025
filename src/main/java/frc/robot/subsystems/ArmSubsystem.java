@@ -92,7 +92,7 @@ public class ArmSubsystem extends SubsystemBase {
       new SysIdRoutine.Config(
           Volts.per(Second).of(.25),
           Volts.of(1),
-          Seconds.of(5),
+          Seconds.of(10),
           state -> SignalLogger.writeString("Elevator Motor SysId", state.toString())),
       new SysIdRoutine.Mechanism((voltage) -> {
         elevatorMotorLeader.setControl(sysIdElevatorControl.withOutput(voltage.in(Volts)));
