@@ -4,6 +4,8 @@ import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 import static edu.wpi.first.wpilibj2.command.Commands.run;
 import static frc.robot.Constants.TestingConstants.CLIMB_TESTING_VOLTAGE;
+import static frc.robot.Constants.TestingConstants.INDEXER_BACKWARDS_TESTING_SPEED;
+import static frc.robot.Constants.TestingConstants.INDEXER_TESTING_SPEED;
 import static frc.robot.Constants.TestingConstants.MANIPULATOR_BACKWARDS_TESTING_SPEED;
 import static frc.robot.Constants.TestingConstants.MANIPULATOR_TESTING_SPEED;
 
@@ -11,12 +13,15 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.GamePieceManipulatorSubsystem;
+import frc.robot.subsystems.IndexerSubsystem;
 
 /**
  * Command factory for TestMode
  */
 public class TestMode {
 
+  private boolean indexerForwardsTest;
+  private boolean indexerBackwardsTest;
   private boolean manipulatorForwardsTest;
   private boolean manipulatorBackwardsTest;
   private boolean climbTest;
@@ -25,6 +30,7 @@ public class TestMode {
   private final GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem;
   private final ClimbSubsystem climbSubsystem;
   private final ArmSubsystem armSubsystem;
+  private final IndexerSubsystem indexerSubsystem;
 
   /**
    * Constructs a test mode
@@ -36,10 +42,12 @@ public class TestMode {
   public TestMode(
       GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem,
       ClimbSubsystem climbSubsystem,
-      ArmSubsystem armSubsystem) {
+      ArmSubsystem armSubsystem,
+      IndexerSubsystem indexerSubsystem) {
     this.gamePieceManipulatorSubsystem = gamePieceManipulatorSubsystem;
     this.climbSubsystem = climbSubsystem;
     this.armSubsystem = armSubsystem;
+    this.indexerSubsystem = indexerSubsystem;
   }
 
   /**
@@ -49,8 +57,26 @@ public class TestMode {
     return testGamePieceManipulatorForwardsCommand().andThen(testGamePieceManipulatorBackwardsCommand())
         .andThen(testClimbCommand())
         .andThen(testArmElevatorCommand())
-        .andThen(testArmCommand());
+        .andThen(testArmCommand())
+        .andThen(testIndexerForwardsCommand())
+        .andThen(testIndexerBackwardsCommand());
 
+  }
+
+  private Command testIndexerForwardsCommand() {
+    return run(() -> indexerSubsystem.runBelt(INDEXER_TESTING_SPEED), indexerSubsystem)
+        .until(indexerSubsystem::isIndexerAtSpeed)
+        .withTimeout(Seconds.of(5))
+        .andThen(this::updateIndexerForwardsTestResult)
+        .finallyDo(indexerSubsystem::stop);
+  }
+
+  private Command testIndexerBackwardsCommand() {
+    return run(() -> indexerSubsystem.runBelt(INDEXER_BACKWARDS_TESTING_SPEED), indexerSubsystem)
+        .until(indexerSubsystem::isIndexerAtSpeed)
+        .withTimeout(Seconds.of(5))
+        .andThen(this::updateIndexerBackwardsTestResult)
+        .finallyDo(indexerSubsystem::stop);
   }
 
   private Command testGamePieceManipulatorForwardsCommand() {
@@ -95,6 +121,20 @@ public class TestMode {
   }
 
   /**
+   * Checks if the indexer forwards test has succeeded and updates the variable accordingly
+   */
+  private void updateIndexerForwardsTestResult() {
+    indexerForwardsTest = indexerSubsystem.isIndexerAtSpeed();
+  }
+
+  /**
+   * Checks if the indexer backwards test has succeeded and updates the variable accordingly
+   */
+  private void updateIndexerBackwardsTestResult() {
+    indexerBackwardsTest = indexerSubsystem.isIndexerAtSpeed();
+  }
+
+  /**
    * Checks if the manipulator forwards test has succeeded and updates the variable accordingly
    */
   private void updateManipulatorForwardsTestResult() {
@@ -127,6 +167,24 @@ public class TestMode {
    */
   private void updateArmTestResults() {
     armTest = armSubsystem.isArmAtPosition();
+  }
+
+  /**
+   * Gets the result of the indexer forwards test
+   *
+   * @return true if the indexer forwards test has been run successfully, otherwise false
+   */
+  public boolean getIndexerForwardsTestResult() {
+    return indexerForwardsTest;
+  }
+
+  /**
+   * Gets the result of the indexer backwards test
+   *
+   * @return true if the indexer backwards test has been run successfully, otherwise false
+   */
+  public boolean getIndexerBackwardsTestResult() {
+    return indexerBackwardsTest;
   }
 
   /**

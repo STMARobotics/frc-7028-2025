@@ -4,6 +4,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.Optional;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 /**
@@ -55,9 +56,27 @@ public abstract class ControlBindings {
   }
 
   /**
-   * Intakes the Coral .
+   * Supplier for the front climb duty cycle
+   *
+   * @return duty cycle supplier
+   */
+  public Optional<DoubleSupplier> frontClimb() {
+    return Optional.empty();
+  }
+
+  /**
+   * Supplier for the front climb duty cycle
+   *
+   * @return duty cycle supplier
+   */
+  public Optional<DoubleSupplier> backClimb() {
+    return Optional.empty();
+  }
+
+  /**
+   * Intakes coral from the Coral Station.
    * 
-   * @return Optional Trigger
+   * @return optional trigger
    */
   public Optional<Trigger> intakeCoral() {
     return Optional.empty();

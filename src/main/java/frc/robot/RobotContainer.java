@@ -30,6 +30,7 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.GamePieceManipulatorSubsystem;
+import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.MitoCANdriaSubsytem;
 
 @Logged(strategy = Logged.Strategy.OPT_IN)
@@ -43,6 +44,7 @@ public class RobotContainer {
       .withSteerRequestType(SteerRequestType.MotionMagicExpo);
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
 
+  private final IndexerSubsystem indexerSubsystem = new IndexerSubsystem();
   private final GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem = new GamePieceManipulatorSubsystem();
   private final ArmSubsystem armSubsystem = new ArmSubsystem();
   private final ClimbSubsystem climbSubsystem = new ClimbSubsystem();
@@ -53,7 +55,11 @@ public class RobotContainer {
   private final DrivetrainTelemetry drivetrainTelemetry = new DrivetrainTelemetry();
   private final PhotonVisionCommand visionCommand = new PhotonVisionCommand(drivetrain::addVisionMeasurement);
 
-  private final TestMode testMode = new TestMode(gamePieceManipulatorSubsystem, climbSubsystem, armSubsystem);
+  private final TestMode testMode = new TestMode(
+      gamePieceManipulatorSubsystem,
+      climbSubsystem,
+      armSubsystem,
+      indexerSubsystem);
 
   /* Path follower */
   private final SendableChooser<Command> autoChooser;
@@ -81,11 +87,21 @@ public class RobotContainer {
     controlBindings.seedFieldCentric()
         .ifPresent(trigger -> trigger.onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric)));
 
+    if (controlBindings.frontClimb().isPresent() || controlBindings.backClimb().isPresent()) {
+      climbSubsystem.setDefaultCommand(climbSubsystem.run(() -> {
+        controlBindings.frontClimb()
+            .ifPresent(frontSupplier -> climbSubsystem.runFrontClimb(frontSupplier.getAsDouble()));
+        controlBindings.backClimb().ifPresent(backSupplier -> climbSubsystem.runBackClimb(backSupplier.getAsDouble()));
+      }));
+    }
+
     drivetrain.registerTelemetry(drivetrainTelemetry::telemeterize);
 
     // Affector
     controlBindings.intakeCoral()
-        .ifPresent(trigger -> trigger.onTrue(new IntakeCoralCommand(gamePieceManipulatorSubsystem, armSubsystem)));
+        .ifPresent(
+            trigger -> trigger
+                .onTrue(new IntakeCoralCommand(indexerSubsystem, gamePieceManipulatorSubsystem, armSubsystem)));
     controlBindings.ejectCoral()
         .ifPresent(trigger -> trigger.onTrue(new EjectCoralCommand(gamePieceManipulatorSubsystem, armSubsystem)));
     controlBindings.holdCoral()
@@ -130,6 +146,12 @@ public class RobotContainer {
     tab.add("Rotate Dynam Fwd", drivetrain.sysIdRotationDynamCommand(kForward));
     tab.add("Rotate Dynam Rev", drivetrain.sysIdRotationDynamCommand(kReverse));
 
+    // Indexer
+    tab.add("Indexer Quasi Forward", indexerSubsystem.sysIdBeltQuasistaticCommand(kForward));
+    tab.add("Indexer Quasi Reverse", indexerSubsystem.sysIdBeltQuasistaticCommand(kReverse));
+    tab.add("Indexer Dynam Forward", indexerSubsystem.sysIdBeltDynamicCommand(kForward));
+    tab.add("Indexer Dynam Reverse", indexerSubsystem.sysIdBeltDynamicCommand(kReverse));
+
     // Elevator
     tab.add("Elevator Quasi Forward", armSubsystem.sysIdElevatorQuasistaticCommand(kForward));
     tab.add("Elevator Quasi Reverse", armSubsystem.sysIdElevatorQuasistaticCommand(kReverse));
@@ -156,7 +178,8 @@ public class RobotContainer {
     var tab = Shuffleboard.getTab("Testing");
 
     tab.add("Run Tests", testMode.testCommand());
-
+    tab.addBoolean("Indexer Fowards Test", () -> testMode.getIndexerForwardsTestResult());
+    tab.addBoolean("Indexer Backwards Test", () -> testMode.getIndexerBackwardsTestResult());
     tab.addBoolean("Manipulator Forwards Test", () -> testMode.getManipulatorForwardsTestResult());
     tab.addBoolean("Manipulator Backwards Test", () -> testMode.getManipulatorBackwardsTestResult());
     tab.addBoolean("Arm Elevator Test", () -> testMode.getArmElevatorTestResult());

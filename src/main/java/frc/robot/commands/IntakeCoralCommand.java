@@ -3,43 +3,43 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.GamePieceManipulatorSubsystem;
+import frc.robot.subsystems.IndexerSubsystem;
 
 /**
- * Intakes the coral.
+ * Runs the indexer belt and the manipulator wheels to transport the coral to the manipulator
  */
 public class IntakeCoralCommand extends Command {
-  // The Subsystem the command runs on.
+
+  private final IndexerSubsystem indexerSubsystem;
   private final GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem;
   private final ArmSubsystem armSubsystem;
 
   /**
-   * The construcnter of the command and tell the perimeteres.
-   * 
-   * @param manipulator
+   * Constructor for the IntakeCoralCommand
+   *
+   * @param indexerSubsystem indexer subsystem
+   * @param gamePieceManipulatorSubsystem manipulator subsystem
    */
-  public IntakeCoralCommand(GamePieceManipulatorSubsystem manipulator, ArmSubsystem arm) {
-    this.gamePieceManipulatorSubsystem = manipulator;
-    addRequirements(gamePieceManipulatorSubsystem);
-    this.armSubsystem = arm;
-    addRequirements(armSubsystem);
+  public IntakeCoralCommand(
+      IndexerSubsystem indexerSubsystem,
+      GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem,
+      ArmSubsystem armSubsystem) {
+    this.indexerSubsystem = indexerSubsystem;
+    this.gamePieceManipulatorSubsystem = gamePieceManipulatorSubsystem;
+    this.armSubsystem = armSubsystem;
+
+    addRequirements(indexerSubsystem, gamePieceManipulatorSubsystem, armSubsystem);
   }
 
-  /**
-   * Move the arm to intake postition, once.
-   */
   @Override
   public void initialize() {
     armSubsystem.moveArmToIntake();
-
   }
 
-  /**
-   * Allow the Game Pieace Manipulator to grab the coral.
-   */
   @Override
   public void execute() {
+    indexerSubsystem.intake();
     gamePieceManipulatorSubsystem.intakeCoral();
-
   }
 
   @Override
@@ -47,13 +47,10 @@ public class IntakeCoralCommand extends Command {
     return gamePieceManipulatorSubsystem.isCoralInPickupPosition();
   }
 
-  /**
-   * Stops and resets the Inject command.
-   */
   @Override
-  public void end(boolean interupted) {
-    armSubsystem.moveElevatorToDefault();
+  public void end(boolean interrupted) {
+    indexerSubsystem.stop();
     gamePieceManipulatorSubsystem.stop();
+    armSubsystem.moveElevatorToDefault();
   }
-
 }
