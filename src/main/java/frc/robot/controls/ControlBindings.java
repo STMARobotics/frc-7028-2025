@@ -51,7 +51,7 @@ public abstract class ControlBindings {
    *
    * @return optional trigger
    */
-  public static Optional<Trigger> seedFieldCentric() {
+  public Optional<Trigger> seedFieldCentric() {
     return Optional.empty();
   }
 

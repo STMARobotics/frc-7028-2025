@@ -97,7 +97,7 @@ public class RobotContainer {
 
     drivetrain.registerTelemetry(drivetrainTelemetry::telemeterize);
 
-    // Affector
+    // Coral bindings
     controlBindings.intakeCoral()
         .ifPresent(
             trigger -> trigger
@@ -108,15 +108,8 @@ public class RobotContainer {
         .ifPresent(trigger -> trigger.onTrue(new ActiveHoldCoralCommand(gamePieceManipulatorSubsystem, armSubsystem)));
     controlBindings.scoreCoral()
         .ifPresent(
-            trigger -> trigger.onTrue(
-                new ScoreCoralCommand(
-                    gamePieceManipulatorSubsystem,
-                    armSubsystem,
-                    drivetrain,
-                    () -> drivetrain.getState().Pose,
-                    0)));
-    // The null represnts angle/pose supplieer and might be filled in with something else.
-
+            trigger -> trigger
+                .onTrue(new ScoreCoralCommand(gamePieceManipulatorSubsystem, armSubsystem, drivetrain, 2)));
   }
 
   public Command getAutonomousCommand() {

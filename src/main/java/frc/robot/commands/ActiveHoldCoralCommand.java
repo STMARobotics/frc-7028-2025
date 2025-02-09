@@ -5,29 +5,24 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.GamePieceManipulatorSubsystem;
 
 /**
- * Runs the motor enough to secure the coral.
+ * Command to actively hold the coral in the game piece manipulator.
  */
 public class ActiveHoldCoralCommand extends Command {
-  // The Subsystem the command runs on.
   private final GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem;
   private final ArmSubsystem armSubsystem;
 
   /**
-   * The construcnter of the command and tell the perimeteres.
+   * Constructs a new ActiveHoldCommand
    * 
-   * @param manipulator manipulator subsystem
+   * @param manipulatorSubsystem manipulator subsystem
+   * @param armSubsystem arm subsystem
    */
-  public ActiveHoldCoralCommand(GamePieceManipulatorSubsystem manipulator, ArmSubsystem arm) {
-    this.gamePieceManipulatorSubsystem = manipulator;
-    addRequirements(gamePieceManipulatorSubsystem);
-
-    this.armSubsystem = arm;
-    addRequirements(armSubsystem);
+  public ActiveHoldCoralCommand(GamePieceManipulatorSubsystem manipulatorSubsystem, ArmSubsystem armSubsystem) {
+    this.gamePieceManipulatorSubsystem = manipulatorSubsystem;
+    this.armSubsystem = armSubsystem;
+    addRequirements(gamePieceManipulatorSubsystem, armSubsystem);
   }
 
-  /**
-   * If the elevator and teh arm are in the right postion it allows it to hold the coral if not then stops.
-   */
   @Override
   public void execute() {
     var isElevatorAtPosition = armSubsystem.isElevatorAtPosition();
@@ -46,9 +41,6 @@ public class ActiveHoldCoralCommand extends Command {
 
   }
 
-  /**
-   * Stops and resets the command.
-   */
   @Override
   public void end(boolean interrupted) {
     armSubsystem.moveElevatorToDefault();

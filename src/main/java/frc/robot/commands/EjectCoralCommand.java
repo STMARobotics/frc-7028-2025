@@ -5,29 +5,24 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.GamePieceManipulatorSubsystem;
 
 /**
- * Eject the coral.
+ * Command to eject the coral from the robot.
  */
 public class EjectCoralCommand extends Command {
-  // The Subsystem the command runs on.
   private final GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem;
   private final ArmSubsystem armSubsystem;
 
   /**
-   * The construcnter of the command and tell the perimeteres.
+   * Constructs a new EjectCoralCommand
    * 
-   * @param manipulator
+   * @param manipulatorSubsytem manipulator subsystem
+   * @param armSubsystem arm subsystem
    */
-  public EjectCoralCommand(GamePieceManipulatorSubsystem manipulator, ArmSubsystem arm) {
-    this.gamePieceManipulatorSubsystem = manipulator;
-    addRequirements(gamePieceManipulatorSubsystem);
-
-    this.armSubsystem = arm;
-    addRequirements(armSubsystem);
+  public EjectCoralCommand(GamePieceManipulatorSubsystem manipulatorSubsytem, ArmSubsystem armSubsystem) {
+    this.gamePieceManipulatorSubsystem = manipulatorSubsytem;
+    this.armSubsystem = armSubsystem;
+    addRequirements(gamePieceManipulatorSubsystem, armSubsystem);
   }
 
-  /**
-   * Allows the Game Piece Manipulator to let go of the coral.
-   */
   @Override
   public void execute() {
     gamePieceManipulatorSubsystem.ejectCoral();
@@ -39,9 +34,6 @@ public class EjectCoralCommand extends Command {
     return !gamePieceManipulatorSubsystem.isCoralInPickupPosition();
   }
 
-  /**
-   * Stops an dresets the commands.
-   */
   @Override
   public void end(boolean interrupted) {
     armSubsystem.moveElevatorToDefault();
