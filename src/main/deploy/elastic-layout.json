@@ -88,8 +88,8 @@
           },
           {
             "title": "Elevator Dynam Reverse",
-            "x": 512.0,
-            "y": 384.0,
+            "x": 768.0,
+            "y": 256.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Command",
@@ -101,8 +101,8 @@
           },
           {
             "title": "Elevator Quasi Forward",
-            "x": 768.0,
-            "y": 256.0,
+            "x": 512.0,
+            "y": 384.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Command",
