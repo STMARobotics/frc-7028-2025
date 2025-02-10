@@ -37,7 +37,7 @@ public class EjectCoralCommand extends Command {
 
   @Override
   public boolean isFinished() {
-    return !gamePieceManipulatorSubsystem.isCoralInEffector();
+    return false;
   }
 
   @Override
