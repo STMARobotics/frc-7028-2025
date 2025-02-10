@@ -35,6 +35,7 @@ public class IntakeCoralCommand extends Command {
   @Override
   public void initialize() {
     armSubsystem.moveArmToIntake();
+    armSubsystem.moveElevatorToDefault();
   }
 
   @Override
@@ -45,7 +46,7 @@ public class IntakeCoralCommand extends Command {
 
   @Override
   public boolean isFinished() {
-    return gamePieceManipulatorSubsystem.isCoralInPickupPosition();
+    return gamePieceManipulatorSubsystem.isCoralInEffector();
   }
 
   @Override

@@ -223,6 +223,8 @@ public class Constants {
 
     public static final int DEVICE_ID_MANIPULATOR_MOTOR = 20;
     public static final int DEVICE_ID_GAME_PIECE_CANRANGE = 36;
+    public static final int DEVICE_ID_EFFECTOR_CANRANGE = 5;
+    // Affector CanRange number is wronge because its new.
 
     public static final SlotConfigs MANIPULATION_SLOT_CONFIGS = new SlotConfigs().withKP(0.0).withKD(0.0).withKS(0.0);
     public static final SlotConfigs HOLD_SLOT_CONFIGS = new SlotConfigs().withKP(0.0).withKD(0.0);

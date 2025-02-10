@@ -24,6 +24,12 @@ public class EjectCoralCommand extends Command {
   }
 
   @Override
+  public void initialize() {
+    armSubsystem.moveElevatorToDefault();
+    armSubsystem.moveArmToIntake();
+  }
+
+  @Override
   public void execute() {
     gamePieceManipulatorSubsystem.ejectCoral();
 
@@ -31,7 +37,7 @@ public class EjectCoralCommand extends Command {
 
   @Override
   public boolean isFinished() {
-    return !gamePieceManipulatorSubsystem.isCoralInPickupPosition();
+    return !gamePieceManipulatorSubsystem.isCoralInEffector();
   }
 
   @Override

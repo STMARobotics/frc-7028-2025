@@ -62,7 +62,8 @@ public class ScoreCoralCommand extends Command {
   public void execute() {
     var isElevatorAtPosition = armSubsystem.isElevatorAtPosition();
     var isArmAtPosition = armSubsystem.isArmAtPosition();
-    if (isElevatorAtPosition && isArmAtPosition) {
+    var isHoldingCoral = gamePieceManipulatorSubsystem.isCoralInEffector();
+    if (isElevatorAtPosition && isArmAtPosition && isHoldingCoral) {
       armSubsystem.stopArm();
       armSubsystem.stopElevator();
       gamePieceManipulatorSubsystem.scoreCoral();
@@ -72,7 +73,7 @@ public class ScoreCoralCommand extends Command {
   }
 
   public boolean isFinished() {
-    return !gamePieceManipulatorSubsystem.isCoralInPickupPosition();
+    return !gamePieceManipulatorSubsystem.isCoralInEffector();
   }
 
   @Override
@@ -80,7 +81,5 @@ public class ScoreCoralCommand extends Command {
     armSubsystem.moveElevatorToDefault();
     armSubsystem.moveArmToIntake();
     gamePieceManipulatorSubsystem.stop();
-    armSubsystem.stopArm();
-    armSubsystem.stopElevator();
   }
 }

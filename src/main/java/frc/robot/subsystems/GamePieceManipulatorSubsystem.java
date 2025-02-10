@@ -10,6 +10,7 @@ import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.CANIVORE_BUS_NAME;
 import static frc.robot.Constants.GamePieceManipulatorConstants.CORAL_DETECTION_THRESHOLD;
+import static frc.robot.Constants.GamePieceManipulatorConstants.DEVICE_ID_EFFECTOR_CANRANGE;
 import static frc.robot.Constants.GamePieceManipulatorConstants.DEVICE_ID_GAME_PIECE_CANRANGE;
 import static frc.robot.Constants.GamePieceManipulatorConstants.DEVICE_ID_MANIPULATOR_MOTOR;
 import static frc.robot.Constants.GamePieceManipulatorConstants.EJECT_VELOCITY;
@@ -49,10 +50,12 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
 
   private final TalonFX wheelMotor = new TalonFX(DEVICE_ID_MANIPULATOR_MOTOR, CANIVORE_BUS_NAME);
   private final CANrange intakeCanRange = new CANrange(DEVICE_ID_GAME_PIECE_CANRANGE, CANIVORE_BUS_NAME);
+  private final CANrange effectorCanRange = new CANrange(DEVICE_ID_EFFECTOR_CANRANGE, CANIVORE_BUS_NAME);
 
   private final StatusSignal<Angle> positionSignal = wheelMotor.getPosition(false);
   private final StatusSignal<AngularVelocity> velocitySignal = wheelMotor.getVelocity(false);
   private final StatusSignal<Boolean> intakeCoralDetected = intakeCanRange.getIsDetected(false);
+  private final StatusSignal<Boolean> effectorCoralDetected = effectorCanRange.getIsDetected(false);
 
   private final TorqueCurrentFOC wheelCharacterization = new TorqueCurrentFOC(0.0);
 
@@ -184,5 +187,14 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
    */
   public boolean isCoralInPickupPosition() {
     return intakeCoralDetected.refresh().getValue();
+  }
+
+  /**
+   * Checks if there is an object is in the effector.
+   * 
+   * @return ture if the CANrange detected the coral.
+   */
+  public boolean isCoralInEffector() {
+    return effectorCoralDetected.refresh().getValue();
   }
 }

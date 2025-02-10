@@ -5,34 +5,38 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.GamePieceManipulatorSubsystem;
 
 /**
- * Command to actively hold the coral in the game piece manipulator.
+ * Runs the motor enough to secure the coral.
  */
 public class ActiveHoldCoralCommand extends Command {
+  // The Subsystem the command runs on.
   private final GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem;
   private final ArmSubsystem armSubsystem;
 
   /**
-   * Constructs a new ActiveHoldCommand
+   * The construcnter of the command and tell the perimeteres.
    * 
-   * @param manipulatorSubsystem manipulator subsystem
-   * @param armSubsystem arm subsystem
+   * @param manipulator manipulator subsystem
    */
-  public ActiveHoldCoralCommand(GamePieceManipulatorSubsystem manipulatorSubsystem, ArmSubsystem armSubsystem) {
-    this.gamePieceManipulatorSubsystem = manipulatorSubsystem;
-    this.armSubsystem = armSubsystem;
-    addRequirements(gamePieceManipulatorSubsystem, armSubsystem);
+  public ActiveHoldCoralCommand(GamePieceManipulatorSubsystem manipulator, ArmSubsystem arm) {
+    this.gamePieceManipulatorSubsystem = manipulator;
+    addRequirements(gamePieceManipulatorSubsystem);
+
+    this.armSubsystem = arm;
+    addRequirements(armSubsystem);
   }
 
+  /**
+   * If the elevator and teh arm are in the right postion it allows it to hold the coral if not then stops.
+   */
   @Override
   public void execute() {
     var isElevatorAtPosition = armSubsystem.isElevatorAtPosition();
     var isArmAtPosition = armSubsystem.isArmAtPosition();
 
-    if (isElevatorAtPosition && isArmAtPosition) {
-      gamePieceManipulatorSubsystem.activeHoldGamePiece();
-    } else {
-      gamePieceManipulatorSubsystem.stop();
-    }
+    gamePieceManipulatorSubsystem.activeHoldGamePiece();
+    armSubsystem.moveElevatorToDefault();
+    ;
+
   }
 
   @Override
@@ -41,10 +45,11 @@ public class ActiveHoldCoralCommand extends Command {
 
   }
 
+  /**
+   * Stops and resets the command.
+   */
   @Override
   public void end(boolean interrupted) {
-    armSubsystem.moveElevatorToDefault();
-    armSubsystem.moveArmToIntake();
     gamePieceManipulatorSubsystem.stop();
   }
 }
