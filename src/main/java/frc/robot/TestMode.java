@@ -3,12 +3,16 @@ package frc.robot;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 import static edu.wpi.first.wpilibj2.command.Commands.run;
+import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 import static frc.robot.Constants.TestingConstants.CLIMB_TESTING_VOLTAGE;
 import static frc.robot.Constants.TestingConstants.INDEXER_BACKWARDS_TESTING_SPEED;
 import static frc.robot.Constants.TestingConstants.INDEXER_TESTING_SPEED;
 import static frc.robot.Constants.TestingConstants.MANIPULATOR_BACKWARDS_TESTING_SPEED;
 import static frc.robot.Constants.TestingConstants.MANIPULATOR_TESTING_SPEED;
 
+import edu.wpi.first.networktables.BooleanPublisher;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
@@ -20,13 +24,18 @@ import frc.robot.subsystems.IndexerSubsystem;
  */
 public class TestMode {
 
-  private boolean indexerForwardsTest;
-  private boolean indexerBackwardsTest;
-  private boolean manipulatorForwardsTest;
-  private boolean manipulatorBackwardsTest;
-  private boolean climbTest;
-  private boolean armElevatorTest;
-  private boolean armTest;
+  private final NetworkTable testingTable = NetworkTableInstance.getDefault().getTable("TestMode");
+
+  private final BooleanPublisher indexerForwardPublisher = testingTable.getBooleanTopic("Indexer Forward").publish();
+  private final BooleanPublisher indexerBackwardPublisher = testingTable.getBooleanTopic("Indexer Backward").publish();
+  private final BooleanPublisher manipulatorForwardPublisher = testingTable.getBooleanTopic("Manipulator Forward")
+      .publish();
+  private final BooleanPublisher manipulatorBackwardPublisher = testingTable.getBooleanTopic("Manipulator Backward")
+      .publish();
+  private final BooleanPublisher climbPublisher = testingTable.getBooleanTopic("Climb").publish();
+  private final BooleanPublisher elevatorPubliser = testingTable.getBooleanTopic("Elevator").publish();
+  private final BooleanPublisher armPublisher = testingTable.getBooleanTopic("Arm").publish();
+
   private final GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem;
   private final ClimbSubsystem climbSubsystem;
   private final ArmSubsystem armSubsystem;
@@ -54,7 +63,8 @@ public class TestMode {
    * Command to run all the tests in the TestMode routine
    */
   public Command testCommand() {
-    return testGamePieceManipulatorForwardsCommand().andThen(testGamePieceManipulatorBackwardsCommand())
+    return runOnce(this::initializeResults).andThen(testGamePieceManipulatorForwardsCommand())
+        .andThen(testGamePieceManipulatorBackwardsCommand())
         .andThen(testClimbCommand())
         .andThen(testArmElevatorCommand())
         .andThen(testArmCommand())
@@ -63,11 +73,24 @@ public class TestMode {
 
   }
 
+  /**
+   * Sets all of the results to false
+   */
+  private void initializeResults() {
+    indexerForwardPublisher.set(false);
+    indexerBackwardPublisher.set(false);
+    manipulatorForwardPublisher.set(false);
+    manipulatorBackwardPublisher.set(false);
+    climbPublisher.set(false);
+    elevatorPubliser.set(false);
+    armPublisher.set(false);
+  }
+
   private Command testIndexerForwardsCommand() {
     return run(() -> indexerSubsystem.runBelt(INDEXER_TESTING_SPEED), indexerSubsystem)
         .until(indexerSubsystem::isIndexerAtSpeed)
         .withTimeout(Seconds.of(5))
-        .andThen(this::updateIndexerForwardsTestResult)
+        .andThen(() -> indexerForwardPublisher.set(indexerSubsystem.isIndexerAtSpeed()))
         .finallyDo(indexerSubsystem::stop);
   }
 
@@ -75,7 +98,7 @@ public class TestMode {
     return run(() -> indexerSubsystem.runBelt(INDEXER_BACKWARDS_TESTING_SPEED), indexerSubsystem)
         .until(indexerSubsystem::isIndexerAtSpeed)
         .withTimeout(Seconds.of(5))
-        .andThen(this::updateIndexerBackwardsTestResult)
+        .andThen(() -> indexerBackwardPublisher.set(indexerSubsystem.isIndexerAtSpeed()))
         .finallyDo(indexerSubsystem::stop);
   }
 
@@ -85,7 +108,7 @@ public class TestMode {
           gamePieceManipulatorSubsystem)
         .until(gamePieceManipulatorSubsystem::isManipulatorAtSpeed)
         .withTimeout(Seconds.of(5))
-        .andThen(this::updateManipulatorForwardsTestResult)
+        .andThen(() -> manipulatorForwardPublisher.set(gamePieceManipulatorSubsystem.isManipulatorAtSpeed()))
         .finallyDo(gamePieceManipulatorSubsystem::stop);
   }
 
@@ -95,145 +118,31 @@ public class TestMode {
           gamePieceManipulatorSubsystem)
         .until(gamePieceManipulatorSubsystem::isManipulatorAtSpeed)
         .withTimeout(Seconds.of(5))
-        .andThen(this::updateManipulatorBackwardsTestResult)
+        .andThen(() -> manipulatorBackwardPublisher.set(gamePieceManipulatorSubsystem.isManipulatorAtSpeed()))
         .finallyDo(gamePieceManipulatorSubsystem::stop);
   }
 
   private Command testClimbCommand() {
-    return run(() -> testClimbMotors(), climbSubsystem).until(climbSubsystem::areClimbMotorsMoving)
+    return run(() -> {
+      climbSubsystem.runFrontClimb(CLIMB_TESTING_VOLTAGE.in(Volts));
+      climbSubsystem.runBackClimb(CLIMB_TESTING_VOLTAGE.in(Volts));
+    }, climbSubsystem).until(climbSubsystem::areClimbMotorsMoving)
         .withTimeout(Seconds.of(5))
-        .andThen(this::updateClimbTestResult)
+        .andThen(() -> climbPublisher.set(climbSubsystem.areClimbMotorsMoving()))
         .finallyDo(climbSubsystem::stopMotors);
   }
 
   private Command testArmElevatorCommand() {
     return run(() -> armSubsystem.moveElevatorLevel4(), armSubsystem).until(armSubsystem::isElevatorAtPosition)
         .withTimeout(Seconds.of(5))
-        .andThen(this::updateElevatorTestResult)
+        .andThen(() -> elevatorPubliser.set(armSubsystem.isElevatorAtPosition()))
         .finallyDo(armSubsystem::moveElevatorToDefault);
   }
 
   private Command testArmCommand() {
     return run(() -> armSubsystem.moveArmToLevel4(), armSubsystem).until(armSubsystem::isArmAtPosition)
         .withTimeout(Seconds.of(5))
-        .andThen(this::updateArmTestResults)
+        .andThen(() -> armPublisher.set(armSubsystem.isArmAtPosition()))
         .finallyDo(armSubsystem::moveArmToIntake);
-  }
-
-  /**
-   * Checks if the indexer forwards test has succeeded and updates the variable accordingly
-   */
-  private void updateIndexerForwardsTestResult() {
-    indexerForwardsTest = indexerSubsystem.isIndexerAtSpeed();
-  }
-
-  /**
-   * Checks if the indexer backwards test has succeeded and updates the variable accordingly
-   */
-  private void updateIndexerBackwardsTestResult() {
-    indexerBackwardsTest = indexerSubsystem.isIndexerAtSpeed();
-  }
-
-  /**
-   * Checks if the manipulator forwards test has succeeded and updates the variable accordingly
-   */
-  private void updateManipulatorForwardsTestResult() {
-    manipulatorForwardsTest = gamePieceManipulatorSubsystem.isManipulatorAtSpeed();
-  }
-
-  /**
-   * Checks if the manipulator backwards test has succeeded and updates the variable accordingly
-   */
-  private void updateManipulatorBackwardsTestResult() {
-    manipulatorBackwardsTest = gamePieceManipulatorSubsystem.isManipulatorAtSpeed();
-  }
-
-  /**
-   * Checks if the climb test has succeeded and updates the variable accordingly
-   */
-  private void updateClimbTestResult() {
-    climbTest = climbSubsystem.areClimbMotorsMoving();
-  }
-
-  /**
-   * Checks if the elevator test has succeeded and updates the variable accordingly
-   */
-  private void updateElevatorTestResult() {
-    armElevatorTest = armSubsystem.isElevatorAtPosition();
-  }
-
-  /**
-   * Checks if the arm test has succeeded and updates the variable accordingly
-   */
-  private void updateArmTestResults() {
-    armTest = armSubsystem.isArmAtPosition();
-  }
-
-  /**
-   * Gets the result of the indexer forwards test
-   *
-   * @return true if the indexer forwards test has been run successfully, otherwise false
-   */
-  public boolean getIndexerForwardsTestResult() {
-    return indexerForwardsTest;
-  }
-
-  /**
-   * Gets the result of the indexer backwards test
-   *
-   * @return true if the indexer backwards test has been run successfully, otherwise false
-   */
-  public boolean getIndexerBackwardsTestResult() {
-    return indexerBackwardsTest;
-  }
-
-  /**
-   * Gets the result of the manipulator forwards test
-   *
-   * @return true if the manipulator forwards test has been run successfully, otherwise false
-   */
-  public boolean getManipulatorForwardsTestResult() {
-    return manipulatorForwardsTest;
-  }
-
-  /**
-   * Gets the result of the manipulator backwards test
-   *
-   * @return true if the manipulator backwards test has been run successfully, otherwise false
-   */
-  public boolean getManipulatorBackwardsTestResult() {
-    return manipulatorBackwardsTest;
-  }
-
-  /**
-   * Gets the result of the climb test
-   *
-   * @return true if the climb test has been run successfully, otherwise false
-   */
-  public boolean getClimbTestResult() {
-    return climbTest;
-  }
-
-  /**
-   * Gets the result of the elevator test
-   *
-   * @return true if the elevator test has been run successfully, otherwise false
-   */
-  public boolean getArmElevatorTestResult() {
-    return armElevatorTest;
-  }
-
-  /**
-   * Gets the result of the arm test
-   *
-   * @return true if the arm test has been run successfully, otherwise false
-   */
-  public boolean getArmTestResult() {
-    return armTest;
-  }
-
-  private void testClimbMotors() {
-    climbSubsystem.runFrontClimb(CLIMB_TESTING_VOLTAGE.in(Volts));
-    climbSubsystem.runBackClimb(CLIMB_TESTING_VOLTAGE.in(Volts));
   }
 }
