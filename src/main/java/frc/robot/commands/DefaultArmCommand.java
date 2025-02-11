@@ -23,17 +23,17 @@ public class DefaultArmCommand extends Command {
 
   @Override
   public void execute() {
-    if (armSubsystem.isElevatorParked()) {
-      // Turn the elevator off if it's parked
-      armSubsystem.stopElevator();
+    if (armSubsystem.isParked()) {
+      // Turn the arm and elevator off if it's parked
+      armSubsystem.stop();
     } else {
-      armSubsystem.parkElevator();
+      armSubsystem.park();
     }
   }
 
   @Override
   public void end(boolean interrupted) {
-    armSubsystem.stopElevator();
+    armSubsystem.stop();
   }
 
 }

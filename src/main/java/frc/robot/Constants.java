@@ -190,6 +190,10 @@ public class Constants {
     public static final Distance ELEVATOR_TOP_LIMIT = Meters.of(0.727075);
     public static final Distance ELEVATOR_BOTTOM_LIMIT = Meters.of(0.0);
 
+    public static final Distance ELEVATOR_SAFE_HEIGHT = Meters.of(0.2);
+    public static final Angle ARM_FORWARD_LIMIT = Rotations.of(.75);
+    public static final Angle ARM_REVERSE_LIMIT = Rotations.of(-0.125);
+
     public static final Distance ELEVATOR_POSITION_TOLERANCE = Inches.of(0.5);
     public static final Angle ARM_POSITION_TOLERANCE = Degrees.of(1);
 
@@ -214,15 +218,14 @@ public class Constants {
         .withMotionMagicCruiseVelocity(2.0);
 
     public static final Distance ELEVATOR_INTAKE_POSITION = Meters.of(0);
-    public static final Distance LEVEL_1_HEIGHT = Meters.of(0);
     public static final Distance LEVEL_2_HEIGHT = Meters.of(0);
     public static final Distance LEVEL_3_HEIGHT = Meters.of(0);
     public static final Distance LEVEL_4_HEIGHT = Meters.of(0);
 
+    public static final Angle ARM_INTAKE_ANGLE = Radian.of(0);
     public static final Angle LEVEL_2_ANGLE = Radian.of(0);
     public static final Angle LEVEL_3_ANGLE = Radian.of(0);
     public static final Angle LEVEL_4_ANGLE = Radian.of(0);
-    public static final Angle INTAKE_ANGLE = Radian.of(0);
 
     // Values for Mechanism2d visualization
     public static final Distance ARM_PIVOT_LENGTH = Meters.of(0.577);
