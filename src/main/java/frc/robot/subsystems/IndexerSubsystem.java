@@ -6,7 +6,9 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.CANIVORE_BUS_NAME;
+import static frc.robot.Constants.IndexerConstants.CORAL_DETECTION_THRESHOLD;
 import static frc.robot.Constants.IndexerConstants.DEVICE_ID_BELT;
+import static frc.robot.Constants.IndexerConstants.DEVICE_ID_GAME_PIECE_CANRANGE;
 import static frc.robot.Constants.IndexerConstants.EJECT_VELOCITY;
 import static frc.robot.Constants.IndexerConstants.INDEXER_SPEED_TOLERANCE;
 import static frc.robot.Constants.IndexerConstants.INTAKE_VELOCITY;
@@ -17,10 +19,12 @@ import static frc.robot.Constants.IndexerConstants.TORQUE_CURRENT_LIMIT;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.CANrangeConfiguration;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
+import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -34,10 +38,13 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 public class IndexerSubsystem extends SubsystemBase {
 
   private final TalonFX beltMotor = new TalonFX(DEVICE_ID_BELT, CANIVORE_BUS_NAME);
+  private final CANrange intakeCanRange = new CANrange(DEVICE_ID_GAME_PIECE_CANRANGE, CANIVORE_BUS_NAME);
+
   private final VelocityTorqueCurrentFOC beltControl = new VelocityTorqueCurrentFOC(0.0);
   private final TorqueCurrentFOC beltSysIdControl = new TorqueCurrentFOC(0.0);
 
   private final StatusSignal<AngularVelocity> beltVelocitySignal = beltMotor.getVelocity();
+  private final StatusSignal<Boolean> intakeCoralDetected = intakeCanRange.getIsDetected(false);
 
   private final SysIdRoutine beltSysIdRoutine = new SysIdRoutine(
       new SysIdRoutine.Config(
@@ -60,6 +67,10 @@ public class IndexerSubsystem extends SubsystemBase {
     beltTalonConfig.TorqueCurrent.withPeakForwardTorqueCurrent(TORQUE_CURRENT_LIMIT)
         .withPeakReverseTorqueCurrent(TORQUE_CURRENT_LIMIT.unaryMinus());
     beltMotor.getConfigurator().apply(beltTalonConfig);
+
+    var canRangeConfig = new CANrangeConfiguration();
+    canRangeConfig.ProximityParams.withProximityThreshold(CORAL_DETECTION_THRESHOLD);
+    intakeCanRange.getConfigurator().apply(canRangeConfig);
   }
 
   /**
@@ -133,5 +144,14 @@ public class IndexerSubsystem extends SubsystemBase {
         .getValue()
         .minus(beltControl.getVelocityMeasure())
         .abs(RotationsPerSecond) <= INDEXER_SPEED_TOLERANCE.in(RotationsPerSecond);
+  }
+
+  /**
+   * Checks if there is an object in front of the game piece sensor
+   * 
+   * @return true if there is a game piece detected, otherwise false
+   */
+  public boolean isCoralInPickupPosition() {
+    return intakeCoralDetected.refresh().getValue();
   }
 }

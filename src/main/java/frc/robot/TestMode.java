@@ -136,13 +136,13 @@ public class TestMode {
     return run(() -> armSubsystem.moveElevatorLevel4(), armSubsystem).until(armSubsystem::isElevatorAtPosition)
         .withTimeout(Seconds.of(5))
         .andThen(() -> elevatorPubliser.set(armSubsystem.isElevatorAtPosition()))
-        .finallyDo(armSubsystem::moveElevatorToDefault);
+        .finallyDo(armSubsystem::parkElevator);
   }
 
   private Command testArmCommand() {
-    return run(() -> armSubsystem.moveArmToLevel4(), armSubsystem).until(armSubsystem::isArmAtPosition)
+    return run(() -> armSubsystem.moveArmToLevel4(), armSubsystem).until(armSubsystem::isArmAtAngle)
         .withTimeout(Seconds.of(5))
-        .andThen(() -> armPublisher.set(armSubsystem.isArmAtPosition()))
+        .andThen(() -> armPublisher.set(armSubsystem.isArmAtAngle()))
         .finallyDo(armSubsystem::moveArmToIntake);
   }
 }

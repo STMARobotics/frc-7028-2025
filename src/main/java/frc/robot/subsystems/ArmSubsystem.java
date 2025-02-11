@@ -7,6 +7,7 @@ import static com.ctre.phoenix6.signals.NeutralModeValue.Brake;
 import static com.ctre.phoenix6.signals.ReverseLimitSourceValue.RemoteCANdiS2;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Rotation;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
@@ -26,9 +27,11 @@ import static frc.robot.Constants.ArmConstants.DEVICE_ID_ELEVATOR_MOTOR_FOLLOWER
 import static frc.robot.Constants.ArmConstants.DEVICE_ID_ELEVATOR_MOTOR_LEADER;
 import static frc.robot.Constants.ArmConstants.ELEVATOR_BASE_HEIGHT;
 import static frc.robot.Constants.ArmConstants.ELEVATOR_BOTTOM_LIMIT;
-import static frc.robot.Constants.ArmConstants.ELEVATOR_DEFAULT_HEIGHT;
 import static frc.robot.Constants.ArmConstants.ELEVATOR_DISTANCE_PER_ROTATION;
+import static frc.robot.Constants.ArmConstants.ELEVATOR_INTAKE_POSITION;
 import static frc.robot.Constants.ArmConstants.ELEVATOR_MOTION_MAGIC_CONFIGS;
+import static frc.robot.Constants.ArmConstants.ELEVATOR_PARK_HEIGHT;
+import static frc.robot.Constants.ArmConstants.ELEVATOR_PARK_TOLERANCE;
 import static frc.robot.Constants.ArmConstants.ELEVATOR_POSITION_TOLERANCE;
 import static frc.robot.Constants.ArmConstants.ELEVATOR_SLOT_CONFIGS;
 import static frc.robot.Constants.ArmConstants.ELEVATOR_STATOR_CURRENT_LIMIT;
@@ -57,6 +60,8 @@ import com.ctre.phoenix6.hardware.CANdi;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.S1CloseStateValue;
 import com.ctre.phoenix6.signals.S2CloseStateValue;
+import edu.wpi.first.units.AngleUnit;
+import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
@@ -157,9 +162,9 @@ public class ArmSubsystem extends SubsystemBase {
         .withReverseLimitAutosetPositionEnable(true)
         .withReverseLimitAutosetPositionValue(Rotations.of(0));
     elevatorTalonConfig.SoftwareLimitSwitch.withForwardSoftLimitEnable(true)
-        .withForwardSoftLimitThreshold(ELEVATOR_TOP_LIMIT.in(Meters) / ELEVATOR_DISTANCE_PER_ROTATION.in(Meters))
+        .withForwardSoftLimitThreshold(elevatorDistanceToRotations(ELEVATOR_TOP_LIMIT))
         .withReverseSoftLimitEnable(true)
-        .withReverseSoftLimitThreshold(ELEVATOR_BOTTOM_LIMIT.in(Meters) / ELEVATOR_DISTANCE_PER_ROTATION.in(Meters));
+        .withReverseSoftLimitThreshold(elevatorDistanceToRotations(ELEVATOR_BOTTOM_LIMIT));
 
     elevatorMotorLeader.getConfigurator().apply(elevatorTalonConfig);
     elevatorMotorFollower.getConfigurator().apply(elevatorTalonConfig);
@@ -190,21 +195,16 @@ public class ArmSubsystem extends SubsystemBase {
   public void periodic() {
     if (Robot.isReal()) {
       // Update the Mechanism2d
-      BaseStatusSignal.refreshAll(armPositionSignal, elevatorPositionSignal, armVelocitySignal, elevatorVelocitySignal);
-      var armPosition = BaseStatusSignal.getLatencyCompensatedValue(armPositionSignal, armVelocitySignal);
-      var elevatorPosition = BaseStatusSignal
-          .getLatencyCompensatedValue(elevatorPositionSignal, elevatorVelocitySignal);
-      elevatorStageLigament.setLength(elevatorPosition.in(Rotations) / ELEVATOR_DISTANCE_PER_ROTATION.in(Meters));
+      elevatorStageLigament.setLength(getElevatorMeters());
       // 0 is straight down for the ligament, but 0 is straight out to the right for the real arm
-      armLigament.setAngle(armPosition.in(Degrees) - 90);
+      armLigament.setAngle(getArmAngle().in(Degrees) - 90);
     }
   }
 
   @Override
   public void simulationPeriodic() {
     // For sim, just say the elevator and arm are instantly where they're supposed to be
-    elevatorStageLigament
-        .setLength(elevatorControl.getPositionMeasure().in(Rotations) / ELEVATOR_DISTANCE_PER_ROTATION.in(Meters));
+    elevatorStageLigament.setLength(elevatorAngleToMeters(elevatorControl.getPositionMeasure()));
     armLigament.setAngle(armControl.getPositionMeasure().in(Degrees) - 90);
   }
 
@@ -275,44 +275,47 @@ public class ArmSubsystem extends SubsystemBase {
    *
    * @param The desired position in meters
    */
-  public void moveElevator(Distance position) {
-    elevatorMotorLeader
-        .setControl(elevatorControl.withPosition(position.in(Meters) * ELEVATOR_DISTANCE_PER_ROTATION.in(Meters)));
+  public void moveElevatorToPosition(Distance position) {
+    elevatorMotorLeader.setControl(elevatorControl.withPosition(elevatorDistanceToRotations(position)));
   }
 
   /**
    * Moves the elevator to the height it remains at when inactive
    */
-  public void moveElevatorToDefault() {
-    moveElevator(ELEVATOR_DEFAULT_HEIGHT);
+  public void parkElevator() {
+    moveElevatorToPosition(ELEVATOR_PARK_HEIGHT);
+  }
+
+  public void moveElevatorToIntakePosition() {
+    moveElevatorToPosition(ELEVATOR_INTAKE_POSITION);
   }
 
   /*
    * Moves the elevator to the height required to score on the bottom level
    */
   public void moveElevatorLevel1() {
-    moveElevator(LEVEL_1_HEIGHT);
+    moveElevatorToPosition(LEVEL_1_HEIGHT);
   }
 
   /*
    * Moves the elevator to the height required to score on the second level
    */
   public void moveElevatorLevel2() {
-    moveElevator(LEVEL_2_HEIGHT);
+    moveElevatorToPosition(LEVEL_2_HEIGHT);
   }
 
   /*
    * Moves the elevator to the height required to score on the third level
    */
   public void moveElevatorLevel3() {
-    moveElevator(LEVEL_3_HEIGHT);
+    moveElevatorToPosition(LEVEL_3_HEIGHT);
   }
 
   /*
    * Moves the elevator to the height required to score on the top level
    */
   public void moveElevatorLevel4() {
-    moveElevator(LEVEL_4_HEIGHT);
+    moveElevatorToPosition(LEVEL_4_HEIGHT);
   }
 
   /**
@@ -372,21 +375,47 @@ public class ArmSubsystem extends SubsystemBase {
    * @return true if the elevator is at the target position, within a tolerance
    */
   public boolean isElevatorAtPosition() {
-    return elevatorPositionSignal.refresh()
-        .getValue()
-        .minus(elevatorControl.getPositionMeasure())
-        .abs(Rotations) <= ELEVATOR_POSITION_TOLERANCE.in(Meters) / ELEVATOR_DISTANCE_PER_ROTATION.in(Meters);
+    return Math.abs(
+        getElevatorMeters()
+            - elevatorAngleToMeters(elevatorControl.getPositionMeasure())) <= ELEVATOR_POSITION_TOLERANCE.in(Meters);
   }
 
   /**
-   * Checks if the arm is at the target position
+   * Returns true if the elevator is below park position, within a tolerance.
    * 
-   * @return true if the arm is at the target position, within a tolerance
+   * @return true if elevator is parked
    */
-  public boolean isArmAtPosition() {
-    return armPositionSignal.refresh()
-        .getValue()
-        .minus(armControl.getPositionMeasure())
-        .abs(Rotations) <= ARM_POSITION_TOLERANCE.in(Rotations);
+  public boolean isElevatorParked() {
+    return getElevatorMeters() < (ELEVATOR_PARK_HEIGHT.in(Meters) + ELEVATOR_PARK_TOLERANCE.in(Meters));
   }
+
+  /**
+   * Checks if the arm is at the target angle
+   * 
+   * @return true if the arm is at the target angle, within a tolerance
+   */
+  public boolean isArmAtAngle() {
+    return getArmAngle().abs(Rotations) <= ARM_POSITION_TOLERANCE.in(Rotations);
+  }
+
+  private Measure<AngleUnit> getArmAngle() {
+    BaseStatusSignal.refreshAll(armPositionSignal, armVelocitySignal);
+    var armPosition = BaseStatusSignal.getLatencyCompensatedValue(armPositionSignal, armVelocitySignal);
+    return armPosition;
+  }
+
+  private double getElevatorMeters() {
+    BaseStatusSignal.refreshAll(elevatorPositionSignal, elevatorVelocitySignal);
+    var elevatorPosition = BaseStatusSignal.getLatencyCompensatedValue(elevatorPositionSignal, elevatorVelocitySignal);
+    return elevatorAngleToMeters(elevatorPosition);
+  }
+
+  private double elevatorAngleToMeters(Measure<AngleUnit> angle) {
+    return angle.in(Rotations) * ELEVATOR_DISTANCE_PER_ROTATION.in(Meters.per(Rotation));
+  }
+
+  private double elevatorDistanceToRotations(Distance height) {
+    return height.in(Meters) / ELEVATOR_DISTANCE_PER_ROTATION.in(Meters.per(Rotation));
+  }
+
 }

@@ -6,9 +6,9 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.GamePieceManipulatorSubsystem;
 
 /**
- * Command to score coral in the reef.
+ * Move the arm to position to socre coral on the reef.
  */
-public class ScoreCoralCommand extends Command {
+public class MoveArmToReefPosition extends Command {
 
   private final GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem;
   private final ArmSubsystem armSubsystem;
@@ -16,14 +16,14 @@ public class ScoreCoralCommand extends Command {
   private final int levelToScore;
 
   /**
-   * Constructs a new ScoreCoralCommand
+   * Constructor
    * 
    * @param manipulatorSubsystem manipulator subsytem
    * @param armSubsystem arm subsystem
    * @param drivetrainSubsystem drivetrain subsystem
    * @param levelToScore level to score [1, 4]
    */
-  public ScoreCoralCommand(
+  public MoveArmToReefPosition(
       GamePieceManipulatorSubsystem manipulatorSubsystem,
       ArmSubsystem armSubsystem,
       CommandSwerveDrivetrain drivetrainSubsystem,
@@ -61,7 +61,7 @@ public class ScoreCoralCommand extends Command {
   @Override
   public void execute() {
     var isElevatorAtPosition = armSubsystem.isElevatorAtPosition();
-    var isArmAtPosition = armSubsystem.isArmAtPosition();
+    var isArmAtPosition = armSubsystem.isArmAtAngle();
     if (isElevatorAtPosition && isArmAtPosition) {
       armSubsystem.stopArm();
       armSubsystem.stopElevator();
@@ -77,7 +77,7 @@ public class ScoreCoralCommand extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    armSubsystem.moveElevatorToDefault();
+    armSubsystem.parkElevator();
     armSubsystem.moveArmToIntake();
     gamePieceManipulatorSubsystem.stop();
   }

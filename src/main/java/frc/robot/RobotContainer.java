@@ -22,12 +22,10 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.commands.ActiveHoldCoralCommand;
-import frc.robot.commands.EjectCoralCommand;
+import frc.robot.commands.DefaultArmCommand;
 import frc.robot.commands.IntakeCoralCommand;
 import frc.robot.commands.PhotonVisionCommand;
 import frc.robot.commands.QuestNavCommand;
-import frc.robot.commands.ScoreCoralCommand;
 import frc.robot.controls.ControlBindings;
 import frc.robot.controls.XBoxControlBindings;
 import frc.robot.generated.TunerConstants;
@@ -86,6 +84,7 @@ public class RobotContainer {
 
     visionCommand.schedule();
     questNavCommand.schedule();
+    armSubsystem.setDefaultCommand(new DefaultArmCommand(armSubsystem));
   }
 
   private void configureBindings() {
@@ -116,13 +115,9 @@ public class RobotContainer {
             trigger -> trigger
                 .onTrue(new IntakeCoralCommand(indexerSubsystem, gamePieceManipulatorSubsystem, armSubsystem)));
     controlBindings.ejectCoral()
-        .ifPresent(trigger -> trigger.onTrue(new EjectCoralCommand(gamePieceManipulatorSubsystem, armSubsystem)));
-    controlBindings.holdCoral()
-        .ifPresent(trigger -> trigger.onTrue(new ActiveHoldCoralCommand(gamePieceManipulatorSubsystem, armSubsystem)));
-    controlBindings.scoreCoral()
         .ifPresent(
             trigger -> trigger
-                .onTrue(new ScoreCoralCommand(gamePieceManipulatorSubsystem, armSubsystem, drivetrain, 2)));
+                .whileTrue(indexerSubsystem.run(indexerSubsystem::eject).finallyDo(indexerSubsystem::stop)));
   }
 
   private void configurePathPlanner() {

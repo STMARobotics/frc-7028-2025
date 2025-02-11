@@ -33,26 +33,26 @@ public class IntakeCoralCommand extends Command {
   }
 
   @Override
-  public void initialize() {
-    armSubsystem.moveArmToIntake();
-    armSubsystem.moveElevatorToDefault();
-  }
-
-  @Override
   public void execute() {
-    indexerSubsystem.intake();
+    armSubsystem.moveArmToIntake();
+    armSubsystem.moveElevatorToIntakePosition();
     gamePieceManipulatorSubsystem.intakeCoral();
+    if (armSubsystem.isElevatorAtPosition() && armSubsystem.isArmAtAngle()) {
+      // Run the belt if the arm is in position
+      indexerSubsystem.intake();
+    }
   }
 
   @Override
   public boolean isFinished() {
-    return false;
+    return indexerSubsystem.isCoralInPickupPosition();
   }
 
   @Override
   public void end(boolean interrupted) {
     indexerSubsystem.stop();
     gamePieceManipulatorSubsystem.stop();
-    armSubsystem.moveElevatorToDefault();
+    armSubsystem.parkElevator();
+    armSubsystem.stopArm();
   }
 }

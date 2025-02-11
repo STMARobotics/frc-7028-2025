@@ -91,21 +91,4 @@ public abstract class ControlBindings {
     return Optional.empty();
   }
 
-  /**
-   * Make sure the the Coral is in the right postion and allowes the arm to hold it.
-   * 
-   * @return Optional Trigger
-   */
-  public Optional<Trigger> holdCoral() {
-    return Optional.empty();
-  }
-
-  /**
-   * Allows the Game Piece Manipultor to score accurately.
-   * 
-   * @return Optional Trigger
-   */
-  public Optional<Trigger> scoreCoral() {
-    return Optional.empty();
-  }
 }
