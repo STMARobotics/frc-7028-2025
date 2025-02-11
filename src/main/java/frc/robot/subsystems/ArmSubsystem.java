@@ -11,6 +11,7 @@ import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
+import static frc.robot.Constants.ArmConstants.ARM_MAGNETIC_OFFSET;
 import static frc.robot.Constants.ArmConstants.ARM_MOTION_MAGIC_CONFIGS;
 import static frc.robot.Constants.ArmConstants.ARM_PIVOT_LENGTH;
 import static frc.robot.Constants.ArmConstants.ARM_POSITION_TOLERANCE;
@@ -99,9 +100,13 @@ public class ArmSubsystem extends SubsystemBase {
       }, null, this));
 
   private final SysIdRoutine armSysIdRoutine = new SysIdRoutine(
-      new SysIdRoutine.Config(null, null, null, state -> SignalLogger.writeString("Arm Motor SysId", state.toString())),
+      new SysIdRoutine.Config(
+          Volts.per(Second).of(0.25),
+          Volts.of(2.0),
+          null,
+          state -> SignalLogger.writeString("Arm Motor SysId", state.toString())),
       new SysIdRoutine.Mechanism((voltage) -> {
-        elevatorMotorLeader.setControl(sysIdArmControl.withOutput(voltage.in(Volts)));
+        armMotor.setControl(sysIdArmControl.withOutput(voltage.in(Volts)));
       }, null, this));
 
   private final StatusSignal<Boolean> atTopLimitSignal = elevatorCanDi.getS1Closed();
@@ -160,15 +165,22 @@ public class ArmSubsystem extends SubsystemBase {
     elevatorMotorFollower.getConfigurator().apply(elevatorTalonConfig);
     elevatorMotorFollower.setControl(new Follower(elevatorMotorLeader.getDeviceID(), false));
 
+    CANdiConfiguration armCanDiConfig = new CANdiConfiguration();
+    armCanDiConfig.PWM1.withAbsoluteSensorOffset(ARM_MAGNETIC_OFFSET)
+        .withAbsoluteSensorDiscontinuityPoint(0.5)
+        .withSensorDirection(true);
+    armCanDi.getConfigurator().apply(armCanDiConfig);
+
     var armTalonConfig = new TalonFXConfiguration();
     armTalonConfig.MotorOutput.withNeutralMode(Brake).withInverted(Clockwise_Positive);
+    armTalonConfig.Voltage.withPeakForwardVoltage(2).withPeakReverseVoltage(-2);
     armTalonConfig.withSlot0(Slot0Configs.from(ARM_SLOT_CONFIGS));
     armTalonConfig.CurrentLimits.withSupplyCurrentLimit(ARM_SUPPLY_CURRENT_LIMIT)
         .withSupplyCurrentLimitEnable(true)
         .withStatorCurrentLimit(ARM_STATOR_CURRENT_LIMIT)
         .withStatorCurrentLimitEnable(true);
     armTalonConfig.withMotionMagic(ARM_MOTION_MAGIC_CONFIGS);
-    armTalonConfig.Feedback.withSensorToMechanismRatio(ARM_ROTOR_TO_SENSOR_RATIO).withFusedCANdiPwm1(armCanDi);
+    armTalonConfig.Feedback.withRotorToSensorRatio(ARM_ROTOR_TO_SENSOR_RATIO).withFusedCANdiPwm1(armCanDi);
 
     armMotor.getConfigurator().apply(armTalonConfig);
     SmartDashboard.putData("Arm", armMechanism);

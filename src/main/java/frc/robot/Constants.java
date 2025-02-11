@@ -1,11 +1,11 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Centimeter;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
-import static edu.wpi.first.units.Units.Millimeters;
 import static edu.wpi.first.units.Units.Radian;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
@@ -18,6 +18,7 @@ import static frc.robot.Constants.TeleopDriveConstants.MAX_TELEOP_VELOCITY;
 
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.SlotConfigs;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
@@ -188,18 +189,19 @@ public class Constants {
     public static final Current ARM_STATOR_CURRENT_LIMIT = Amps.of(40);
     public static final Current ARM_SUPPLY_CURRENT_LIMIT = Amps.of(40);
     public static final double ARM_ROTOR_TO_SENSOR_RATIO = 45;
-    public static final Angle ARM_MAGNETIC_OFFSET = Rotations.of(0.0);
+    public static final Angle ARM_MAGNETIC_OFFSET = Rotations.of(0.65);
 
-    public static final SlotConfigs ARM_SLOT_CONFIGS = new SlotConfigs().withKP(0.0)
+    public static final SlotConfigs ARM_SLOT_CONFIGS = new SlotConfigs().withGravityType(GravityTypeValue.Arm_Cosine)
+        .withKP(20.0)
         .withKD(0.0)
-        .withKS(0.0)
+        .withKS(0.15341)
         .withKG(0.12) // Volts
         .withKV(5.59) // V*s/rotation
         .withKA(0.03); // V*s^2/rotation
 
     public static final MotionMagicConfigs ARM_MOTION_MAGIC_CONFIGS = new MotionMagicConfigs()
-        .withMotionMagicAcceleration(0.01)
-        .withMotionMagicCruiseVelocity(0.01);
+        .withMotionMagicAcceleration(5.0)
+        .withMotionMagicCruiseVelocity(2.0);
 
     public static final Distance LEVEL_1_HEIGHT = Meters.of(0);
     public static final Distance LEVEL_2_HEIGHT = Meters.of(0);
@@ -231,7 +233,7 @@ public class Constants {
     public static final Current TORQUE_CURRENT_LIMIT = Amps.of(20);
     public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(10);
 
-    public static final Distance CORAL_DETECTION_THRESHOLD = Millimeters.of(2);
+    public static final Distance CORAL_DETECTION_THRESHOLD = Centimeter.of(6);
 
     public static final AngularVelocity INAKE_VELOCITY = RadiansPerSecond.of(5);
     public static final AngularVelocity EJECT_VELOCITY = RadiansPerSecond.of(-5);
