@@ -56,20 +56,11 @@ public abstract class ControlBindings {
   }
 
   /**
-   * Supplier for the front climb duty cycle
+   * Supplier for the climb duty cycle
    *
    * @return duty cycle supplier
    */
-  public Optional<DoubleSupplier> frontClimb() {
-    return Optional.empty();
-  }
-
-  /**
-   * Supplier for the front climb duty cycle
-   *
-   * @return duty cycle supplier
-   */
-  public Optional<DoubleSupplier> backClimb() {
+  public Optional<DoubleSupplier> climb() {
     return Optional.empty();
   }
 

@@ -124,12 +124,11 @@ public class TestMode {
 
   private Command testClimbCommand() {
     return run(() -> {
-      climbSubsystem.runFrontClimb(CLIMB_TESTING_VOLTAGE.in(Volts));
-      climbSubsystem.runBackClimb(CLIMB_TESTING_VOLTAGE.in(Volts));
+      climbSubsystem.runClimb(CLIMB_TESTING_VOLTAGE.in(Volts));
     }, climbSubsystem).until(climbSubsystem::areClimbMotorsMoving)
         .withTimeout(Seconds.of(5))
         .andThen(() -> climbPublisher.set(climbSubsystem.areClimbMotorsMoving()))
-        .finallyDo(climbSubsystem::stopMotors);
+        .finallyDo(climbSubsystem::stop);
   }
 
   private Command testArmElevatorCommand() {
