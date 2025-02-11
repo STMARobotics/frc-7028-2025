@@ -29,7 +29,7 @@
             "height": 128.0,
             "type": "Command",
             "properties": {
-              "topic": "/Shuffleboard/SysId/Arm Dynam Forward",
+              "topic": "/SmartDashboard/Arm Dynam Forward",
               "period": 0.06,
               "show_type": true
             }
@@ -42,7 +42,7 @@
             "height": 128.0,
             "type": "Command",
             "properties": {
-              "topic": "/Shuffleboard/SysId/Arm Dynam Reverse",
+              "topic": "/SmartDashboard/Arm Dynam Reverse",
               "period": 0.06,
               "show_type": true
             }
@@ -55,7 +55,7 @@
             "height": 128.0,
             "type": "Command",
             "properties": {
-              "topic": "/Shuffleboard/SysId/Arm Quasi Forward",
+              "topic": "/SmartDashboard/Arm Quasi Forward",
               "period": 0.06,
               "show_type": true
             }
@@ -68,7 +68,7 @@
             "height": 128.0,
             "type": "Command",
             "properties": {
-              "topic": "/Shuffleboard/SysId/Arm Quasi Reverse",
+              "topic": "/SmartDashboard/Arm Quasi Reverse",
               "period": 0.06,
               "show_type": true
             }
@@ -81,7 +81,7 @@
             "height": 128.0,
             "type": "Command",
             "properties": {
-              "topic": "/Shuffleboard/SysId/Elevator Dynam Forward",
+              "topic": "/SmartDashboard/Elevator Dynam Forward",
               "period": 0.06,
               "show_type": true
             }
@@ -94,7 +94,7 @@
             "height": 128.0,
             "type": "Command",
             "properties": {
-              "topic": "/Shuffleboard/SysId/Elevator Dynam Reverse",
+              "topic": "/SmartDashboard/Elevator Dynam Reverse",
               "period": 0.06,
               "show_type": true
             }
@@ -107,7 +107,7 @@
             "height": 128.0,
             "type": "Command",
             "properties": {
-              "topic": "/Shuffleboard/SysId/Elevator Quasi Forward",
+              "topic": "/SmartDashboard/Elevator Quasi Forward",
               "period": 0.06,
               "show_type": true
             }
@@ -120,7 +120,7 @@
             "height": 128.0,
             "type": "Command",
             "properties": {
-              "topic": "/Shuffleboard/SysId/Elevator Quasi Reverse",
+              "topic": "/SmartDashboard/Elevator Quasi Reverse",
               "period": 0.06,
               "show_type": true
             }
@@ -133,7 +133,7 @@
             "height": 128.0,
             "type": "Command",
             "properties": {
-              "topic": "/Shuffleboard/SysId/Indexer Dynam Forward",
+              "topic": "/SmartDashboard/Indexer Dynam Forward",
               "period": 0.06,
               "show_type": true
             }
@@ -146,7 +146,7 @@
             "height": 128.0,
             "type": "Command",
             "properties": {
-              "topic": "/Shuffleboard/SysId/Indexer Quasi Forward",
+              "topic": "/SmartDashboard/Indexer Quasi Forward",
               "period": 0.06,
               "show_type": true
             }
@@ -159,7 +159,7 @@
             "height": 128.0,
             "type": "Command",
             "properties": {
-              "topic": "/Shuffleboard/SysId/Indexer Dynam Reverse",
+              "topic": "/SmartDashboard/Indexer Dynam Reverse",
               "period": 0.06,
               "show_type": true
             }
@@ -172,7 +172,7 @@
             "height": 128.0,
             "type": "Command",
             "properties": {
-              "topic": "/Shuffleboard/SysId/Indexer Quasi Reverse",
+              "topic": "/SmartDashboard/Indexer Quasi Reverse",
               "period": 0.06,
               "show_type": true
             }
@@ -185,7 +185,7 @@
             "height": 128.0,
             "type": "Command",
             "properties": {
-              "topic": "/Shuffleboard/SysId/Manipulator Dynam Forward",
+              "topic": "/SmartDashboard/Manipulator Dynam Forward",
               "period": 0.06,
               "show_type": true
             }
@@ -198,7 +198,7 @@
             "height": 128.0,
             "type": "Command",
             "properties": {
-              "topic": "/Shuffleboard/SysId/Manipulator Quasi Forward",
+              "topic": "/SmartDashboard/Manipulator Quasi Forward",
               "period": 0.06,
               "show_type": true
             }
@@ -211,7 +211,7 @@
             "height": 128.0,
             "type": "Command",
             "properties": {
-              "topic": "/Shuffleboard/SysId/Manipulator Dynam Reverse",
+              "topic": "/SmartDashboard/Manipulator Dynam Reverse",
               "period": 0.06,
               "show_type": true
             }
@@ -224,7 +224,7 @@
             "height": 128.0,
             "type": "Command",
             "properties": {
-              "topic": "/Shuffleboard/SysId/Manipulator Quasi Reverse",
+              "topic": "/SmartDashboard/Manipulator Quasi Reverse",
               "period": 0.06,
               "show_type": true
             }
@@ -245,7 +245,7 @@
             "height": 128.0,
             "type": "Command",
             "properties": {
-              "topic": "/Shuffleboard/SysId/Rotate Dynam Fwd",
+              "topic": "/SmartDashboard/Rotate Dynam Fwd",
               "period": 0.06,
               "show_type": true
             }
@@ -258,7 +258,7 @@
             "height": 128.0,
             "type": "Command",
             "properties": {
-              "topic": "/Shuffleboard/SysId/Drive Dynam Fwd",
+              "topic": "/SmartDashboard/Drive Dynam Fwd",
               "period": 0.06,
               "show_type": true
             }
@@ -271,7 +271,7 @@
             "height": 128.0,
             "type": "Command",
             "properties": {
-              "topic": "/Shuffleboard/SysId/Drive Dynam Rev",
+              "topic": "/SmartDashboard/Drive Dynam Rev",
               "period": 0.06,
               "show_type": true
             }
@@ -284,7 +284,7 @@
             "height": 128.0,
             "type": "Command",
             "properties": {
-              "topic": "/Shuffleboard/SysId/Drive Quasi Fwd",
+              "topic": "/SmartDashboard/Drive Quasi Fwd",
               "period": 0.06,
               "show_type": true
             }
@@ -297,7 +297,7 @@
             "height": 128.0,
             "type": "Command",
             "properties": {
-              "topic": "/Shuffleboard/SysId/Drive Quasi Rev",
+              "topic": "/SmartDashboard/Drive Quasi Rev",
               "period": 0.06,
               "show_type": true
             }
@@ -310,7 +310,7 @@
             "height": 128.0,
             "type": "Command",
             "properties": {
-              "topic": "/Shuffleboard/SysId/Slip Test",
+              "topic": "/SmartDashboard/Slip Test",
               "period": 0.06,
               "show_type": true
             }
@@ -323,7 +323,7 @@
             "height": 128.0,
             "type": "Command",
             "properties": {
-              "topic": "/Shuffleboard/SysId/Steer Dynam Fwd",
+              "topic": "/SmartDashboard/Steer Dynam Fwd",
               "period": 0.06,
               "show_type": true
             }
@@ -336,7 +336,7 @@
             "height": 128.0,
             "type": "Command",
             "properties": {
-              "topic": "/Shuffleboard/SysId/Steer Dynam Rev",
+              "topic": "/SmartDashboard/Steer Dynam Rev",
               "period": 0.06,
               "show_type": true
             }
@@ -349,7 +349,7 @@
             "height": 128.0,
             "type": "Command",
             "properties": {
-              "topic": "/Shuffleboard/SysId/Steer Quasi Fwd",
+              "topic": "/SmartDashboard/Steer Quasi Fwd",
               "period": 0.06,
               "show_type": true
             }
@@ -362,7 +362,7 @@
             "height": 128.0,
             "type": "Command",
             "properties": {
-              "topic": "/Shuffleboard/SysId/Steer Quasi Rev",
+              "topic": "/SmartDashboard/Steer Quasi Rev",
               "period": 0.06,
               "show_type": true
             }
@@ -375,7 +375,7 @@
             "height": 128.0,
             "type": "Command",
             "properties": {
-              "topic": "/Shuffleboard/SysId/Rotate Quasi Rev",
+              "topic": "/SmartDashboard/Rotate Quasi Rev",
               "period": 0.06,
               "show_type": true
             }
@@ -388,7 +388,7 @@
             "height": 128.0,
             "type": "Command",
             "properties": {
-              "topic": "/Shuffleboard/SysId/Rotate Dynam Rev",
+              "topic": "/SmartDashboard/Rotate Dynam Rev",
               "period": 0.06,
               "show_type": true
             }
@@ -401,7 +401,7 @@
             "height": 128.0,
             "type": "Command",
             "properties": {
-              "topic": "/Shuffleboard/SysId/Rotate Quasi Fwd",
+              "topic": "/SmartDashboard/Rotate Quasi Fwd",
               "period": 0.06,
               "show_type": true
             }
@@ -410,11 +410,41 @@
       }
     },
     {
-      "name": "Testing",
+      "name": "Test Mode",
       "grid_layout": {
         "layouts": [
           {
-            "title": "List Layout",
+            "title": "Climb",
+            "x": 0.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "Climb",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Boolean Box",
+                "properties": {
+                  "topic": "/TestMode/Climb",
+                  "period": 0.06,
+                  "data_type": "boolean",
+                  "true_color": 4283215696,
+                  "false_color": 4294198070,
+                  "true_icon": "None",
+                  "false_icon": "None"
+                }
+              }
+            ]
+          },
+          {
+            "title": "Arm",
             "x": 512.0,
             "y": 0.0,
             "width": 256.0,
@@ -425,14 +455,14 @@
             },
             "children": [
               {
-                "title": "Arm Elevator Test",
-                "x": 768.0,
+                "title": "Arm",
+                "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Testing/Arm Elevator Test",
+                  "topic": "/TestMode/Arm",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -442,14 +472,14 @@
                 }
               },
               {
-                "title": "Arm Test",
-                "x": 896.0,
-                "y": 128.0,
+                "title": "Elevator",
+                "x": 0.0,
+                "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Testing/Arm Test",
+                  "topic": "/TestMode/Elevator",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -461,54 +491,7 @@
             ]
           },
           {
-            "title": "List Layout",
-            "x": 768.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 384.0,
-            "type": "List Layout",
-            "properties": {
-              "label_position": "TOP"
-            },
-            "children": [
-              {
-                "title": "Indexer Fowards Test",
-                "x": 1024.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Boolean Box",
-                "properties": {
-                  "topic": "/Shuffleboard/Testing/Indexer Fowards Test",
-                  "period": 0.06,
-                  "data_type": "boolean",
-                  "true_color": 4283215696,
-                  "false_color": 4294198070,
-                  "true_icon": "None",
-                  "false_icon": "None"
-                }
-              },
-              {
-                "title": "Indexer Backwards Test",
-                "x": 1152.0,
-                "y": 128.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Boolean Box",
-                "properties": {
-                  "topic": "/Shuffleboard/Testing/Indexer Backwards Test",
-                  "period": 0.06,
-                  "data_type": "boolean",
-                  "true_color": 4283215696,
-                  "false_color": 4294198070,
-                  "true_icon": "None",
-                  "false_icon": "None"
-                }
-              }
-            ]
-          },
-          {
-            "title": "List Layout",
+            "title": "Manipulator",
             "x": 256.0,
             "y": 0.0,
             "width": 256.0,
@@ -519,14 +502,14 @@
             },
             "children": [
               {
-                "title": "Manipulator Backwards Test",
-                "x": 768.0,
-                "y": 384.0,
+                "title": "Manipulator Backward",
+                "x": 0.0,
+                "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Testing/Manipulator Backwards Test",
+                  "topic": "/TestMode/Manipulator Backward",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -536,14 +519,61 @@
                 }
               },
               {
-                "title": "Manipulator Forwards Test",
-                "x": 896.0,
-                "y": 512.0,
+                "title": "Manipulator Forward",
+                "x": 0.0,
+                "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Testing/Manipulator Forwards Test",
+                  "topic": "/TestMode/Manipulator Forward",
+                  "period": 0.06,
+                  "data_type": "boolean",
+                  "true_color": 4283215696,
+                  "false_color": 4294198070,
+                  "true_icon": "None",
+                  "false_icon": "None"
+                }
+              }
+            ]
+          },
+          {
+            "title": "Indexer",
+            "x": 768.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 384.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "Indexer Backward",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Boolean Box",
+                "properties": {
+                  "topic": "/TestMode/Indexer Backward",
+                  "period": 0.06,
+                  "data_type": "boolean",
+                  "true_color": 4283215696,
+                  "false_color": 4294198070,
+                  "true_icon": "None",
+                  "false_icon": "None"
+                }
+              },
+              {
+                "title": "Indexer Forward",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Boolean Box",
+                "properties": {
+                  "topic": "/TestMode/Indexer Forward",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -564,7 +594,7 @@
             "height": 128.0,
             "type": "Command",
             "properties": {
-              "topic": "/Shuffleboard/Testing/Run Tests",
+              "topic": "/SmartDashboard/Run Tests",
               "period": 0.06,
               "show_type": true
             }

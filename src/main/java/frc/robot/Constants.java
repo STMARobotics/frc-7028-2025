@@ -251,7 +251,7 @@ public class Constants {
     public static final AngularVelocity INDEXER_BACKWARDS_TESTING_SPEED = INDEXER_TESTING_SPEED.unaryMinus();
     public static final AngularVelocity INDEXER_TESTING_SPEED_TOLERANCE = RotationsPerSecond.of(3);
 
-    public static final AngularVelocity MANIPULATOR_TESTING_SPEED = RadiansPerSecond.of(2);
+    public static final AngularVelocity MANIPULATOR_TESTING_SPEED = RotationsPerSecond.of(10);
     public static final AngularVelocity MANIPULATOR_BACKWARDS_TESTING_SPEED = MANIPULATOR_TESTING_SPEED.unaryMinus();
     public static final AngularVelocity MANIPULATOR_TESTING_SPEED_TOLERANCE = RotationsPerSecond.of(3);
 

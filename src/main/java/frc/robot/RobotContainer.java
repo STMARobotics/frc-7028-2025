@@ -13,8 +13,12 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -22,6 +26,7 @@ import frc.robot.commands.ActiveHoldCoralCommand;
 import frc.robot.commands.EjectCoralCommand;
 import frc.robot.commands.IntakeCoralCommand;
 import frc.robot.commands.PhotonVisionCommand;
+import frc.robot.commands.QuestNavCommand;
 import frc.robot.commands.ScoreCoralCommand;
 import frc.robot.controls.ControlBindings;
 import frc.robot.controls.XBoxControlBindings;
@@ -32,6 +37,7 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.GamePieceManipulatorSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.MitoCANdriaSubsytem;
+import frc.robot.vision.QuestNav;
 
 @Logged(strategy = Logged.Strategy.OPT_IN)
 public class RobotContainer {
@@ -50,10 +56,15 @@ public class RobotContainer {
   private final ClimbSubsystem climbSubsystem = new ClimbSubsystem();
   @Logged
   private final MitoCANdriaSubsytem mitoCANdriaSubsytem = new MitoCANdriaSubsytem();
+  private final QuestNav questNav = new QuestNav();
 
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
   private final DrivetrainTelemetry drivetrainTelemetry = new DrivetrainTelemetry();
   private final PhotonVisionCommand visionCommand = new PhotonVisionCommand(drivetrain::addVisionMeasurement);
+  private final QuestNavCommand questNavCommand = new QuestNavCommand(questNav);
+
+  /** Swerve request to apply during robot-centric path following */
+  private final SwerveRequest.ApplyRobotSpeeds m_pathApplyRobotSpeeds = new SwerveRequest.ApplyRobotSpeeds();
 
   private final TestMode testMode = new TestMode(
       gamePieceManipulatorSubsystem,
@@ -71,8 +82,10 @@ public class RobotContainer {
 
     controlBindings = new XBoxControlBindings();
     configureBindings();
+    configurePathPlanner();
 
     visionCommand.schedule();
+    questNavCommand.schedule();
   }
 
   private void configureBindings() {
@@ -112,70 +125,87 @@ public class RobotContainer {
                 .onTrue(new ScoreCoralCommand(gamePieceManipulatorSubsystem, armSubsystem, drivetrain, 2)));
   }
 
+  private void configurePathPlanner() {
+    try {
+      var config = RobotConfig.fromGUISettings();
+      AutoBuilder.configure(
+          () -> drivetrain.getState().Pose,
+            drivetrain::resetPose,
+            () -> drivetrain.getState().Speeds,
+            (speeds, feedforwards) -> drivetrain.setControl(
+                m_pathApplyRobotSpeeds.withSpeeds(speeds)
+                    .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesXNewtons())
+                    .withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesYNewtons())),
+            new PPHolonomicDriveController(new PIDConstants(10, 0, 0), new PIDConstants(7, 0, 0)),
+            config,
+            () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
+            drivetrain);
+    } catch (Exception ex) {
+      DriverStation.reportError("Failed to load PathPlanner config and configure AutoBuilder", ex.getStackTrace());
+    }
+  }
+
   public Command getAutonomousCommand() {
     /* Run the path selected from the auto chooser */
     return autoChooser.getSelected();
   }
 
-  public void populateSysIdDashboard() {
-    var tab = Shuffleboard.getTab("SysId");
+  /**
+   * Sends all of the testing commands to the dashboard
+   */
+  public void populateTestModeDashboard() {
+    // Test mode command
+    SmartDashboard.putData("Run Tests", testMode.testCommand());
+
+    // SysID commands
 
     // Drive
-    tab.add("Drive Quasi Fwd", drivetrain.sysIdTranslationQuasiCommand(kForward));
-    tab.add("Drive Quasi Rev", drivetrain.sysIdTranslationQuasiCommand(kReverse));
-    tab.add("Drive Dynam Fwd", drivetrain.sysIdTranslationDynamCommand(kForward));
-    tab.add("Drive Dynam Rev", drivetrain.sysIdTranslationDynamCommand(kReverse));
-    tab.add("Slip Test", drivetrain.sysIdDriveSlipCommand());
+    SmartDashboard.putData("Drive Quasi Fwd", drivetrain.sysIdTranslationQuasiCommand(kForward));
+    SmartDashboard.putData("Drive Quasi Rev", drivetrain.sysIdTranslationQuasiCommand(kReverse));
+    SmartDashboard.putData("Drive Dynam Fwd", drivetrain.sysIdTranslationDynamCommand(kForward));
+    SmartDashboard.putData("Drive Dynam Rev", drivetrain.sysIdTranslationDynamCommand(kReverse));
+    SmartDashboard.putData("Slip Test", drivetrain.sysIdDriveSlipCommand());
 
     // Steer
-    tab.add("Steer Quasi Fwd", drivetrain.sysIdSteerQuasiCommand(kForward));
-    tab.add("Steer Quasi Rev", drivetrain.sysIdSteerQuasiCommand(kReverse));
-    tab.add("Steer Dynam Fwd", drivetrain.sysIdSteerDynamCommand(kForward));
-    tab.add("Steer Dynam Rev", drivetrain.sysIdSteerDynamCommand(kReverse));
+    SmartDashboard.putData("Steer Quasi Fwd", drivetrain.sysIdSteerQuasiCommand(kForward));
+    SmartDashboard.putData("Steer Quasi Rev", drivetrain.sysIdSteerQuasiCommand(kReverse));
+    SmartDashboard.putData("Steer Dynam Fwd", drivetrain.sysIdSteerDynamCommand(kForward));
+    SmartDashboard.putData("Steer Dynam Rev", drivetrain.sysIdSteerDynamCommand(kReverse));
 
     // Rotation
-    tab.add("Rotate Quasi Fwd", drivetrain.sysIdRotationQuasiCommand(kForward));
-    tab.add("Rotate Quasi Rev", drivetrain.sysIdRotationQuasiCommand(kReverse));
-    tab.add("Rotate Dynam Fwd", drivetrain.sysIdRotationDynamCommand(kForward));
-    tab.add("Rotate Dynam Rev", drivetrain.sysIdRotationDynamCommand(kReverse));
+    SmartDashboard.putData("Rotate Quasi Fwd", drivetrain.sysIdRotationQuasiCommand(kForward));
+    SmartDashboard.putData("Rotate Quasi Rev", drivetrain.sysIdRotationQuasiCommand(kReverse));
+    SmartDashboard.putData("Rotate Dynam Fwd", drivetrain.sysIdRotationDynamCommand(kForward));
+    SmartDashboard.putData("Rotate Dynam Rev", drivetrain.sysIdRotationDynamCommand(kReverse));
 
     // Indexer
-    tab.add("Indexer Quasi Forward", indexerSubsystem.sysIdBeltQuasistaticCommand(kForward));
-    tab.add("Indexer Quasi Reverse", indexerSubsystem.sysIdBeltQuasistaticCommand(kReverse));
-    tab.add("Indexer Dynam Forward", indexerSubsystem.sysIdBeltDynamicCommand(kForward));
-    tab.add("Indexer Dynam Reverse", indexerSubsystem.sysIdBeltDynamicCommand(kReverse));
+    SmartDashboard.putData("Indexer Quasi Forward", indexerSubsystem.sysIdBeltQuasistaticCommand(kForward));
+    SmartDashboard.putData("Indexer Quasi Reverse", indexerSubsystem.sysIdBeltQuasistaticCommand(kReverse));
+    SmartDashboard.putData("Indexer Dynam Forward", indexerSubsystem.sysIdBeltDynamicCommand(kForward));
+    SmartDashboard.putData("Indexer Dynam Reverse", indexerSubsystem.sysIdBeltDynamicCommand(kReverse));
 
     // Elevator
-    tab.add("Elevator Quasi Forward", armSubsystem.sysIdElevatorQuasistaticCommand(kForward));
-    tab.add("Elevator Quasi Reverse", armSubsystem.sysIdElevatorQuasistaticCommand(kReverse));
-    tab.add("Elevator Dynam Forward", armSubsystem.sysIdElevatorDynamicCommand(kForward));
-    tab.add("Elevator Dynam Reverse", armSubsystem.sysIdElevatorDynamicCommand(kReverse));
+    SmartDashboard.putData("Elevator Quasi Forward", armSubsystem.sysIdElevatorQuasistaticCommand(kForward));
+    SmartDashboard.putData("Elevator Quasi Reverse", armSubsystem.sysIdElevatorQuasistaticCommand(kReverse));
+    SmartDashboard.putData("Elevator Dynam Forward", armSubsystem.sysIdElevatorDynamicCommand(kForward));
+    SmartDashboard.putData("Elevator Dynam Reverse", armSubsystem.sysIdElevatorDynamicCommand(kReverse));
 
     // Arm
-    tab.add("Arm Quasi Forward", armSubsystem.sysIdArmQuasistaticCommand(kForward));
-    tab.add("Arm Quasi Reverse", armSubsystem.sysIdArmQuasistaticCommand(kReverse));
-    tab.add("Arm Dynam Forward", armSubsystem.sysIdArmDynamicCommand(kForward));
-    tab.add("Arm Dynam Reverse", armSubsystem.sysIdArmDynamicCommand(kReverse));
+    SmartDashboard.putData("Arm Quasi Forward", armSubsystem.sysIdArmQuasistaticCommand(kForward));
+    SmartDashboard.putData("Arm Quasi Reverse", armSubsystem.sysIdArmQuasistaticCommand(kReverse));
+    SmartDashboard.putData("Arm Dynam Forward", armSubsystem.sysIdArmDynamicCommand(kForward));
+    SmartDashboard.putData("Arm Dynam Reverse", armSubsystem.sysIdArmDynamicCommand(kReverse));
 
     // Manipulator
-    tab.add("Manipulator Quasi Forward", gamePieceManipulatorSubsystem.sysIdManipulatorQuasistaticCommand(kForward));
-    tab.add("Manipulator Quasi Reverse", gamePieceManipulatorSubsystem.sysIdManipulatorQuasistaticCommand(kReverse));
-    tab.add("Manipulator Dynam Forward", gamePieceManipulatorSubsystem.sysIdManipulatorDynamicCommand(kForward));
-    tab.add("Manipulator Dynam Reverse", gamePieceManipulatorSubsystem.sysIdManipulatorDynamicCommand(kReverse));
-  }
-
-  /**
-   * Creates the testing tab in Elastic along with all the test result displays
-   */
-  public void populateTestingDashboard() {
-    var tab = Shuffleboard.getTab("Testing");
-
-    tab.add("Run Tests", testMode.testCommand());
-    tab.addBoolean("Indexer Fowards Test", () -> testMode.getIndexerForwardsTestResult());
-    tab.addBoolean("Indexer Backwards Test", () -> testMode.getIndexerBackwardsTestResult());
-    tab.addBoolean("Manipulator Forwards Test", () -> testMode.getManipulatorForwardsTestResult());
-    tab.addBoolean("Manipulator Backwards Test", () -> testMode.getManipulatorBackwardsTestResult());
-    tab.addBoolean("Arm Elevator Test", () -> testMode.getArmElevatorTestResult());
-    tab.addBoolean("Arm Test", () -> testMode.getArmTestResult());
+    SmartDashboard.putData(
+        "Manipulator Quasi Forward",
+          gamePieceManipulatorSubsystem.sysIdManipulatorQuasistaticCommand(kForward));
+    SmartDashboard.putData(
+        "Manipulator Quasi Reverse",
+          gamePieceManipulatorSubsystem.sysIdManipulatorQuasistaticCommand(kReverse));
+    SmartDashboard
+        .putData("Manipulator Dynam Forward", gamePieceManipulatorSubsystem.sysIdManipulatorDynamicCommand(kForward));
+    SmartDashboard
+        .putData("Manipulator Dynam Reverse", gamePieceManipulatorSubsystem.sysIdManipulatorDynamicCommand(kReverse));
   }
 }
