@@ -74,7 +74,7 @@ public abstract class ControlBindings {
   }
 
   /**
-   * Run the indexer belt and the manipulator wheels to intake coral
+   * Intakes coral from the Coral Station.
    * 
    * @return optional trigger
    */
@@ -82,4 +82,30 @@ public abstract class ControlBindings {
     return Optional.empty();
   }
 
+  /**
+   * Eject the Coral and put it on the
+   * 
+   * @return Optional Trigger
+   */
+  public Optional<Trigger> ejectCoral() {
+    return Optional.empty();
+  }
+
+  /**
+   * Make sure the the Coral is in the right postion and allowes the arm to hold it.
+   * 
+   * @return Optional Trigger
+   */
+  public Optional<Trigger> holdCoral() {
+    return Optional.empty();
+  }
+
+  /**
+   * Allows the Game Piece Manipultor to score accurately.
+   * 
+   * @return Optional Trigger
+   */
+  public Optional<Trigger> scoreCoral() {
+    return Optional.empty();
+  }
 }
