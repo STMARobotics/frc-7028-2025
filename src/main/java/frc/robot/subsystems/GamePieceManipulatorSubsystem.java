@@ -53,6 +53,7 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
   private final StatusSignal<Angle> positionSignal = wheelMotor.getPosition(false);
   private final StatusSignal<AngularVelocity> velocitySignal = wheelMotor.getVelocity(false);
   private final StatusSignal<Boolean> intakeCoralDetected = intakeCanRange.getIsDetected(false);
+
   private final TorqueCurrentFOC wheelCharacterization = new TorqueCurrentFOC(0.0);
 
   // SysId routine for rollers - NOTE: the output type is amps, NOT volts (even though it says volts)
@@ -184,5 +185,4 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
   public boolean isCoralInPickupPosition() {
     return intakeCoralDetected.refresh().getValue();
   }
-
 }
