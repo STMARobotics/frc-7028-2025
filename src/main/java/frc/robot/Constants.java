@@ -169,16 +169,16 @@ public class Constants {
     public static final int DEVICE_ID_ARM_MOTOR = 45;
     public static final int DEVICE_ID_ARM_CANDI = 46;
 
-    public static final SlotConfigs ELEVATOR_SLOT_CONFIGS = new SlotConfigs().withKP(0.0)
+    public static final SlotConfigs ELEVATOR_SLOT_CONFIGS = new SlotConfigs().withKP(0.01)
         .withKD(0.0)
         .withKS(0.0)
-        .withKG(0.34) // Volts
-        .withKV(2.22) // V*s/m
-        .withKA(0.05); // V*s^2/m
+        .withKV(0.135)
+        .withKA(0.002) // V*s^2/m
+        .withKG(0.39); // Volts
 
     public static final MotionMagicConfigs ELEVATOR_MOTION_MAGIC_CONFIGS = new MotionMagicConfigs()
-        .withMotionMagicAcceleration(0.01)
-        .withMotionMagicCruiseVelocity(0.01);
+        .withMotionMagicCruiseVelocity(40)
+        .withMotionMagicAcceleration(120);
 
     public static final Current ELEVATOR_SUPPLY_CURRENT_LIMIT = Amps.of(80);
     public static final Current ELEVATOR_STATOR_CURRENT_LIMIT = Amps.of(100);
