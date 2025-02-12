@@ -56,13 +56,8 @@ public class XBoxControlBindings extends ControlBindings {
   }
 
   @Override
-  public Optional<DoubleSupplier> frontClimb() {
+  public Optional<DoubleSupplier> climb() {
     return Optional.of(driverController::getLeftTriggerAxis);
-  }
-
-  @Override
-  public Optional<DoubleSupplier> backClimb() {
-    return Optional.of(driverController::getRightTriggerAxis);
   }
 
   @Override

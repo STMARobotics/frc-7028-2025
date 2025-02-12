@@ -100,13 +100,10 @@ public class RobotContainer {
     controlBindings.seedFieldCentric()
         .ifPresent(trigger -> trigger.onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric)));
 
-    if (controlBindings.frontClimb().isPresent() || controlBindings.backClimb().isPresent()) {
-      climbSubsystem.setDefaultCommand(climbSubsystem.run(() -> {
-        controlBindings.frontClimb()
-            .ifPresent(frontSupplier -> climbSubsystem.runFrontClimb(frontSupplier.getAsDouble()));
-        controlBindings.backClimb().ifPresent(backSupplier -> climbSubsystem.runBackClimb(backSupplier.getAsDouble()));
-      }));
-    }
+    controlBindings.climb()
+        .ifPresent(
+            climbSupplier -> climbSubsystem
+                .setDefaultCommand(climbSubsystem.run(() -> climbSubsystem.runClimb(climbSupplier.getAsDouble()))));
 
     drivetrain.registerTelemetry(drivetrainTelemetry::telemeterize);
 

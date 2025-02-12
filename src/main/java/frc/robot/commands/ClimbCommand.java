@@ -36,13 +36,12 @@ public class ClimbCommand extends Command {
 
   @Override
   public void execute() {
-    climbSubsystem.runFrontClimb(frontClimbSpeed.getAsDouble());
-    climbSubsystem.runBackClimb(backClimbSpeed.getAsDouble());
+    climbSubsystem.runClimb(frontClimbSpeed.getAsDouble());
   }
 
   @Override
   public void end(boolean interrupted) {
-    climbSubsystem.stopMotors();
+    climbSubsystem.stop();
   }
 
 }
