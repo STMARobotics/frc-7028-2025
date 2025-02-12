@@ -125,9 +125,9 @@ public class TestMode {
   private Command testClimbCommand() {
     return run(() -> {
       climbSubsystem.runClimb(CLIMB_TESTING_VOLTAGE.in(Volts));
-    }, climbSubsystem).until(climbSubsystem::areClimbMotorsMoving)
+    }, climbSubsystem).until(climbSubsystem::isClimbMotorMoving)
         .withTimeout(Seconds.of(5))
-        .andThen(() -> climbPublisher.set(climbSubsystem.areClimbMotorsMoving()))
+        .andThen(() -> climbPublisher.set(climbSubsystem.isClimbMotorMoving()))
         .finallyDo(climbSubsystem::stop);
   }
 

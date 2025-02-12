@@ -46,8 +46,8 @@ public class ClimbSubsystem extends SubsystemBase {
 
   private final VoltageOut climbControl = new VoltageOut(0.0).withEnableFOC(true);
 
-  private final StatusSignal<AngularVelocity> climbFrontVelocitySignal = climbMotor.getVelocity();
-  private final StatusSignal<Angle> climbFrontPositionSignal = climbMotor.getPosition();
+  private final StatusSignal<AngularVelocity> climbVelocitySignal = climbMotor.getVelocity();
+  private final StatusSignal<Angle> climbPositionSignal = climbMotor.getPosition();
 
   private final Mechanism2d climbMechanisms = new Mechanism2d(12, 5);
   private final MechanismRoot2d climbRoot = climbMechanisms.getRoot("Climb", 3, 3);
@@ -83,10 +83,6 @@ public class ClimbSubsystem extends SubsystemBase {
     }
 
     climbMotor.getConfigurator().apply(climbTalonConfig);
-    if (Robot.isReal()) {
-      // CANdi doesn't support sim
-      climbTalonConfig.Feedback.withFusedCANdiPwm2(climbCanDi);
-    }
 
     SmartDashboard.putData("Climb", climbMechanisms);
   }
@@ -109,27 +105,23 @@ public class ClimbSubsystem extends SubsystemBase {
    * 
    * @return true if the motor has reached one rotation per second
    */
-  public boolean areClimbMotorsMoving() {
-    return (climbFrontVelocitySignal.refresh().getValue().in(RotationsPerSecond) > 1);
+  public boolean isClimbMotorMoving() {
+    return (climbVelocitySignal.refresh().getValue().in(RotationsPerSecond) > 1);
   }
 
   @Override
   public void periodic() {
-    climbLigament.setAngle(-climbFrontPositionSignal.refresh().getValue().in(Degrees) / CLIMB_ROTOR_TO_SENSOR_RATIO);
+    climbLigament.setAngle(-climbPositionSignal.refresh().getValue().in(Degrees) / CLIMB_ROTOR_TO_SENSOR_RATIO);
   }
 
   @Override
   public void simulationPeriodic() {
-    getMotorVoltage(climbMotorSimState, climbMotorSim);
-  }
-
-  private static void getMotorVoltage(TalonFXSimState simState, DCMotorSim motorSim) {
-    simState.setSupplyVoltage(RobotController.getBatteryVoltage());
-    var motorVoltage = simState.getMotorVoltageMeasure();
-    motorSim.setInputVoltage(motorVoltage.in(Volts));
-    motorSim.update(0.020);
-    simState.setRawRotorPosition(motorSim.getAngularPosition().times(CLIMB_ROTOR_TO_SENSOR_RATIO));
-    simState.setRotorVelocity(motorSim.getAngularVelocity().times(CLIMB_ROTOR_TO_SENSOR_RATIO));
+    climbMotorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
+    var motorVoltage = climbMotorSimState.getMotorVoltageMeasure();
+    climbMotorSim.setInputVoltage(motorVoltage.in(Volts));
+    climbMotorSim.update(0.020);
+    climbMotorSimState.setRawRotorPosition(climbMotorSim.getAngularPosition().times(CLIMB_ROTOR_TO_SENSOR_RATIO));
+    climbMotorSimState.setRotorVelocity(climbMotorSim.getAngularVelocity().times(CLIMB_ROTOR_TO_SENSOR_RATIO));
   }
 
 }
