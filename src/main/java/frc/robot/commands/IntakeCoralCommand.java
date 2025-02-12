@@ -35,10 +35,12 @@ public class IntakeCoralCommand extends Command {
   @Override
   public void execute() {
     armSubsystem.moveToCoralIntakePosition();
-    gamePieceManipulatorSubsystem.intakeCoral();
-    if (armSubsystem.isElevatorAtPosition() && armSubsystem.isArmAtAngle()) {
+    if (armSubsystem.isAtPosition()) {
       // Run the belt if the arm is in position
       indexerSubsystem.intake();
+      gamePieceManipulatorSubsystem.intakeCoral();
+    } else {
+      gamePieceManipulatorSubsystem.stop();
     }
   }
 

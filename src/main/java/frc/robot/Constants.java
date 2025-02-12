@@ -190,7 +190,11 @@ public class Constants {
     public static final Distance ELEVATOR_TOP_LIMIT = Meters.of(0.727075);
     public static final Distance ELEVATOR_BOTTOM_LIMIT = Meters.of(0.0);
 
-    public static final Distance ELEVATOR_SAFE_HEIGHT = Meters.of(0.2);
+    // TODO get these from the real robot
+    public static final Distance ELEVATOR_SAFE_HEIGHT = Inches.of(3.0);
+    public static final Angle ARM_DANGER_MIN = Rotations.of(-0.125);
+    public static final Angle ARM_DANGER_MAX = Rotations.of(-0.075);
+
     public static final Angle ARM_FORWARD_LIMIT = Rotations.of(.75);
     public static final Angle ARM_REVERSE_LIMIT = Rotations.of(-0.125);
 

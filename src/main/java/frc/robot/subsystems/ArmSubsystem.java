@@ -7,11 +7,14 @@ import static com.ctre.phoenix6.signals.NeutralModeValue.Brake;
 import static com.ctre.phoenix6.signals.ReverseLimitSourceValue.RemoteCANdiS2;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Rotation;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
+import static frc.robot.Constants.ArmConstants.ARM_DANGER_MAX;
+import static frc.robot.Constants.ArmConstants.ARM_DANGER_MIN;
 import static frc.robot.Constants.ArmConstants.ARM_INTAKE_ANGLE;
 import static frc.robot.Constants.ArmConstants.ARM_MAGNETIC_OFFSET;
 import static frc.robot.Constants.ArmConstants.ARM_MOTION_MAGIC_CONFIGS;
@@ -53,13 +56,16 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANdiConfiguration;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANdi;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.S1CloseStateValue;
 import com.ctre.phoenix6.signals.S2CloseStateValue;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.measure.Angle;
@@ -272,39 +278,49 @@ public class ArmSubsystem extends SubsystemBase {
   }
 
   /**
-   * Moves the arm to the specified height and angle
+   * Moves the arm to the specified height and angle.
+   * <p>
+   * This protects the elevator and arm from hitting the indexer belt when it has coral. If a conflict would occur, the
+   * elevator will stay at a safe height.
    * 
-   * @param targetElevatorHeight height to move to
+   * @param targetElevatorHeight height to move to. This will be overridden if targetArmAngle might cause this to hit
+   *          the belt
    * @param targetArmAngle angle to move to
    */
   public void moveToPosition(Distance targetElevatorHeight, Angle targetArmAngle) {
     // Try to prevent the arm from powering into the belt
     // There is only a conflict when the arm has coral, but there's no way to know if that's the case
     // It's also only a problem in certain areas of arm travel, but it would be complex to try to handle them
+    Distance elevatorHeightSetpoint = targetElevatorHeight;
+
+    // Wrap angle to [-π, π] radians
+    var targetRadians = MathUtil.angleModulus(targetArmAngle.in(Radians));
+    if (targetRadians > ARM_DANGER_MIN.in(Radians) && targetRadians < ARM_DANGER_MAX.in(Radians)) {
+      // The arm target is in the danger zone where the coral hits the belt, move the elevator target up if it's too low
+      elevatorHeightSetpoint = elevatorHeightSetpoint.lt(ELEVATOR_SAFE_HEIGHT) ? ELEVATOR_SAFE_HEIGHT
+          : elevatorHeightSetpoint;
+    }
+
+    double targetElevatorRotations;
+    ControlRequest angleControlRequest;
     if (isArmAtAngle()) {
-      elevatorMotorLeader.setControl(elevatorControl.withPosition(elevatorDistanceToRotations(targetElevatorHeight)));
-      armMotor.setControl(armControl.withPosition(targetArmAngle));
+      angleControlRequest = armControl.withPosition(targetArmAngle);
+      targetElevatorRotations = elevatorDistanceToRotations(elevatorHeightSetpoint);
     } else {
       if (getElevatorMeters() >= ELEVATOR_SAFE_HEIGHT.in(Meters)) {
-        armMotor.setControl(armControl.withPosition(targetArmAngle));
-        if (targetElevatorHeight.lt(ELEVATOR_SAFE_HEIGHT)) {
-          elevatorMotorLeader
-              .setControl(elevatorControl.withPosition(elevatorDistanceToRotations(ELEVATOR_SAFE_HEIGHT)));
-        } else {
-          elevatorMotorLeader
-              .setControl(elevatorControl.withPosition(elevatorDistanceToRotations(targetElevatorHeight)));
-        }
+        angleControlRequest = armControl.withPosition(targetArmAngle);
+        targetElevatorRotations = elevatorHeightSetpoint.lt(ELEVATOR_SAFE_HEIGHT)
+            ? elevatorDistanceToRotations(ELEVATOR_SAFE_HEIGHT)
+            : elevatorDistanceToRotations(elevatorHeightSetpoint);
       } else {
-        armMotor.stopMotor();
-        if (targetElevatorHeight.gt(ELEVATOR_SAFE_HEIGHT)) {
-          elevatorMotorLeader
-              .setControl(elevatorControl.withPosition(elevatorDistanceToRotations(targetElevatorHeight)));
-        } else {
-          elevatorMotorLeader
-              .setControl(elevatorControl.withPosition(elevatorDistanceToRotations(ELEVATOR_SAFE_HEIGHT)));
-        }
+        angleControlRequest = new NeutralOut();
+        targetElevatorRotations = elevatorHeightSetpoint.gt(ELEVATOR_SAFE_HEIGHT)
+            ? elevatorDistanceToRotations(elevatorHeightSetpoint)
+            : elevatorDistanceToRotations(ELEVATOR_SAFE_HEIGHT);
       }
     }
+    elevatorMotorLeader.setControl(elevatorControl.withPosition(targetElevatorRotations));
+    armMotor.setControl(angleControlRequest);
   }
 
   /**
