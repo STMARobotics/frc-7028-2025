@@ -9,10 +9,7 @@ import static frc.robot.Constants.CANIVORE_BUS_NAME;
 import static frc.robot.Constants.IndexerConstants.CORAL_DETECTION_THRESHOLD;
 import static frc.robot.Constants.IndexerConstants.DEVICE_ID_BELT;
 import static frc.robot.Constants.IndexerConstants.DEVICE_ID_GAME_PIECE_CANRANGE;
-import static frc.robot.Constants.IndexerConstants.EJECT_VELOCITY;
 import static frc.robot.Constants.IndexerConstants.INDEXER_SPEED_TOLERANCE;
-import static frc.robot.Constants.IndexerConstants.INTAKE_VELOCITY;
-import static frc.robot.Constants.IndexerConstants.SCORE_VELOCITY_LEVEL_1;
 import static frc.robot.Constants.IndexerConstants.SLOT_CONFIGS;
 import static frc.robot.Constants.IndexerConstants.SUPPLY_CURRENT_LIMIT;
 import static frc.robot.Constants.IndexerConstants.TORQUE_CURRENT_LIMIT;
@@ -24,6 +21,7 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -40,6 +38,8 @@ public class IndexerSubsystem extends SubsystemBase {
   private final TalonFX beltMotor = new TalonFX(DEVICE_ID_BELT, CANIVORE_BUS_NAME);
   private final CANrange intakeCanRange = new CANrange(DEVICE_ID_GAME_PIECE_CANRANGE, CANIVORE_BUS_NAME);
 
+  // TODO voltage for week zero
+  private final VoltageOut beltVoltageOut = new VoltageOut(0.0).withEnableFOC(true);
   private final VelocityTorqueCurrentFOC beltControl = new VelocityTorqueCurrentFOC(0.0);
   private final TorqueCurrentFOC beltSysIdControl = new TorqueCurrentFOC(0.0);
 
@@ -110,7 +110,9 @@ public class IndexerSubsystem extends SubsystemBase {
    * Runs belt to move coral onto end effector
    */
   public void intake() {
-    beltMotor.setControl(beltControl.withVelocity(INTAKE_VELOCITY));
+    // TODO voltage for week zero
+    beltMotor.setControl(beltVoltageOut.withOutput(2.0));
+    // beltMotor.setControl(beltControl.withVelocity(INTAKE_VELOCITY));
   }
 
   /**
@@ -124,14 +126,18 @@ public class IndexerSubsystem extends SubsystemBase {
    * Run belt backward to score on level 1 of the reef
    */
   public void scoreLevel1() {
-    beltMotor.setControl(beltControl.withVelocity(SCORE_VELOCITY_LEVEL_1));
+    // TODO voltage for week zero
+    beltMotor.setControl(beltVoltageOut.withOutput(-4.0));
+    // beltMotor.setControl(beltControl.withVelocity(SCORE_VELOCITY_LEVEL_1));
   }
 
   /**
    * Run belt backward to remove coral from the system
    */
   public void eject() {
-    beltMotor.setControl(beltControl.withVelocity(EJECT_VELOCITY));
+    // TODO voltage for week zero
+    beltMotor.setControl(beltVoltageOut.withOutput(-2.0));
+    // beltMotor.setControl(beltControl.withVelocity(EJECT_VELOCITY));
   }
 
   /**

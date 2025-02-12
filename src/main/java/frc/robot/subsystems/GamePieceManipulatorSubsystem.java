@@ -11,11 +11,8 @@ import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.CANIVORE_BUS_NAME;
 import static frc.robot.Constants.GamePieceManipulatorConstants.DEVICE_ID_MANIPULATOR_MOTOR;
-import static frc.robot.Constants.GamePieceManipulatorConstants.EJECT_VELOCITY;
 import static frc.robot.Constants.GamePieceManipulatorConstants.HOLD_SLOT_CONFIGS;
-import static frc.robot.Constants.GamePieceManipulatorConstants.INAKE_VELOCITY;
 import static frc.robot.Constants.GamePieceManipulatorConstants.MANIPULATION_SLOT_CONFIGS;
-import static frc.robot.Constants.GamePieceManipulatorConstants.SCORE_VELOCITY;
 import static frc.robot.Constants.GamePieceManipulatorConstants.STATOR_CURRENT_LIMIT;
 import static frc.robot.Constants.GamePieceManipulatorConstants.SUPPLY_CURRENT_LIMIT;
 import static frc.robot.Constants.GamePieceManipulatorConstants.TORQUE_CURRENT_LIMIT;
@@ -30,6 +27,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -63,7 +61,8 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
           null,
           this));
 
-  // define how motors are controlled
+  // TODO voltage for week zero
+  private final VoltageOut wheelVoltageOut = new VoltageOut(0.0).withEnableFOC(true);
   private final VelocityTorqueCurrentFOC wheelControl = new VelocityTorqueCurrentFOC(0).withSlot(0);
   private final PositionVoltage holdControl = new PositionVoltage(0.0).withSlot(1);
 
@@ -122,21 +121,27 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
    * Allow the wheels to move forward so they can grab the coral from the inside
    */
   public void intakeCoral() {
-    wheelMotor.setControl(wheelControl.withVelocity(INAKE_VELOCITY));
+    // TODO voltage for week zero
+    wheelMotor.setControl(wheelVoltageOut.withOutput(3.0));
+    // wheelMotor.setControl(wheelControl.withVelocity(INAKE_VELOCITY));
   }
 
   /**
    * Allow the wheel to go backward do the the coral can go on the reef
    */
   public void ejectCoral() {
-    wheelMotor.setControl(wheelControl.withVelocity(EJECT_VELOCITY));
+    // TODO voltage for week zero
+    wheelMotor.setControl(wheelVoltageOut.withOutput(-2.0));
+    // wheelMotor.setControl(wheelControl.withVelocity(EJECT_VELOCITY));
   }
 
   /**
    * Score speed to put the coral onto the reef
    */
   public void scoreCoral() {
-    wheelMotor.setControl(wheelControl.withVelocity(SCORE_VELOCITY));
+    // TODO voltage for week zero
+    wheelMotor.setControl(wheelVoltageOut.withOutput(-2.0));
+    // wheelMotor.setControl(wheelControl.withVelocity(SCORE_VELOCITY));
   }
 
   /**
