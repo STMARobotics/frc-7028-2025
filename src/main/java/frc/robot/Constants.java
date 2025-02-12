@@ -191,8 +191,11 @@ public class Constants {
     public static final Distance ELEVATOR_BOTTOM_LIMIT = Meters.of(0.0);
 
     // TODO get these from the real robot
+    /** Minimun height where the manipulator won't hit the elevator when it's holding coral */
     public static final Distance ELEVATOR_SAFE_HEIGHT = Inches.of(3.0);
+    /** Min of the range where the manipulator hits the belt when holding coral */
     public static final Angle ARM_DANGER_MIN = Rotations.of(-0.125);
+    /** Max of the range where the manipulator hits the belt when holding coral */
     public static final Angle ARM_DANGER_MAX = Rotations.of(-0.075);
 
     public static final Distance ELEVATOR_POSITION_TOLERANCE = Inches.of(0.5);

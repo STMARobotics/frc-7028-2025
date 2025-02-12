@@ -301,25 +301,29 @@ public class ArmSubsystem extends SubsystemBase {
           : elevatorHeightSetpoint;
     }
 
-    double targetElevatorRotations;
+    Distance targetElevatorRotations;
     ControlRequest angleControlRequest;
     if (isArmAtAngle()) {
+      // Arm is at the target angle. We already made sure the targets were safe, so go
       angleControlRequest = armControl.withPosition(targetArmAngle);
-      targetElevatorRotations = elevatorDistanceToRotations(elevatorHeightSetpoint);
+      targetElevatorRotations = elevatorHeightSetpoint;
     } else {
+      // Arm is not at the target yet
       if (getElevatorMeters() >= ELEVATOR_SAFE_HEIGHT.in(Meters)) {
+        // Elevator is above the safe zone, so the arm can move
         angleControlRequest = armControl.withPosition(targetArmAngle);
-        targetElevatorRotations = elevatorHeightSetpoint.lt(ELEVATOR_SAFE_HEIGHT)
-            ? elevatorDistanceToRotations(ELEVATOR_SAFE_HEIGHT)
-            : elevatorDistanceToRotations(elevatorHeightSetpoint);
+        // Don't let the elevator move below safe zone while the arm is still moving
+        targetElevatorRotations = elevatorHeightSetpoint.lt(ELEVATOR_SAFE_HEIGHT) ? ELEVATOR_SAFE_HEIGHT
+            : elevatorHeightSetpoint;
       } else {
-        angleControlRequest = new NeutralOut();
-        targetElevatorRotations = elevatorHeightSetpoint.gt(ELEVATOR_SAFE_HEIGHT)
-            ? elevatorDistanceToRotations(elevatorHeightSetpoint)
-            : elevatorDistanceToRotations(ELEVATOR_SAFE_HEIGHT);
+        // The elevator is below the safe zone, where conflict can occur so just turn the arm off
+        angleControlRequest = new NeutralOut(); // best option to try to prevent damage
+        // Move the elevator to the target if it's above the safe zone, otherwise move it to the edge of the safe zone
+        targetElevatorRotations = elevatorHeightSetpoint.gt(ELEVATOR_SAFE_HEIGHT) ? elevatorHeightSetpoint
+            : ELEVATOR_SAFE_HEIGHT;
       }
     }
-    elevatorMotorLeader.setControl(elevatorControl.withPosition(targetElevatorRotations));
+    elevatorMotorLeader.setControl(elevatorControl.withPosition(elevatorDistanceToRotations(targetElevatorRotations)));
     armMotor.setControl(angleControlRequest);
   }
 
