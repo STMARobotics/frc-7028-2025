@@ -69,14 +69,4 @@ public class XBoxControlBindings extends ControlBindings {
   public Optional<Trigger> ejectCoral() {
     return Optional.of(driverController.leftBumper());
   }
-
-  @Override
-  public Optional<Trigger> holdCoral() {
-    return Optional.of(driverController.a());
-  }
-
-  @Override
-  public Optional<Trigger> scoreCoral() {
-    return Optional.of(driverController.b());
-  }
 }

@@ -10,6 +10,7 @@ import static edu.wpi.first.units.Units.Radian;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
+import static edu.wpi.first.units.Units.Rotation;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
@@ -28,6 +29,10 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.units.AngleUnit;
+import edu.wpi.first.units.DistanceUnit;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.PerUnit;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -112,11 +117,14 @@ public class Constants {
    */
   public static class IndexerConstants {
     public static final int DEVICE_ID_BELT = 70;
+    public static final int DEVICE_ID_GAME_PIECE_CANRANGE = 36;
 
     public static final AngularVelocity INTAKE_VELOCITY = RadiansPerSecond.of(1);
+
     public static final AngularVelocity SCORE_VELOCITY_LEVEL_1 = RadiansPerSecond.of(-1);
     public static final AngularVelocity EJECT_VELOCITY = RadiansPerSecond.of(-2);
     public static final AngularVelocity INDEXER_SPEED_TOLERANCE = RotationsPerSecond.of(3);
+    public static final Distance CORAL_DETECTION_THRESHOLD = Centimeter.of(6);
 
     public static final Current TORQUE_CURRENT_LIMIT = Amps.of(100);
     public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(10); // Placeholder, will have to change
@@ -176,15 +184,22 @@ public class Constants {
     public static final Current ELEVATOR_STATOR_CURRENT_LIMIT = Amps.of(100);
 
     public static final double ELEVATOR_ROTOR_GEAR_RATIO = 2.85714286;
-    public static final Distance ELEVATOR_DISTANCE_PER_ROTATION = Meters.of(0.05489);
+    public static final Measure<PerUnit<DistanceUnit, AngleUnit>> ELEVATOR_DISTANCE_PER_ROTATION = Meters.per(Rotation)
+        .ofNative(0.05489);
 
     public static final Distance ELEVATOR_TOP_LIMIT = Meters.of(0.727075);
     public static final Distance ELEVATOR_BOTTOM_LIMIT = Meters.of(0.0);
 
+    // TODO get these from the real robot
+    public static final Distance ELEVATOR_SAFE_HEIGHT = Inches.of(3.0);
+    public static final Angle ARM_DANGER_MIN = Rotations.of(-0.125);
+    public static final Angle ARM_DANGER_MAX = Rotations.of(-0.075);
+
     public static final Distance ELEVATOR_POSITION_TOLERANCE = Inches.of(0.5);
     public static final Angle ARM_POSITION_TOLERANCE = Degrees.of(1);
 
-    public static final Distance ELEVATOR_DEFAULT_HEIGHT = Meters.of(0);
+    public static final Distance ELEVATOR_PARK_HEIGHT = Meters.of(0.0);
+    public static final Distance ELEVATOR_PARK_TOLERANCE = Meters.of(0.01);
 
     public static final Current ARM_STATOR_CURRENT_LIMIT = Amps.of(40);
     public static final Current ARM_SUPPLY_CURRENT_LIMIT = Amps.of(40);
@@ -203,15 +218,15 @@ public class Constants {
         .withMotionMagicAcceleration(5.0)
         .withMotionMagicCruiseVelocity(2.0);
 
-    public static final Distance LEVEL_1_HEIGHT = Meters.of(0);
+    public static final Distance ELEVATOR_INTAKE_POSITION = Meters.of(0);
     public static final Distance LEVEL_2_HEIGHT = Meters.of(0);
     public static final Distance LEVEL_3_HEIGHT = Meters.of(0);
     public static final Distance LEVEL_4_HEIGHT = Meters.of(0);
 
+    public static final Angle ARM_INTAKE_ANGLE = Radian.of(0);
     public static final Angle LEVEL_2_ANGLE = Radian.of(0);
     public static final Angle LEVEL_3_ANGLE = Radian.of(0);
     public static final Angle LEVEL_4_ANGLE = Radian.of(0);
-    public static final Angle INTAKE_ANGLE = Radian.of(0);
 
     // Values for Mechanism2d visualization
     public static final Distance ARM_PIVOT_LENGTH = Meters.of(0.577);
@@ -224,7 +239,6 @@ public class Constants {
   public static class GamePieceManipulatorConstants {
 
     public static final int DEVICE_ID_MANIPULATOR_MOTOR = 20;
-    public static final int DEVICE_ID_GAME_PIECE_CANRANGE = 36;
 
     public static final SlotConfigs MANIPULATION_SLOT_CONFIGS = new SlotConfigs().withKP(0.0).withKD(0.0).withKS(0.0);
     public static final SlotConfigs HOLD_SLOT_CONFIGS = new SlotConfigs().withKP(0.0).withKD(0.0);
@@ -232,8 +246,6 @@ public class Constants {
     public static final Current STATOR_CURRENT_LIMIT = Amps.of(20);
     public static final Current TORQUE_CURRENT_LIMIT = Amps.of(20);
     public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(10);
-
-    public static final Distance CORAL_DETECTION_THRESHOLD = Centimeter.of(6);
 
     public static final AngularVelocity INAKE_VELOCITY = RadiansPerSecond.of(5);
     public static final AngularVelocity EJECT_VELOCITY = RadiansPerSecond.of(-5);

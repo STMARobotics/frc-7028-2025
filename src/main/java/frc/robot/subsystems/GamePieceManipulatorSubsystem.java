@@ -10,8 +10,6 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.CANIVORE_BUS_NAME;
-import static frc.robot.Constants.GamePieceManipulatorConstants.CORAL_DETECTION_THRESHOLD;
-import static frc.robot.Constants.GamePieceManipulatorConstants.DEVICE_ID_GAME_PIECE_CANRANGE;
 import static frc.robot.Constants.GamePieceManipulatorConstants.DEVICE_ID_MANIPULATOR_MOTOR;
 import static frc.robot.Constants.GamePieceManipulatorConstants.EJECT_VELOCITY;
 import static frc.robot.Constants.GamePieceManipulatorConstants.HOLD_SLOT_CONFIGS;
@@ -26,14 +24,12 @@ import static frc.robot.Constants.GamePieceManipulatorConstants.WHEEL_SPEED_TOLE
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.configs.CANrangeConfiguration;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.Slot1Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
-import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -48,11 +44,9 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 public class GamePieceManipulatorSubsystem extends SubsystemBase {
 
   private final TalonFX wheelMotor = new TalonFX(DEVICE_ID_MANIPULATOR_MOTOR, CANIVORE_BUS_NAME);
-  private final CANrange intakeCanRange = new CANrange(DEVICE_ID_GAME_PIECE_CANRANGE, CANIVORE_BUS_NAME);
 
   private final StatusSignal<Angle> positionSignal = wheelMotor.getPosition(false);
   private final StatusSignal<AngularVelocity> velocitySignal = wheelMotor.getVelocity(false);
-  private final StatusSignal<Boolean> intakeCoralDetected = intakeCanRange.getIsDetected(false);
 
   private final TorqueCurrentFOC wheelCharacterization = new TorqueCurrentFOC(0.0);
 
@@ -89,10 +83,6 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
         .withSupplyCurrentLimit(SUPPLY_CURRENT_LIMIT)
         .withSupplyCurrentLimitEnable(true);
     wheelMotor.getConfigurator().apply(motorConfig);
-
-    var canRangeConfig = new CANrangeConfiguration();
-    canRangeConfig.ProximityParams.withProximityThreshold(CORAL_DETECTION_THRESHOLD);
-    intakeCanRange.getConfigurator().apply(canRangeConfig);
   }
 
   /**
@@ -177,12 +167,4 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
         .abs(RotationsPerSecond) <= WHEEL_SPEED_TOLERANCE.in(RotationsPerSecond);
   }
 
-  /**
-   * Checks if there is an object in front of the game piece sensor
-   * 
-   * @return true if there is a game piece detected, otherwise false
-   */
-  public boolean isCoralInPickupPosition() {
-    return intakeCoralDetected.refresh().getValue();
-  }
 }
