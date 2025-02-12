@@ -4,6 +4,7 @@
 package frc.robot.subsystems;
 
 import static com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive;
+import static com.ctre.phoenix6.signals.NeutralModeValue.Coast;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
@@ -34,7 +35,6 @@ import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -81,7 +81,7 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
   public GamePieceManipulatorSubsystem() {
     var motorConfig = new TalonFXConfiguration();
     motorConfig.withSlot0(Slot0Configs.from(MANIPULATION_SLOT_CONFIGS)).withSlot1(Slot1Configs.from(HOLD_SLOT_CONFIGS));
-    motorConfig.MotorOutput.withNeutralMode(NeutralModeValue.Brake).withInverted(Clockwise_Positive);
+    motorConfig.MotorOutput.withNeutralMode(Coast).withInverted(Clockwise_Positive);
     motorConfig.TorqueCurrent.withPeakForwardTorqueCurrent(TORQUE_CURRENT_LIMIT)
         .withPeakReverseTorqueCurrent(TORQUE_CURRENT_LIMIT.unaryMinus());
     motorConfig.CurrentLimits.withStatorCurrentLimit(STATOR_CURRENT_LIMIT)
