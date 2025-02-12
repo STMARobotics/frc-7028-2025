@@ -416,11 +416,11 @@ public class ArmSubsystem extends SubsystemBase {
     return elevatorAngleToMeters(elevatorPosition);
   }
 
-  private double elevatorAngleToMeters(Measure<AngleUnit> angle) {
+  private static double elevatorAngleToMeters(Measure<AngleUnit> angle) {
     return angle.in(Rotations) * ELEVATOR_DISTANCE_PER_ROTATION.in(Meters.per(Rotation));
   }
 
-  private double elevatorDistanceToRotations(Distance height) {
+  private static double elevatorDistanceToRotations(Distance height) {
     return height.in(Meters) / ELEVATOR_DISTANCE_PER_ROTATION.in(Meters.per(Rotation));
   }
 

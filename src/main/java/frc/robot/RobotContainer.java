@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.DefaultArmCommand;
+import frc.robot.commands.EjectCoralCommand;
 import frc.robot.commands.IntakeCoralCommand;
 import frc.robot.commands.PhotonVisionCommand;
 import frc.robot.commands.QuestNavCommand;
@@ -117,7 +118,7 @@ public class RobotContainer {
     controlBindings.ejectCoral()
         .ifPresent(
             trigger -> trigger
-                .whileTrue(indexerSubsystem.run(indexerSubsystem::eject).finallyDo(indexerSubsystem::stop)));
+                .whileTrue(new EjectCoralCommand(gamePieceManipulatorSubsystem, armSubsystem, indexerSubsystem)));
   }
 
   private void configurePathPlanner() {

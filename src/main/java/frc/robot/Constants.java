@@ -195,9 +195,6 @@ public class Constants {
     public static final Angle ARM_DANGER_MIN = Rotations.of(-0.125);
     public static final Angle ARM_DANGER_MAX = Rotations.of(-0.075);
 
-    public static final Angle ARM_FORWARD_LIMIT = Rotations.of(.75);
-    public static final Angle ARM_REVERSE_LIMIT = Rotations.of(-0.125);
-
     public static final Distance ELEVATOR_POSITION_TOLERANCE = Inches.of(0.5);
     public static final Angle ARM_POSITION_TOLERANCE = Degrees.of(1);
 
