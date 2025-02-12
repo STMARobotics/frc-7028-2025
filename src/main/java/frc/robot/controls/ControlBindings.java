@@ -76,10 +76,54 @@ public abstract class ControlBindings {
   /**
    * Eject the Coral and put it on the
    * 
-   * @return Optional Trigger
+   * @return optional Trigger
    */
   public Optional<Trigger> ejectCoral() {
     return Optional.empty();
   }
 
+  /**
+   * Moves the arm to reef level 2
+   * 
+   * @return optional trigger
+   */
+  public Optional<Trigger> moveArmToReefLevel2() {
+    return Optional.empty();
+  }
+
+  /**
+   * Moves the arm to reef level 3
+   * 
+   * @return optional trigger
+   */
+  public Optional<Trigger> moveArmToReefLevel3() {
+    return Optional.empty();
+  }
+
+  /**
+   * Moves the arm to reef level 4
+   * 
+   * @return optional trigger
+   */
+  public Optional<Trigger> moveArmToReefLevel4() {
+    return Optional.empty();
+  }
+
+  /**
+   * Runs the game piece manipulator to release the coral
+   * 
+   * @return optional trigger
+   */
+  public Optional<Trigger> releaseCoral() {
+    return Optional.empty();
+  }
+
+  /**
+   * Moves the arm to the park position
+   * 
+   * @return optional trigger
+   */
+  public Optional<Trigger> parkArm() {
+    return Optional.empty();
+  }
 }

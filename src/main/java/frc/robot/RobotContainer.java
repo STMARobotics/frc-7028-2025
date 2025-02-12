@@ -116,6 +116,24 @@ public class RobotContainer {
         .ifPresent(
             trigger -> trigger
                 .whileTrue(new EjectCoralCommand(gamePieceManipulatorSubsystem, armSubsystem, indexerSubsystem)));
+
+    controlBindings.moveArmToReefLevel2()
+        .ifPresent(
+            trigger -> trigger.onTrue(armSubsystem.run(armSubsystem::moveToLevel2).finallyDo(armSubsystem::stop)));
+    controlBindings.moveArmToReefLevel3()
+        .ifPresent(
+            trigger -> trigger.onTrue(armSubsystem.run(armSubsystem::moveToLevel3).finallyDo(armSubsystem::stop)));
+    controlBindings.moveArmToReefLevel4()
+        .ifPresent(
+            trigger -> trigger.onTrue(armSubsystem.run(armSubsystem::moveToLevel4).finallyDo(armSubsystem::stop)));
+
+    controlBindings.releaseCoral()
+        .ifPresent(
+            trigger -> trigger.whileTrue(
+                gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectCoral)
+                    .finallyDo(gamePieceManipulatorSubsystem::stop)));
+    controlBindings.parkArm()
+        .ifPresent(trigger -> trigger.onTrue(armSubsystem.runOnce(armSubsystem::park).finallyDo(armSubsystem::stop)));
   }
 
   private void configurePathPlanner() {
