@@ -22,7 +22,6 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.commands.DefaultArmCommand;
 import frc.robot.commands.EjectCoralCommand;
 import frc.robot.commands.IntakeCoralCommand;
 import frc.robot.commands.PhotonVisionCommand;
@@ -88,7 +87,7 @@ public class RobotContainer {
 
     visionCommand.schedule();
     questNavCommand.schedule();
-    armSubsystem.setDefaultCommand(new DefaultArmCommand(armSubsystem));
+    armSubsystem.setDefaultCommand(armSubsystem.run(armSubsystem::park).finallyDo(armSubsystem::stop));
   }
 
   private void configureBindings() {
