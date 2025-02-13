@@ -28,7 +28,7 @@ import frc.robot.commands.IntakeCoralCommand;
 import frc.robot.commands.PhotonVisionCommand;
 import frc.robot.commands.QuestNavCommand;
 import frc.robot.controls.ControlBindings;
-import frc.robot.controls.XBoxControlBindings;
+import frc.robot.controls.JoystickControlBindings;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
@@ -49,8 +49,11 @@ public class RobotContainer {
       .withSteerRequestType(SteerRequestType.MotionMagicExpo);
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
 
+  @Logged
   private final IndexerSubsystem indexerSubsystem = new IndexerSubsystem();
+  @Logged
   private final GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem = new GamePieceManipulatorSubsystem();
+  @Logged
   private final ArmSubsystem armSubsystem = new ArmSubsystem();
   private final ClimbSubsystem climbSubsystem = new ClimbSubsystem();
   @Logged
@@ -79,7 +82,7 @@ public class RobotContainer {
     autoChooser = AutoBuilder.buildAutoChooser("Tests");
     SmartDashboard.putData("Auto Mode", autoChooser);
 
-    controlBindings = new XBoxControlBindings();
+    controlBindings = new JoystickControlBindings();
     configureBindings();
     configurePathPlanner();
 
@@ -130,7 +133,7 @@ public class RobotContainer {
     controlBindings.releaseCoral()
         .ifPresent(
             trigger -> trigger.whileTrue(
-                gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectCoral)
+                gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::scoreCoral)
                     .finallyDo(gamePieceManipulatorSubsystem::stop)));
     controlBindings.parkArm()
         .ifPresent(trigger -> trigger.onTrue(armSubsystem.runOnce(armSubsystem::park).finallyDo(armSubsystem::stop)));
@@ -167,6 +170,8 @@ public class RobotContainer {
   public void populateTestModeDashboard() {
     // Test mode command
     SmartDashboard.putData("Run Tests", testMode.testCommand());
+    SmartDashboard.putData("Arm in coast", armSubsystem.runOnce(armSubsystem::coast).ignoringDisable(true));
+    SmartDashboard.putData("Arm in brake", armSubsystem.runOnce(armSubsystem::brake).ignoringDisable(true));
 
     // SysID commands
 

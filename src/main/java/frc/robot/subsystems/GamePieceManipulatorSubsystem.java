@@ -29,6 +29,7 @@ import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -39,6 +40,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 /**
  * The is the Subsytem for the Game Pieace Manipulator.
  */
+@Logged
 public class GamePieceManipulatorSubsystem extends SubsystemBase {
 
   private final TalonFX wheelMotor = new TalonFX(DEVICE_ID_MANIPULATOR_MOTOR, CANIVORE_BUS_NAME);
@@ -131,7 +133,7 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
    */
   public void ejectCoral() {
     // TODO voltage for week zero
-    wheelMotor.setControl(wheelVoltageOut.withOutput(-2.0));
+    wheelMotor.setControl(wheelVoltageOut.withOutput(-4.0));
     // wheelMotor.setControl(wheelControl.withVelocity(EJECT_VELOCITY));
   }
 
@@ -140,7 +142,7 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
    */
   public void scoreCoral() {
     // TODO voltage for week zero
-    wheelMotor.setControl(wheelVoltageOut.withOutput(-2.0));
+    wheelMotor.setControl(wheelVoltageOut.withOutput(-12.0));
     // wheelMotor.setControl(wheelControl.withVelocity(SCORE_VELOCITY));
   }
 

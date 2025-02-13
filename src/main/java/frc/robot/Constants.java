@@ -1,12 +1,11 @@
 package frc.robot;
 
+import static com.ctre.phoenix6.signals.GravityTypeValue.Arm_Cosine;
 import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Centimeter;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
-import static edu.wpi.first.units.Units.Radian;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
@@ -19,7 +18,6 @@ import static frc.robot.Constants.TeleopDriveConstants.MAX_TELEOP_VELOCITY;
 
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.SlotConfigs;
-import com.ctre.phoenix6.signals.GravityTypeValue;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
@@ -116,7 +114,7 @@ public class Constants {
    * Constants for the indexer subsystem
    */
   public static class IndexerConstants {
-    public static final int DEVICE_ID_BELT = 70;
+    public static final int DEVICE_ID_BELT = 35;
     public static final int DEVICE_ID_GAME_PIECE_CANRANGE = 36;
 
     public static final AngularVelocity INTAKE_VELOCITY = RadiansPerSecond.of(1);
@@ -124,7 +122,7 @@ public class Constants {
     public static final AngularVelocity SCORE_VELOCITY_LEVEL_1 = RadiansPerSecond.of(-1);
     public static final AngularVelocity EJECT_VELOCITY = RadiansPerSecond.of(-2);
     public static final AngularVelocity INDEXER_SPEED_TOLERANCE = RotationsPerSecond.of(3);
-    public static final Distance CORAL_DETECTION_THRESHOLD = Centimeter.of(6);
+    public static final Distance CORAL_DETECTION_THRESHOLD = Meters.of(0.076);
 
     public static final Current TORQUE_CURRENT_LIMIT = Amps.of(100);
     public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(10); // Placeholder, will have to change
@@ -190,16 +188,16 @@ public class Constants {
     public static final Distance ELEVATOR_TOP_LIMIT = Meters.of(0.727075);
     public static final Distance ELEVATOR_BOTTOM_LIMIT = Meters.of(0.0);
 
-    // TODO get these from the real robot
     /** Minimun height where the manipulator won't hit the elevator when it's holding coral */
-    public static final Distance ELEVATOR_SAFE_HEIGHT = Inches.of(3.0);
+    public static final Distance ELEVATOR_SAFE_HEIGHT = Meters.of(0.017);
+    public static final Distance ELEVATOR_SAFE_TARGET = Meters.of(0.03);
     /** Min of the range where the manipulator hits the belt when holding coral */
-    public static final Angle ARM_DANGER_MIN = Rotations.of(-0.125);
+    public static final Angle ARM_DANGER_MIN = Rotations.of(-0.225);
     /** Max of the range where the manipulator hits the belt when holding coral */
-    public static final Angle ARM_DANGER_MAX = Rotations.of(-0.075);
+    public static final Angle ARM_DANGER_MAX = Rotations.of(-0.126);
 
     public static final Distance ELEVATOR_POSITION_TOLERANCE = Inches.of(0.5);
-    public static final Angle ARM_POSITION_TOLERANCE = Degrees.of(1);
+    public static final Angle ARM_POSITION_TOLERANCE = Degrees.of(5);
 
     public static final Distance ELEVATOR_PARK_HEIGHT = Meters.of(0.0);
     public static final Distance ELEVATOR_PARK_TOLERANCE = Meters.of(0.01);
@@ -207,13 +205,13 @@ public class Constants {
     public static final Current ARM_STATOR_CURRENT_LIMIT = Amps.of(40);
     public static final Current ARM_SUPPLY_CURRENT_LIMIT = Amps.of(40);
     public static final double ARM_ROTOR_TO_SENSOR_RATIO = 45;
-    public static final Angle ARM_MAGNETIC_OFFSET = Rotations.of(0.65);
+    public static final Angle ARM_MAGNETIC_OFFSET = Rotations.of(0.612793);
 
-    public static final SlotConfigs ARM_SLOT_CONFIGS = new SlotConfigs().withGravityType(GravityTypeValue.Arm_Cosine)
-        .withKP(20.0)
+    public static final SlotConfigs ARM_SLOT_CONFIGS = new SlotConfigs().withGravityType(Arm_Cosine)
+        .withKP(40.0)
         .withKD(0.0)
         .withKS(0.15341)
-        .withKG(0.12) // Volts
+        .withKG(0.4) // Volts
         .withKV(5.59) // V*s/rotation
         .withKA(0.03); // V*s^2/rotation
 
@@ -222,14 +220,14 @@ public class Constants {
         .withMotionMagicCruiseVelocity(2.0);
 
     public static final Distance ELEVATOR_INTAKE_POSITION = Meters.of(0);
-    public static final Distance LEVEL_2_HEIGHT = Meters.of(0);
+    public static final Distance LEVEL_2_HEIGHT = Meters.of(0.1946611669921875);
     public static final Distance LEVEL_3_HEIGHT = Meters.of(0);
-    public static final Distance LEVEL_4_HEIGHT = Meters.of(0);
+    public static final Distance LEVEL_4_HEIGHT = Meters.of(0.7186891357421875);
 
-    public static final Angle ARM_INTAKE_ANGLE = Radian.of(0);
-    public static final Angle LEVEL_2_ANGLE = Radian.of(0);
-    public static final Angle LEVEL_3_ANGLE = Radian.of(0);
-    public static final Angle LEVEL_4_ANGLE = Radian.of(0);
+    public static final Angle ARM_INTAKE_ANGLE = Rotations.of(-0.230);
+    public static final Angle LEVEL_2_ANGLE = Rotations.of(-0.31787109375);
+    public static final Angle LEVEL_3_ANGLE = Rotations.of(0.195);
+    public static final Angle LEVEL_4_ANGLE = Rotations.of(0.17);
 
     // Values for Mechanism2d visualization
     public static final Distance ARM_PIVOT_LENGTH = Meters.of(0.577);
@@ -246,9 +244,9 @@ public class Constants {
     public static final SlotConfigs MANIPULATION_SLOT_CONFIGS = new SlotConfigs().withKP(0.0).withKD(0.0).withKS(0.0);
     public static final SlotConfigs HOLD_SLOT_CONFIGS = new SlotConfigs().withKP(0.0).withKD(0.0);
 
-    public static final Current STATOR_CURRENT_LIMIT = Amps.of(20);
-    public static final Current TORQUE_CURRENT_LIMIT = Amps.of(20);
-    public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(10);
+    public static final Current STATOR_CURRENT_LIMIT = Amps.of(30);
+    public static final Current TORQUE_CURRENT_LIMIT = Amps.of(10);
+    public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(20);
 
     public static final AngularVelocity INAKE_VELOCITY = RadiansPerSecond.of(5);
     public static final AngularVelocity EJECT_VELOCITY = RadiansPerSecond.of(-5);

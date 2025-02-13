@@ -48,5 +48,6 @@ public class EjectCoralCommand extends Command {
   public void end(boolean interrupted) {
     armSubsystem.stop();
     gamePieceManipulatorSubsystem.stop();
+    indexerSubsystem.stop();
   }
 }

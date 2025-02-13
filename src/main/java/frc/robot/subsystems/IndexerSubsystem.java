@@ -24,6 +24,7 @@ import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -33,6 +34,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 /**
  * The subsystem for the coral box/indexer
  */
+@Logged
 public class IndexerSubsystem extends SubsystemBase {
 
   private final TalonFX beltMotor = new TalonFX(DEVICE_ID_BELT, CANIVORE_BUS_NAME);
@@ -136,7 +138,7 @@ public class IndexerSubsystem extends SubsystemBase {
    */
   public void eject() {
     // TODO voltage for week zero
-    beltMotor.setControl(beltVoltageOut.withOutput(-2.0));
+    beltMotor.setControl(beltVoltageOut.withOutput(-8.0));
     // beltMotor.setControl(beltControl.withVelocity(EJECT_VELOCITY));
   }
 

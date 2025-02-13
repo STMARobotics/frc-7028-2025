@@ -1,5 +1,7 @@
 package frc.robot.commands;
 
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.GamePieceManipulatorSubsystem;
@@ -13,6 +15,7 @@ public class IntakeCoralCommand extends Command {
   private final IndexerSubsystem indexerSubsystem;
   private final GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem;
   private final ArmSubsystem armSubsystem;
+  private final Debouncer coralDebouncer = new Debouncer(0.1, DebounceType.kRising);
 
   /**
    * Constructors a IntakeCoralCommand
@@ -33,6 +36,11 @@ public class IntakeCoralCommand extends Command {
   }
 
   @Override
+  public void initialize() {
+    coralDebouncer.calculate(false);
+  }
+
+  @Override
   public void execute() {
     armSubsystem.moveToCoralIntakePosition();
     if (armSubsystem.isAtPosition()) {
@@ -47,7 +55,7 @@ public class IntakeCoralCommand extends Command {
 
   @Override
   public boolean isFinished() {
-    return indexerSubsystem.isCoralInPickupPosition();
+    return coralDebouncer.calculate(indexerSubsystem.isCoralInPickupPosition());
   }
 
   @Override

@@ -55,12 +55,12 @@ public class JoystickControlBindings extends ControlBindings {
 
   @Override
   public Optional<Trigger> moveArmToReefLevel2() {
-    return Optional.of(rightJoystick.povLeft());
+    return Optional.of(rightJoystick.povRight());
   }
 
   @Override
   public Optional<Trigger> moveArmToReefLevel3() {
-    return Optional.of(rightJoystick.povRight());
+    return Optional.of(rightJoystick.povLeft());
   }
 
   @Override
@@ -95,6 +95,6 @@ public class JoystickControlBindings extends ControlBindings {
 
   @Override
   public Optional<Trigger> parkArm() {
-    return Optional.of(rightJoystick.povDown());
+    return Optional.of(leftJoystick.povDown());
   }
 }

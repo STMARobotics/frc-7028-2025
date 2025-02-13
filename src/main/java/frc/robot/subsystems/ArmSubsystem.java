@@ -4,6 +4,7 @@ import static com.ctre.phoenix6.signals.ForwardLimitSourceValue.RemoteCANdiS1;
 import static com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive;
 import static com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
 import static com.ctre.phoenix6.signals.NeutralModeValue.Brake;
+import static com.ctre.phoenix6.signals.NeutralModeValue.Coast;
 import static com.ctre.phoenix6.signals.ReverseLimitSourceValue.RemoteCANdiS2;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
@@ -38,6 +39,7 @@ import static frc.robot.Constants.ArmConstants.ELEVATOR_PARK_HEIGHT;
 import static frc.robot.Constants.ArmConstants.ELEVATOR_PARK_TOLERANCE;
 import static frc.robot.Constants.ArmConstants.ELEVATOR_POSITION_TOLERANCE;
 import static frc.robot.Constants.ArmConstants.ELEVATOR_SAFE_HEIGHT;
+import static frc.robot.Constants.ArmConstants.ELEVATOR_SAFE_TARGET;
 import static frc.robot.Constants.ArmConstants.ELEVATOR_SLOT_CONFIGS;
 import static frc.robot.Constants.ArmConstants.ELEVATOR_STATOR_CURRENT_LIMIT;
 import static frc.robot.Constants.ArmConstants.ELEVATOR_SUPPLY_CURRENT_LIMIT;
@@ -65,6 +67,7 @@ import com.ctre.phoenix6.hardware.CANdi;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.S1CloseStateValue;
 import com.ctre.phoenix6.signals.S2CloseStateValue;
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.Measure;
@@ -86,6 +89,7 @@ import frc.robot.Robot;
 /**
  * The is the Subsytem for the Arm, including the elevator.
  */
+@Logged
 public class ArmSubsystem extends SubsystemBase {
 
   private final TalonFX elevatorMotorLeader = new TalonFX(DEVICE_ID_ELEVATOR_MOTOR_LEADER, CANIVORE_BUS_NAME);
@@ -184,7 +188,6 @@ public class ArmSubsystem extends SubsystemBase {
 
     var armTalonConfig = new TalonFXConfiguration();
     armTalonConfig.MotorOutput.withNeutralMode(Brake).withInverted(Clockwise_Positive);
-    armTalonConfig.Voltage.withPeakForwardVoltage(2).withPeakReverseVoltage(-2);
     armTalonConfig.withSlot0(Slot0Configs.from(ARM_SLOT_CONFIGS));
     armTalonConfig.CurrentLimits.withSupplyCurrentLimit(ARM_SUPPLY_CURRENT_LIMIT)
         .withSupplyCurrentLimitEnable(true)
@@ -300,27 +303,28 @@ public class ArmSubsystem extends SubsystemBase {
       elevatorHeightSetpoint = elevatorHeightSetpoint.lt(ELEVATOR_SAFE_HEIGHT) ? ELEVATOR_SAFE_HEIGHT
           : elevatorHeightSetpoint;
     }
+    armControl.withPosition(targetArmAngle);
 
     Distance targetElevatorRotations;
     ControlRequest angleControlRequest;
     if (isArmAtAngle()) {
       // Arm is at the target angle. We already made sure the targets were safe, so go
-      angleControlRequest = armControl.withPosition(targetArmAngle);
+      angleControlRequest = armControl;
       targetElevatorRotations = elevatorHeightSetpoint;
     } else {
       // Arm is not at the target yet
       if (getElevatorMeters() >= ELEVATOR_SAFE_HEIGHT.in(Meters)) {
         // Elevator is above the safe zone, so the arm can move
-        angleControlRequest = armControl.withPosition(targetArmAngle);
+        angleControlRequest = armControl;
         // Don't let the elevator move below safe zone while the arm is still moving
-        targetElevatorRotations = elevatorHeightSetpoint.lt(ELEVATOR_SAFE_HEIGHT) ? ELEVATOR_SAFE_HEIGHT
+        targetElevatorRotations = elevatorHeightSetpoint.lt(ELEVATOR_SAFE_HEIGHT) ? ELEVATOR_SAFE_TARGET
             : elevatorHeightSetpoint;
       } else {
         // The elevator is below the safe zone, where conflict can occur so just turn the arm off
         angleControlRequest = new NeutralOut(); // best option to try to prevent damage
         // Move the elevator to the target if it's above the safe zone, otherwise move it to the edge of the safe zone
         targetElevatorRotations = elevatorHeightSetpoint.gt(ELEVATOR_SAFE_HEIGHT) ? elevatorHeightSetpoint
-            : ELEVATOR_SAFE_HEIGHT;
+            : ELEVATOR_SAFE_TARGET;
       }
     }
     elevatorMotorLeader.setControl(elevatorControl.withPosition(elevatorDistanceToRotations(targetElevatorRotations)));
@@ -396,7 +400,8 @@ public class ArmSubsystem extends SubsystemBase {
    * @return true if arm and elevator are parked
    */
   public boolean isParked() {
-    return getElevatorMeters() < (ELEVATOR_PARK_HEIGHT.in(Meters) + ELEVATOR_PARK_TOLERANCE.in(Meters));
+    return getElevatorMeters() < (ELEVATOR_PARK_HEIGHT.in(Meters) + ELEVATOR_PARK_TOLERANCE.in(Meters))
+        && isArmAtAngle();
   }
 
   /**
@@ -405,16 +410,53 @@ public class ArmSubsystem extends SubsystemBase {
    * @return true if the arm is at the target angle, within a tolerance
    */
   public boolean isArmAtAngle() {
-    return getArmAngle().abs(Rotations) <= ARM_POSITION_TOLERANCE.in(Rotations);
+    var angleTarget = MathUtil.angleModulus(getArmAngle().in(Radians));
+    return Math.abs(armControl.getPositionMeasure().in(Radians) - angleTarget) <= ARM_POSITION_TOLERANCE.in(Radians);
   }
 
-  private Measure<AngleUnit> getArmAngle() {
+  /**
+   * Gets the arm angle
+   * 
+   * @return arm angle
+   */
+  public Measure<AngleUnit> getArmAngle() {
     BaseStatusSignal.refreshAll(armPositionSignal, armVelocitySignal);
-    var armPosition = BaseStatusSignal.getLatencyCompensatedValue(armPositionSignal, armVelocitySignal);
-    return armPosition;
+    return BaseStatusSignal.getLatencyCompensatedValue(armPositionSignal, armVelocitySignal);
   }
 
-  private double getElevatorMeters() {
+  /**
+   * Gets the arm angle in rotations. This is helpful for Epilogue
+   * 
+   * @return arm angle in rotations
+   */
+  public double getArmAngleRotations() {
+    return getArmAngle().in(Rotations);
+  }
+
+  /**
+   * Puts the arm and elevator motors in coast mode
+   */
+  public void coast() {
+    elevatorMotorLeader.setNeutralMode(Coast);
+    elevatorMotorFollower.setNeutralMode(Coast);
+    armMotor.setNeutralMode(Coast);
+  }
+
+  /**
+   * Puts the arm and elevator motors in brake mode
+   */
+  public void brake() {
+    elevatorMotorLeader.setNeutralMode(Brake);
+    elevatorMotorFollower.setNeutralMode(Brake);
+    armMotor.setNeutralMode(Brake);
+  }
+
+  /**
+   * Gets the elevator position in meters. This is helpful within this class, and for Epilogue
+   * 
+   * @return elevator position in meters
+   */
+  public double getElevatorMeters() {
     BaseStatusSignal.refreshAll(elevatorPositionSignal, elevatorVelocitySignal);
     var elevatorPosition = BaseStatusSignal.getLatencyCompensatedValue(elevatorPositionSignal, elevatorVelocitySignal);
     return elevatorAngleToMeters(elevatorPosition);
