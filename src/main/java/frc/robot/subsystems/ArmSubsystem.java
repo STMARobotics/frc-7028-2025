@@ -101,6 +101,7 @@ public class ArmSubsystem extends SubsystemBase {
 
   private final MotionMagicVoltage elevatorControl = new MotionMagicVoltage(0.0).withEnableFOC(true);
   private final MotionMagicVoltage armControl = new MotionMagicVoltage(0.0).withEnableFOC(true);
+  private final NeutralOut neutralOut = new NeutralOut();
   private final VoltageOut sysIdElevatorControl = new VoltageOut(0.0).withEnableFOC(true);
   private final VoltageOut sysIdArmControl = new VoltageOut(0.0).withEnableFOC(true);
 
@@ -291,6 +292,22 @@ public class ArmSubsystem extends SubsystemBase {
    * @param targetArmAngle angle to move to
    */
   public void moveToPosition(Distance targetElevatorHeight, Angle targetArmAngle) {
+    moveToPosition(targetElevatorHeight, targetArmAngle, false);
+  }
+
+  /**
+   * Moves the arm to the specified height and angle.
+   * <p>
+   * This protects the elevator and arm from hitting the indexer belt when it has coral. If a conflict would occur, the
+   * elevator will stay at a safe height.
+   * 
+   * @param targetElevatorHeight height to move to. This will be overridden if targetArmAngle might cause this to hit
+   *          the belt
+   * @param targetArmAngle angle to move to
+   * @param park true if the elevator should power down if the arm is in position and the elevator is below the park
+   *          height
+   */
+  private void moveToPosition(Distance targetElevatorHeight, Angle targetArmAngle, boolean park) {
     // Try to prevent the arm from powering into the belt
     // There is only a conflict when the arm has coral, but there's no way to know if that's the case
     // It's also only a problem in certain areas of arm travel, but it would be complex to try to handle them
@@ -305,29 +322,36 @@ public class ArmSubsystem extends SubsystemBase {
     }
     armControl.withPosition(targetArmAngle);
 
-    Distance targetElevatorRotations;
+    ControlRequest heightControlRequest;
     ControlRequest angleControlRequest;
     if (isArmAtAngle()) {
       // Arm is at the target angle. We already made sure the targets were safe, so go
       angleControlRequest = armControl;
-      targetElevatorRotations = elevatorHeightSetpoint;
+      if (park && getElevatorMeters() < (ELEVATOR_PARK_HEIGHT.in(Meters) + ELEVATOR_PARK_TOLERANCE.in(Meters))) {
+        // Elevator can park, turn it off
+        heightControlRequest = neutralOut;
+      } else {
+        heightControlRequest = elevatorControl.withPosition(elevatorDistanceToRotations(elevatorHeightSetpoint));
+      }
     } else {
       // Arm is not at the target yet
       if (getElevatorMeters() >= ELEVATOR_SAFE_HEIGHT.in(Meters)) {
         // Elevator is above the safe zone, so the arm can move
         angleControlRequest = armControl;
         // Don't let the elevator move below safe zone while the arm is still moving
-        targetElevatorRotations = elevatorHeightSetpoint.lt(ELEVATOR_SAFE_HEIGHT) ? ELEVATOR_SAFE_TARGET
+        elevatorHeightSetpoint = elevatorHeightSetpoint.lt(ELEVATOR_SAFE_HEIGHT) ? ELEVATOR_SAFE_TARGET
             : elevatorHeightSetpoint;
+        heightControlRequest = elevatorControl.withPosition(elevatorDistanceToRotations(elevatorHeightSetpoint));
       } else {
         // The elevator is below the safe zone, where conflict can occur so just turn the arm off
-        angleControlRequest = new NeutralOut(); // best option to try to prevent damage
+        angleControlRequest = neutralOut; // best option to try to prevent damage
         // Move the elevator to the target if it's above the safe zone, otherwise move it to the edge of the safe zone
-        targetElevatorRotations = elevatorHeightSetpoint.gt(ELEVATOR_SAFE_HEIGHT) ? elevatorHeightSetpoint
+        elevatorHeightSetpoint = elevatorHeightSetpoint.gt(ELEVATOR_SAFE_HEIGHT) ? elevatorHeightSetpoint
             : ELEVATOR_SAFE_TARGET;
+        heightControlRequest = elevatorControl.withPosition(elevatorDistanceToRotations(elevatorHeightSetpoint));
       }
     }
-    elevatorMotorLeader.setControl(elevatorControl.withPosition(elevatorDistanceToRotations(targetElevatorRotations)));
+    elevatorMotorLeader.setControl(heightControlRequest);
     armMotor.setControl(angleControlRequest);
   }
 
@@ -335,7 +359,7 @@ public class ArmSubsystem extends SubsystemBase {
    * Moves the arm and elevator to the park position
    */
   public void park() {
-    moveToPosition(ELEVATOR_PARK_HEIGHT, ARM_INTAKE_ANGLE);
+    moveToPosition(ELEVATOR_PARK_HEIGHT, ARM_INTAKE_ANGLE, true);
   }
 
   /**
