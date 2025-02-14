@@ -14,8 +14,14 @@ import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
+import static frc.robot.Constants.ArmConstants.ALGAE_LEVEL_1_ANGLE;
+import static frc.robot.Constants.ArmConstants.ALGAE_LEVEL_1_HEIGHT;
+import static frc.robot.Constants.ArmConstants.ALGAE_LEVEL_2_ANGLE;
+import static frc.robot.Constants.ArmConstants.ALGAE_LEVEL_2_HEIGHT;
 import static frc.robot.Constants.ArmConstants.ARM_DANGER_MAX;
 import static frc.robot.Constants.ArmConstants.ARM_DANGER_MIN;
+import static frc.robot.Constants.ArmConstants.ARM_FORBIDDEN_ZONE_MAX;
+import static frc.robot.Constants.ArmConstants.ARM_FORBIDDEN_ZONE_MIN;
 import static frc.robot.Constants.ArmConstants.ARM_INTAKE_ANGLE;
 import static frc.robot.Constants.ArmConstants.ARM_MAGNETIC_OFFSET;
 import static frc.robot.Constants.ArmConstants.ARM_MOTION_MAGIC_CONFIGS;
@@ -74,6 +80,7 @@ import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
@@ -92,11 +99,11 @@ import frc.robot.Robot;
 @Logged
 public class ArmSubsystem extends SubsystemBase {
 
-  private final TalonFX elevatorMotorLeader = new TalonFX(DEVICE_ID_ELEVATOR_MOTOR_LEADER, CANIVORE_BUS_NAME);
+  final TalonFX elevatorMotorLeader = new TalonFX(DEVICE_ID_ELEVATOR_MOTOR_LEADER, CANIVORE_BUS_NAME);
   private final TalonFX elevatorMotorFollower = new TalonFX(DEVICE_ID_ELEVATOR_MOTOR_FOLLOWER, CANIVORE_BUS_NAME);
   private final CANdi elevatorCanDi = new CANdi(DEVICE_ID_ELEVATOR_CANDI, CANIVORE_BUS_NAME);
 
-  private final TalonFX armMotor = new TalonFX(DEVICE_ID_ARM_MOTOR, CANIVORE_BUS_NAME);
+  final TalonFX armMotor = new TalonFX(DEVICE_ID_ARM_MOTOR, CANIVORE_BUS_NAME);
   private final CANdi armCanDi = new CANdi(DEVICE_ID_ARM_CANDI, CANIVORE_BUS_NAME);
 
   private final MotionMagicVoltage elevatorControl = new MotionMagicVoltage(0.0).withEnableFOC(true);
@@ -131,6 +138,8 @@ public class ArmSubsystem extends SubsystemBase {
   private final StatusSignal<Angle> armPositionSignal = armMotor.getPosition();
   private final StatusSignal<AngularVelocity> armVelocitySignal = armMotor.getVelocity();
   private final StatusSignal<AngularVelocity> elevatorVelocitySignal = elevatorMotorLeader.getVelocity();
+
+  private final MutAngle armTarget = Rotations.mutable(0);
 
   // Mechanism is on a 2d plane, so its the elevator viewed from the back (pop-tart side) of the robot
   // The width of the mechanism pallete is big enough to fit the mechanism in all configurations, pus a little margin
@@ -196,7 +205,6 @@ public class ArmSubsystem extends SubsystemBase {
         .withStatorCurrentLimitEnable(true);
     armTalonConfig.withMotionMagic(ARM_MOTION_MAGIC_CONFIGS);
     armTalonConfig.Feedback.withRotorToSensorRatio(ARM_ROTOR_TO_SENSOR_RATIO).withFusedCANdiPwm1(armCanDi);
-    armTalonConfig.ClosedLoopGeneral.withContinuousWrap(true);
 
     armMotor.getConfigurator().apply(armTalonConfig);
     SmartDashboard.putData("Arm", armMechanism);
@@ -307,21 +315,29 @@ public class ArmSubsystem extends SubsystemBase {
    * @param park true if the elevator should power down if the arm is in position and the elevator is below the park
    *          height
    */
-  private void moveToPosition(Distance targetElevatorHeight, Angle targetArmAngle, boolean park) {
-    // Try to prevent the arm from powering into the belt
+  void moveToPosition(Distance targetElevatorHeight, Angle targetArmAngle, boolean park) {
+    // First, handle the arm forbidden zone and choose which direction to go
+    Angle calculatedTargetArmAngle = calculateArmTarget(
+        (Angle) getArmAngle(),
+          targetArmAngle,
+          ARM_FORBIDDEN_ZONE_MIN,
+          ARM_FORBIDDEN_ZONE_MAX);
+
+    // Next, try to prevent the arm from powering into the belt
     // There is only a conflict when the arm has coral, but there's no way to know if that's the case
     // It's also only a problem in certain areas of arm travel, but it would be complex to try to handle them
     Distance elevatorHeightSetpoint = targetElevatorHeight;
 
-    // Wrap angle to [-π, π] radians
-    var targetRadians = MathUtil.angleModulus(targetArmAngle.in(Radians));
-    if (targetRadians > ARM_DANGER_MIN.in(Radians) && targetRadians < ARM_DANGER_MAX.in(Radians)) {
-      // The arm target is in the danger zone where the coral hits the belt, move the elevator target up if it's too low
+    // Normalize / wrap arm angle to 1 rotation
+    var targetRotations = ((calculatedTargetArmAngle.in(Rotations) % 1.0) + 1.0) % 1.0;
+    if (targetRotations > ARM_DANGER_MIN.in(Rotations) && targetRotations < ARM_DANGER_MAX.in(Rotations)) {
+      // The arm target is in the danger zone where the coral hits the belt, move the elevator target up if it's too
+      // low
       elevatorHeightSetpoint = elevatorHeightSetpoint.lt(ELEVATOR_SAFE_HEIGHT) ? ELEVATOR_SAFE_HEIGHT
           : elevatorHeightSetpoint;
     }
-    armControl.withPosition(targetArmAngle);
 
+    armControl.withPosition(calculatedTargetArmAngle);
     ControlRequest heightControlRequest;
     ControlRequest angleControlRequest;
     if (isArmAtAngle()) {
@@ -388,6 +404,20 @@ public class ArmSubsystem extends SubsystemBase {
    */
   public void moveToLevel4() {
     moveToPosition(LEVEL_4_HEIGHT, LEVEL_4_ANGLE);
+  }
+
+  /**
+   * Moves arm to the position to extract algae from the lower reef location
+   */
+  public void moveToAlgaeLevel1() {
+    moveToPosition(ALGAE_LEVEL_1_HEIGHT, ALGAE_LEVEL_1_ANGLE);
+  }
+
+  /**
+   * Moves arm to the position to extract algae from the higher reef location
+   */
+  public void moveToAlgaeLevel2() {
+    moveToPosition(ALGAE_LEVEL_2_HEIGHT, ALGAE_LEVEL_2_ANGLE);
   }
 
   /**
@@ -492,6 +522,58 @@ public class ArmSubsystem extends SubsystemBase {
 
   private static double elevatorDistanceToRotations(Distance height) {
     return height.in(Meters) / ELEVATOR_DISTANCE_PER_ROTATION.in(Meters.per(Rotation));
+  }
+
+  /**
+   * Calculates an arm target location, avoiding a forbidden zone. This is used to control the direction the arm moves
+   * for things like avoiding hitting the reef after scoring, or swinging the arm into the intake box after acquiring a
+   * coral.
+   * <p>
+   * This depends on the fact that the arm can rotate more than one rotation, and that the value <em>does not</em> wrap.
+   * For example, when rotating 0.9 rotations from 0.2 the end position is 1.1, not 0.1.
+   * 
+   * @param start current position of the arm. This should not be a continuous wrap value.
+   * @param target target position of the arm. This can be a continuous wrap value, 0.8 is the same as -1.2.
+   * @param forbiddenMin forbidden zone for the arm motion. Must be < forbiddenMax. This can be a continuous wrap value,
+   *          0.8 is the same as -1.2.
+   * @param forbiddenMax forbidden zone max for the arm motion. Must be > forbiddenMin. This can be a continuous wrap
+   *          value, 0.8 is the same as -1.2.
+   * @return the calculated target position. This will not be a continuous wrap value.
+   */
+  Angle calculateArmTarget(Angle start, Angle target, Angle forbiddenMin, Angle forbiddenMax) {
+    // normalize all of the values to within one rotation
+    var normalizedStart = ((start.in(Rotations) % 1.0) + 1.0) % 1.0;
+    var normalizedTarget = ((target.in(Rotations) % 1.0) + 1.0) % 1.0;
+    var normalizedForbiddenMin = ((forbiddenMin.in(Rotations) % 1.0) + 1.0) % 1.0;
+    var normalizedForbiddenMax = ((forbiddenMax.in(Rotations) % 1.0) + 1.0) % 1.0;
+
+    // make sure the target is outside of the forbidden zone
+    if (normalizedTarget > normalizedForbiddenMin && normalizedTarget < normalizedForbiddenMax) {
+      // target is in forbidden zone, change the target to the edge nearest to the target (this is a choice, it could be
+      // the edge nearest to the starting position)
+      if (Math.abs(normalizedTarget - normalizedForbiddenMin) > Math.abs(normalizedTarget - normalizedForbiddenMax)) {
+        normalizedTarget = normalizedForbiddenMax;
+      } else {
+        normalizedTarget = normalizedForbiddenMin;
+      }
+    }
+
+    // choose shortest or longest path, based on the forbidden zone in range of [-1, 1] for example, 0.8 or -0.2
+    if ((normalizedStart < normalizedForbiddenMin && normalizedTarget > normalizedForbiddenMin)
+        || (normalizedStart > normalizedForbiddenMax && normalizedTarget < normalizedForbiddenMax)) {
+      // go the long way
+      if (normalizedStart < normalizedTarget) {
+        normalizedTarget -= 1;
+      } else {
+        normalizedTarget += 1;
+      }
+    }
+
+    // get the difference between the normalized current position and the chosen target
+    var difference = (normalizedTarget - normalizedStart);
+
+    // add the difference to the starting location
+    return armTarget.mut_replace(start.in(Rotations) + difference, Rotations);
   }
 
 }

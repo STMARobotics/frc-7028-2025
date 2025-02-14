@@ -147,6 +147,22 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
   }
 
   /**
+   * Runs the wheels to intake algae
+   */
+  public void intakeAlgae() {
+    // TODO voltage for week zero
+    wheelMotor.setControl(wheelVoltageOut.withOutput(-3.0));
+  }
+
+  /**
+   * Runs the wheels to eject algae
+   */
+  public void ejectAlgae() {
+    // TODO voltage for week zero
+    wheelMotor.setControl(wheelVoltageOut.withOutput(4.0));
+  }
+
+  /**
    * Actively holds the wheels in the current position to hold a game piece in place
    */
   public void activeHoldGamePiece() {

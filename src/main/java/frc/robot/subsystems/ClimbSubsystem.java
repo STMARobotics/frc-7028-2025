@@ -6,13 +6,12 @@ import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.CANIVORE_BUS_NAME;
-import static frc.robot.Constants.ClimbConstants.CLIMB_MAGNETIC_OFFSET_BACK;
 import static frc.robot.Constants.ClimbConstants.CLIMB_MAGNETIC_OFFSET_FRONT;
 import static frc.robot.Constants.ClimbConstants.CLIMB_ROTOR_TO_SENSOR_RATIO;
 import static frc.robot.Constants.ClimbConstants.CLIMB_STATOR_CURRENT_LIMIT;
 import static frc.robot.Constants.ClimbConstants.CLIMB_SUPPLY_CURRENT_LIMIT;
 import static frc.robot.Constants.ClimbConstants.DEVICE_ID_CLIMB_CANDI;
-import static frc.robot.Constants.ClimbConstants.DEVICE_ID_CLIMB_MOTOR_FRONT;
+import static frc.robot.Constants.ClimbConstants.DEVICE_ID_CLIMB_MOTOR;
 import static frc.robot.Constants.ClimbConstants.MAX_CLIMB_VOLTAGE;
 
 import com.ctre.phoenix6.StatusSignal;
@@ -41,7 +40,7 @@ import frc.robot.Robot;
 
 public class ClimbSubsystem extends SubsystemBase {
 
-  private final TalonFX climbMotor = new TalonFX(DEVICE_ID_CLIMB_MOTOR_FRONT, CANIVORE_BUS_NAME);
+  private final TalonFX climbMotor = new TalonFX(DEVICE_ID_CLIMB_MOTOR, CANIVORE_BUS_NAME);
   private final CANdi climbCanDi = new CANdi(DEVICE_ID_CLIMB_CANDI, CANIVORE_BUS_NAME);
 
   private final VoltageOut climbControl = new VoltageOut(0.0).withEnableFOC(true);
@@ -63,9 +62,6 @@ public class ClimbSubsystem extends SubsystemBase {
   public ClimbSubsystem() {
     var climbCANCoderConfig = new CANdiConfiguration();
     climbCANCoderConfig.PWM1.withAbsoluteSensorOffset(CLIMB_MAGNETIC_OFFSET_FRONT)
-        .withAbsoluteSensorDiscontinuityPoint(Rotations.of(0.5))
-        .withSensorDirection(true);
-    climbCANCoderConfig.PWM2.withAbsoluteSensorOffset(CLIMB_MAGNETIC_OFFSET_BACK)
         .withAbsoluteSensorDiscontinuityPoint(Rotations.of(0.5))
         .withSensorDirection(true);
 
