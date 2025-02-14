@@ -99,11 +99,11 @@ import frc.robot.Robot;
 @Logged
 public class ArmSubsystem extends SubsystemBase {
 
-  final TalonFX elevatorMotorLeader = new TalonFX(DEVICE_ID_ELEVATOR_MOTOR_LEADER, CANIVORE_BUS_NAME);
+  private final TalonFX elevatorMotorLeader = new TalonFX(DEVICE_ID_ELEVATOR_MOTOR_LEADER, CANIVORE_BUS_NAME);
   private final TalonFX elevatorMotorFollower = new TalonFX(DEVICE_ID_ELEVATOR_MOTOR_FOLLOWER, CANIVORE_BUS_NAME);
   private final CANdi elevatorCanDi = new CANdi(DEVICE_ID_ELEVATOR_CANDI, CANIVORE_BUS_NAME);
 
-  final TalonFX armMotor = new TalonFX(DEVICE_ID_ARM_MOTOR, CANIVORE_BUS_NAME);
+  private final TalonFX armMotor = new TalonFX(DEVICE_ID_ARM_MOTOR, CANIVORE_BUS_NAME);
   private final CANdi armCanDi = new CANdi(DEVICE_ID_ARM_CANDI, CANIVORE_BUS_NAME);
 
   private final MotionMagicVoltage elevatorControl = new MotionMagicVoltage(0.0).withEnableFOC(true);
