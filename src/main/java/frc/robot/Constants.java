@@ -6,7 +6,6 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
-import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Rotation;
@@ -138,20 +137,14 @@ public class Constants {
    * Constants for the climb subsystem
    */
   public static class ClimbConstants {
-    public static final int DEVICE_ID_CLIMB_MOTOR_FRONT = 30;
-    public static final int DEVICE_ID_CLIMB_MOTOR_BACK = 31;
+    public static final int DEVICE_ID_CLIMB_MOTOR = 31;
     public static final int DEVICE_ID_CLIMB_CANDI = 32;
 
     public static final Angle CLIMB_MAGNETIC_OFFSET_FRONT = Rotations.of(0.0);
-    public static final Angle CLIMB_MAGNETIC_OFFSET_BACK = Rotations.of(0.0);
 
-    // configuraton {
     public static final Current CLIMB_STATOR_CURRENT_LIMIT = Amps.of(100);
     public static final Current CLIMB_SUPPLY_CURRENT_LIMIT = Amps.of(40);
     public static final double CLIMB_ROTOR_TO_SENSOR_RATIO = (25 / 1); // 25 rotor turns = 1 mechanism turn
-
-    public static final Angle LEFT_CLIMB_MAGNETIC_OFFSET = Radians.of(0);
-    public static final Angle RIGHT_CLIMB_MAGNETIC_OFFSET = Radians.of(0);
 
     public static final Voltage MAX_CLIMB_VOLTAGE = Volts.of(2);
   }
@@ -190,11 +183,16 @@ public class Constants {
 
     /** Minimun height where the manipulator won't hit the elevator when it's holding coral */
     public static final Distance ELEVATOR_SAFE_HEIGHT = Meters.of(0.017);
-    public static final Distance ELEVATOR_SAFE_TARGET = Meters.of(0.03);
+    public static final Distance ELEVATOR_SAFE_TARGET = Meters.of(0.05);
     /** Min of the range where the manipulator hits the belt when holding coral */
-    public static final Angle ARM_DANGER_MIN = Rotations.of(-0.225);
+    public static final Angle ARM_DANGER_MIN = Rotations.of(0.775);
     /** Max of the range where the manipulator hits the belt when holding coral */
-    public static final Angle ARM_DANGER_MAX = Rotations.of(-0.126);
+    public static final Angle ARM_DANGER_MAX = Rotations.of(0.874);
+
+    /** Min of the zone that the arm is never allowed to be commanded into, or to pass through. */
+    public static final Angle ARM_FORBIDDEN_ZONE_MIN = Rotations.of(0.8);
+    /** Max of the zone that the arm is never allowed to be commanded into, or to pass through. */
+    public static final Angle ARM_FORBIDDEN_ZONE_MAX = Rotations.of(0.9);
 
     public static final Distance ELEVATOR_POSITION_TOLERANCE = Inches.of(0.5);
     public static final Angle ARM_POSITION_TOLERANCE = Degrees.of(5);
@@ -205,7 +203,7 @@ public class Constants {
     public static final Current ARM_STATOR_CURRENT_LIMIT = Amps.of(40);
     public static final Current ARM_SUPPLY_CURRENT_LIMIT = Amps.of(40);
     public static final double ARM_ROTOR_TO_SENSOR_RATIO = 45;
-    public static final Angle ARM_MAGNETIC_OFFSET = Rotations.of(0.612793);
+    public static final Angle ARM_MAGNETIC_OFFSET = Rotations.of(0.676025);
 
     public static final SlotConfigs ARM_SLOT_CONFIGS = new SlotConfigs().withGravityType(Arm_Cosine)
         .withKP(40.0)
@@ -216,18 +214,22 @@ public class Constants {
         .withKA(0.03); // V*s^2/rotation
 
     public static final MotionMagicConfigs ARM_MOTION_MAGIC_CONFIGS = new MotionMagicConfigs()
-        .withMotionMagicAcceleration(5.0)
+        .withMotionMagicAcceleration(2.0)
         .withMotionMagicCruiseVelocity(2.0);
 
     public static final Distance ELEVATOR_INTAKE_POSITION = Meters.of(0);
     public static final Distance LEVEL_2_HEIGHT = Meters.of(0.1946611669921875);
     public static final Distance LEVEL_3_HEIGHT = Meters.of(0);
     public static final Distance LEVEL_4_HEIGHT = Meters.of(0.7186891357421875);
+    public static final Distance ALGAE_LEVEL_1_HEIGHT = Meters.of(0);
+    public static final Distance ALGAE_LEVEL_2_HEIGHT = Meters.of(0);
 
     public static final Angle ARM_INTAKE_ANGLE = Rotations.of(-0.230);
     public static final Angle LEVEL_2_ANGLE = Rotations.of(-0.31787109375);
     public static final Angle LEVEL_3_ANGLE = Rotations.of(0.195);
     public static final Angle LEVEL_4_ANGLE = Rotations.of(0.17);
+    public static final Angle ALGAE_LEVEL_1_ANGLE = Rotations.of(0.17);
+    public static final Angle ALGAE_LEVEL_2_ANGLE = Rotations.of(0.17);
 
     // Values for Mechanism2d visualization
     public static final Distance ARM_PIVOT_LENGTH = Meters.of(0.577);

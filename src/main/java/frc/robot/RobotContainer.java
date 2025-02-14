@@ -24,10 +24,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.EjectCoralCommand;
 import frc.robot.commands.IntakeCoralCommand;
-import frc.robot.commands.PhotonVisionCommand;
 import frc.robot.commands.QuestNavCommand;
+import frc.robot.commands.TuneArmCommand;
 import frc.robot.controls.ControlBindings;
 import frc.robot.controls.JoystickControlBindings;
+import frc.robot.controls.XBoxControlBindings;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
@@ -61,7 +62,7 @@ public class RobotContainer {
 
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
   private final DrivetrainTelemetry drivetrainTelemetry = new DrivetrainTelemetry();
-  private final PhotonVisionCommand visionCommand = new PhotonVisionCommand(drivetrain::addVisionMeasurement);
+  // private final PhotonVisionCommand visionCommand = new PhotonVisionCommand(drivetrain::addVisionMeasurement);
   private final QuestNavCommand questNavCommand = new QuestNavCommand(questNav);
 
   /** Swerve request to apply during robot-centric path following */
@@ -78,14 +79,20 @@ public class RobotContainer {
   private final ControlBindings controlBindings;
 
   public RobotContainer() {
+    // Configure control binding scheme
+    if (DriverStation.getJoystickIsXbox(0) || Robot.isSimulation()) {
+      controlBindings = new XBoxControlBindings();
+    } else {
+      controlBindings = new JoystickControlBindings();
+    }
+
     autoChooser = AutoBuilder.buildAutoChooser("Tests");
     SmartDashboard.putData("Auto Mode", autoChooser);
 
-    controlBindings = new JoystickControlBindings();
     configureBindings();
     configurePathPlanner();
 
-    visionCommand.schedule();
+    // visionCommand.schedule();
     questNavCommand.schedule();
     armSubsystem.setDefaultCommand(armSubsystem.run(armSubsystem::park).finallyDo(armSubsystem::stop));
   }
@@ -128,14 +135,35 @@ public class RobotContainer {
     controlBindings.moveArmToReefLevel4()
         .ifPresent(
             trigger -> trigger.onTrue(armSubsystem.run(armSubsystem::moveToLevel4).finallyDo(armSubsystem::stop)));
-
     controlBindings.releaseCoral()
         .ifPresent(
             trigger -> trigger.whileTrue(
                 gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::scoreCoral)
                     .finallyDo(gamePieceManipulatorSubsystem::stop)));
+
     controlBindings.parkArm()
         .ifPresent(trigger -> trigger.onTrue(armSubsystem.runOnce(armSubsystem::park).finallyDo(armSubsystem::stop)));
+
+    controlBindings.tuneArm().ifPresent(trigger -> trigger.onTrue(new TuneArmCommand(armSubsystem)));
+
+    controlBindings.moveArmToReefAlgaeLevel1()
+        .ifPresent(
+            trigger -> trigger.onTrue(armSubsystem.run(armSubsystem::moveToAlgaeLevel1).finallyDo(armSubsystem::stop)));
+    controlBindings.moveArmToReefAlgaeLevel2()
+        .ifPresent(
+            trigger -> trigger.onTrue(armSubsystem.run(armSubsystem::moveToAlgaeLevel2).finallyDo(armSubsystem::stop)));
+
+    controlBindings.intakeAlgae()
+        .ifPresent(
+            trigger -> trigger.whileTrue(
+                gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::intakeAlgae)
+                    .finallyDo(gamePieceManipulatorSubsystem::stop)));
+
+    controlBindings.ejectAlgae()
+        .ifPresent(
+            trigger -> trigger.whileTrue(
+                gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectAlgae)
+                    .finallyDo(gamePieceManipulatorSubsystem::stop)));
   }
 
   private void configurePathPlanner() {

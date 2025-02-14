@@ -126,4 +126,49 @@ public abstract class ControlBindings {
   public Optional<Trigger> parkArm() {
     return Optional.empty();
   }
+
+  /**
+   * Runs the command to move the arm to positions from NT. Should be used in competition.
+   * 
+   * @return optional trigger
+   */
+  public Optional<Trigger> tuneArm() {
+    return Optional.empty();
+  }
+
+  /**
+   * Moves the arm to the position to extract algae from the reef at the lower level
+   * 
+   * @return optional trigger
+   */
+  public Optional<Trigger> moveArmToReefAlgaeLevel1() {
+    return Optional.empty();
+  }
+
+  /**
+   * Moves the arm to the position to extract algae from the reef at the higher level
+   * 
+   * @return optional trigger
+   */
+  public Optional<Trigger> moveArmToReefAlgaeLevel2() {
+    return Optional.empty();
+  }
+
+  /**
+   * Runs the manipulator wheels to intake algae
+   * 
+   * @return
+   */
+  public Optional<Trigger> intakeAlgae() {
+    return Optional.empty();
+  }
+
+  /**
+   * Runs the manipulator wheels to eject algae
+   * 
+   * @return
+   */
+  public Optional<Trigger> ejectAlgae() {
+    return Optional.empty();
+  }
 }
