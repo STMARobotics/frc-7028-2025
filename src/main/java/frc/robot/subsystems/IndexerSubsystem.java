@@ -10,9 +10,10 @@ import static frc.robot.Constants.IndexerConstants.CORAL_DETECTION_THRESHOLD;
 import static frc.robot.Constants.IndexerConstants.DEVICE_ID_BELT;
 import static frc.robot.Constants.IndexerConstants.DEVICE_ID_GAME_PIECE_CANRANGE;
 import static frc.robot.Constants.IndexerConstants.INDEXER_SPEED_TOLERANCE;
+import static frc.robot.Constants.IndexerConstants.INDEXER_STATOR_CURRENT_LIMIT;
+import static frc.robot.Constants.IndexerConstants.INDEXER_SUPPLY_CURRENT_LIMIT;
+import static frc.robot.Constants.IndexerConstants.INDEXER_TORQUE_CURRENT_LIMIT;
 import static frc.robot.Constants.IndexerConstants.SLOT_CONFIGS;
-import static frc.robot.Constants.IndexerConstants.SUPPLY_CURRENT_LIMIT;
-import static frc.robot.Constants.IndexerConstants.TORQUE_CURRENT_LIMIT;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.StatusSignal;
@@ -65,9 +66,12 @@ public class IndexerSubsystem extends SubsystemBase {
     var beltTalonConfig = new TalonFXConfiguration();
     beltTalonConfig.MotorOutput.withNeutralMode(Brake).withInverted(Clockwise_Positive);
     beltTalonConfig.withSlot0(Slot0Configs.from(SLOT_CONFIGS));
-    beltTalonConfig.CurrentLimits.withSupplyCurrentLimit(SUPPLY_CURRENT_LIMIT).withSupplyCurrentLimitEnable(true);
-    beltTalonConfig.TorqueCurrent.withPeakForwardTorqueCurrent(TORQUE_CURRENT_LIMIT)
-        .withPeakReverseTorqueCurrent(TORQUE_CURRENT_LIMIT.unaryMinus());
+    beltTalonConfig.CurrentLimits.withSupplyCurrentLimit(INDEXER_SUPPLY_CURRENT_LIMIT)
+        .withSupplyCurrentLimitEnable(true)
+        .withStatorCurrentLimit(INDEXER_STATOR_CURRENT_LIMIT)
+        .withStatorCurrentLimitEnable(true);
+    beltTalonConfig.TorqueCurrent.withPeakForwardTorqueCurrent(INDEXER_TORQUE_CURRENT_LIMIT)
+        .withPeakReverseTorqueCurrent(INDEXER_TORQUE_CURRENT_LIMIT.unaryMinus());
     beltMotor.getConfigurator().apply(beltTalonConfig);
 
     var canRangeConfig = new CANrangeConfiguration();

@@ -109,4 +109,28 @@ public class ArmSubsystemTest {
     assertEquals(Rotations.of(0.91), result);
   }
 
+  @Test
+  public void testNormalizeInRange() {
+    var result = ArmSubsystem.normalizeArmAngle(Rotations.of(0.45));
+    assertEquals(0.45, result, 0.00001);
+  }
+
+  @Test
+  public void testNormalizeNegative() {
+    var result = ArmSubsystem.normalizeArmAngle(Rotations.of(-0.55));
+    assertEquals(0.45, result, 0.00001);
+  }
+
+  @Test
+  public void testNormalizeLarge() {
+    var result = ArmSubsystem.normalizeArmAngle(Rotations.of(500.38));
+    assertEquals(0.38, result, 0.00001);
+  }
+
+  @Test
+  public void testNormalizeSmall() {
+    var result = ArmSubsystem.normalizeArmAngle(Rotations.of(-300.96));
+    assertEquals(0.04, result, 0.00001);
+  }
+
 }

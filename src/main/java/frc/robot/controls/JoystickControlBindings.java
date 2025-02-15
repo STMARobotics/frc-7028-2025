@@ -105,21 +105,21 @@ public class JoystickControlBindings extends ControlBindings {
 
   @Override
   public Optional<Trigger> moveArmToReefAlgaeLevel1() {
-    return super.moveArmToReefAlgaeLevel1();
+    return Optional.of(leftJoystick.povRight());
   }
 
   @Override
   public Optional<Trigger> moveArmToReefAlgaeLevel2() {
-    return super.moveArmToReefAlgaeLevel2();
+    return Optional.of(leftJoystick.povLeft());
   }
 
   @Override
   public Optional<Trigger> intakeAlgae() {
-    return super.intakeAlgae();
+    return Optional.of(leftJoystick.button(2));
   }
 
   @Override
   public Optional<Trigger> ejectAlgae() {
-    return super.ejectAlgae();
+    return Optional.of(leftJoystick.button(4));
   }
 }

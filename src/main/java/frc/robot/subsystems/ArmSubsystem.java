@@ -8,7 +8,6 @@ import static com.ctre.phoenix6.signals.NeutralModeValue.Coast;
 import static com.ctre.phoenix6.signals.ReverseLimitSourceValue.RemoteCANdiS2;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Rotation;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Second;
@@ -20,11 +19,13 @@ import static frc.robot.Constants.ArmConstants.ALGAE_LEVEL_2_ANGLE;
 import static frc.robot.Constants.ArmConstants.ALGAE_LEVEL_2_HEIGHT;
 import static frc.robot.Constants.ArmConstants.ARM_DANGER_MAX;
 import static frc.robot.Constants.ArmConstants.ARM_DANGER_MIN;
+import static frc.robot.Constants.ArmConstants.ARM_DANGER_TOLERANCE;
 import static frc.robot.Constants.ArmConstants.ARM_FORBIDDEN_ZONE_MAX;
 import static frc.robot.Constants.ArmConstants.ARM_FORBIDDEN_ZONE_MIN;
 import static frc.robot.Constants.ArmConstants.ARM_INTAKE_ANGLE;
 import static frc.robot.Constants.ArmConstants.ARM_MAGNETIC_OFFSET;
 import static frc.robot.Constants.ArmConstants.ARM_MOTION_MAGIC_CONFIGS;
+import static frc.robot.Constants.ArmConstants.ARM_PARK_ANGLE;
 import static frc.robot.Constants.ArmConstants.ARM_PIVOT_LENGTH;
 import static frc.robot.Constants.ArmConstants.ARM_POSITION_TOLERANCE;
 import static frc.robot.Constants.ArmConstants.ARM_ROTOR_TO_SENSOR_RATIO;
@@ -74,7 +75,9 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.S1CloseStateValue;
 import com.ctre.phoenix6.signals.S2CloseStateValue;
 import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.epilogue.NotLogged;
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.measure.Angle;
@@ -139,6 +142,9 @@ public class ArmSubsystem extends SubsystemBase {
   private final StatusSignal<AngularVelocity> armVelocitySignal = armMotor.getVelocity();
   private final StatusSignal<AngularVelocity> elevatorVelocitySignal = elevatorMotorLeader.getVelocity();
 
+  private final Debouncer armDangerDebouncer = new Debouncer(0.1, DebounceType.kFalling);
+
+  @NotLogged
   private final MutAngle armTarget = Rotations.mutable(0);
 
   // Mechanism is on a 2d plane, so its the elevator viewed from the back (pop-tart side) of the robot
@@ -329,19 +335,19 @@ public class ArmSubsystem extends SubsystemBase {
     Distance elevatorHeightSetpoint = targetElevatorHeight;
 
     // Normalize / wrap arm angle to 1 rotation
-    var targetRotations = ((calculatedTargetArmAngle.in(Rotations) % 1.0) + 1.0) % 1.0;
-    if (targetRotations > ARM_DANGER_MIN.in(Rotations) && targetRotations < ARM_DANGER_MAX.in(Rotations)) {
+    var targetRotations = normalizeArmAngle(calculatedTargetArmAngle);
+    if (targetRotations > normalizeArmAngle(ARM_DANGER_MIN) && targetRotations < normalizeArmAngle(ARM_DANGER_MAX)) {
       // The arm target is in the danger zone where the coral hits the belt, move the elevator target up if it's too
       // low
-      elevatorHeightSetpoint = elevatorHeightSetpoint.lt(ELEVATOR_SAFE_HEIGHT) ? ELEVATOR_SAFE_HEIGHT
+      elevatorHeightSetpoint = elevatorHeightSetpoint.lt(ELEVATOR_SAFE_HEIGHT) ? ELEVATOR_SAFE_TARGET
           : elevatorHeightSetpoint;
     }
 
     armControl.withPosition(calculatedTargetArmAngle);
     ControlRequest heightControlRequest;
     ControlRequest angleControlRequest;
-    if (isArmAtAngle()) {
-      // Arm is at the target angle. We already made sure the targets were safe, so go
+    if (isArmAtAngleDangerZone()) {
+      // Arm is at the target angle within the tolerance for danger zone. We already made sure the targets were safe
       angleControlRequest = armControl;
       if (park && getElevatorMeters() < (ELEVATOR_PARK_HEIGHT.in(Meters) + ELEVATOR_PARK_TOLERANCE.in(Meters))) {
         // Elevator can park, turn it off
@@ -375,7 +381,7 @@ public class ArmSubsystem extends SubsystemBase {
    * Moves the arm and elevator to the park position
    */
   public void park() {
-    moveToPosition(ELEVATOR_PARK_HEIGHT, ARM_INTAKE_ANGLE, true);
+    moveToPosition(ELEVATOR_PARK_HEIGHT, ARM_PARK_ANGLE, true);
   }
 
   /**
@@ -464,12 +470,25 @@ public class ArmSubsystem extends SubsystemBase {
    * @return true if the arm is at the target angle, within a tolerance
    */
   public boolean isArmAtAngle() {
-    var angleTarget = MathUtil.angleModulus(getArmAngle().in(Radians));
-    return Math.abs(armControl.getPositionMeasure().in(Radians) - angleTarget) <= ARM_POSITION_TOLERANCE.in(Radians);
+    return isArmAtAngle(ARM_POSITION_TOLERANCE);
   }
 
   /**
-   * Gets the arm angle
+   * Checks if the arm is at the target angle with the danger zone tolerance. This is public so it gets logged by
+   * Epilogue.
+   * 
+   * @return true if the arm is at the target angle, within the tolerance for danger zone
+   */
+  public boolean isArmAtAngleDangerZone() {
+    return armDangerDebouncer.calculate(isArmAtAngle(ARM_DANGER_TOLERANCE));
+  }
+
+  private boolean isArmAtAngle(Angle tolerance) {
+    return armControl.getPositionMeasure().isNear(getArmAngle(), ARM_POSITION_TOLERANCE);
+  }
+
+  /**
+   * Gets the arm angle. This angle is <em>not</em> wrapped to one rotation, it's the raw value from the motor.
    * 
    * @return arm angle
    */
@@ -542,10 +561,10 @@ public class ArmSubsystem extends SubsystemBase {
    */
   Angle calculateArmTarget(Angle start, Angle target, Angle forbiddenMin, Angle forbiddenMax) {
     // normalize all of the values to within one rotation
-    var normalizedStart = ((start.in(Rotations) % 1.0) + 1.0) % 1.0;
-    var normalizedTarget = ((target.in(Rotations) % 1.0) + 1.0) % 1.0;
-    var normalizedForbiddenMin = ((forbiddenMin.in(Rotations) % 1.0) + 1.0) % 1.0;
-    var normalizedForbiddenMax = ((forbiddenMax.in(Rotations) % 1.0) + 1.0) % 1.0;
+    var normalizedStart = normalizeArmAngle(start);
+    var normalizedTarget = normalizeArmAngle(target);
+    var normalizedForbiddenMin = normalizeArmAngle(forbiddenMin);
+    var normalizedForbiddenMax = normalizeArmAngle(forbiddenMax);
 
     // make sure the target is outside of the forbidden zone
     if (normalizedTarget > normalizedForbiddenMin && normalizedTarget < normalizedForbiddenMax) {
@@ -574,6 +593,30 @@ public class ArmSubsystem extends SubsystemBase {
 
     // add the difference to the starting location
     return armTarget.mut_replace(start.in(Rotations) + difference, Rotations);
+  }
+
+  /**
+   * Normalizes an arm angle within one rotation. For example, and angle of 1.2 is normalized to 0.2, an angle of -10.75
+   * is normalized to an angle of 0.25.
+   * 
+   * @param armAngle arm angle to normalize
+   * @return normalized arm angle, in rotations
+   */
+  static double normalizeArmAngle(Measure<AngleUnit> armAngle) {
+    return ((armAngle.in(Rotations) % 1.0) + 1.0) % 1.0;
+  }
+
+  /**
+   * Arm's target position, or NaN if not being controlled. Useful for logging.
+   * 
+   * @return arm's target position or NaN
+   */
+  public double getArmTargetRotations() {
+    var controlMode = armMotor.getAppliedControl();
+    if (controlMode instanceof MotionMagicVoltage) {
+      return ((MotionMagicVoltage) controlMode).getPositionMeasure().in(Rotations);
+    }
+    return Double.NaN;
   }
 
 }

@@ -102,7 +102,7 @@ public class Constants {
         new Transform3d(new Translation3d(-0.5, -0.5, 0.5), new Rotation3d(0, 0, 0)) };
 
     public static final AprilTagFieldLayout APRILTAG_FIELD_LAYOUT = AprilTagFieldLayout
-        .loadField(AprilTagFields.k2025Reefscape);
+        .loadField(AprilTagFields.k2025ReefscapeWelded);
 
     // The standard deviations of our vision estimated poses, which affect correction rate
     public static final Matrix<N3, N1> SINGLE_TAG_STD_DEVS = VecBuilder.fill(4, 4, 8);
@@ -123,8 +123,9 @@ public class Constants {
     public static final AngularVelocity INDEXER_SPEED_TOLERANCE = RotationsPerSecond.of(3);
     public static final Distance CORAL_DETECTION_THRESHOLD = Meters.of(0.076);
 
-    public static final Current TORQUE_CURRENT_LIMIT = Amps.of(100);
-    public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(10); // Placeholder, will have to change
+    public static final Current INDEXER_STATOR_CURRENT_LIMIT = Amps.of(40);
+    public static final Current INDEXER_TORQUE_CURRENT_LIMIT = Amps.of(40);
+    public static final Current INDEXER_SUPPLY_CURRENT_LIMIT = Amps.of(20);
 
     public static final SlotConfigs SLOT_CONFIGS = new SlotConfigs().withKP(0.0)
         .withKD(0.0)
@@ -188,6 +189,7 @@ public class Constants {
     public static final Angle ARM_DANGER_MIN = Rotations.of(0.775);
     /** Max of the range where the manipulator hits the belt when holding coral */
     public static final Angle ARM_DANGER_MAX = Rotations.of(0.874);
+    public static final Angle ARM_DANGER_TOLERANCE = Degrees.of(20);
 
     /** Min of the zone that the arm is never allowed to be commanded into, or to pass through. */
     public static final Angle ARM_FORBIDDEN_ZONE_MIN = Rotations.of(0.8);
@@ -199,6 +201,7 @@ public class Constants {
 
     public static final Distance ELEVATOR_PARK_HEIGHT = Meters.of(0.0);
     public static final Distance ELEVATOR_PARK_TOLERANCE = Meters.of(0.01);
+    public static final Angle ARM_PARK_ANGLE = Rotations.of(0.65);
 
     public static final Current ARM_STATOR_CURRENT_LIMIT = Amps.of(40);
     public static final Current ARM_SUPPLY_CURRENT_LIMIT = Amps.of(40);
@@ -221,15 +224,15 @@ public class Constants {
     public static final Distance LEVEL_2_HEIGHT = Meters.of(0.1946611669921875);
     public static final Distance LEVEL_3_HEIGHT = Meters.of(0);
     public static final Distance LEVEL_4_HEIGHT = Meters.of(0.7186891357421875);
-    public static final Distance ALGAE_LEVEL_1_HEIGHT = Meters.of(0);
-    public static final Distance ALGAE_LEVEL_2_HEIGHT = Meters.of(0);
+    public static final Distance ALGAE_LEVEL_1_HEIGHT = Meters.of(0.35);
+    public static final Distance ALGAE_LEVEL_2_HEIGHT = Meters.of(0.9);
 
     public static final Angle ARM_INTAKE_ANGLE = Rotations.of(-0.230);
     public static final Angle LEVEL_2_ANGLE = Rotations.of(-0.31787109375);
     public static final Angle LEVEL_3_ANGLE = Rotations.of(0.195);
     public static final Angle LEVEL_4_ANGLE = Rotations.of(0.17);
-    public static final Angle ALGAE_LEVEL_1_ANGLE = Rotations.of(0.17);
-    public static final Angle ALGAE_LEVEL_2_ANGLE = Rotations.of(0.17);
+    public static final Angle ALGAE_LEVEL_1_ANGLE = Rotations.of(0.94);
+    public static final Angle ALGAE_LEVEL_2_ANGLE = Rotations.of(0.94);
 
     // Values for Mechanism2d visualization
     public static final Distance ARM_PIVOT_LENGTH = Meters.of(0.577);
