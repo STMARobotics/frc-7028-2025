@@ -58,7 +58,7 @@ public class IntakeCoralCommand extends Command {
   @Override
   public boolean isFinished() {
     final var isIndexerMoving = coralDebouncer.calculate(indexerSubsystem.isIndexerMoving());
-    if (hasIndexerStartedMoving && false == isIndexerMoving) {
+    if (hasIndexerStartedMoving && !isIndexerMoving) {
       return true;
     }
     hasIndexerStartedMoving = isIndexerMoving;

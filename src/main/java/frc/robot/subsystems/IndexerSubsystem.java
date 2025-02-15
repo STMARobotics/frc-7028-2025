@@ -158,10 +158,13 @@ public class IndexerSubsystem extends SubsystemBase {
         .abs(RotationsPerSecond) <= INDEXER_SPEED_TOLERANCE.in(RotationsPerSecond);
   }
 
+  /**
+   * Checks if the indexer belt is moving, within a tolerance
+   * 
+   * @return true of the belt is moving, otherwise false
+   */
   public boolean isIndexerMoving() {
-    return beltVelocitySignal.refresh()
-        .getValue()
-        .abs(RotationsPerSecond) > (INDEXER_SPEED_TOLERANCE.in(RotationsPerSecond));
+    return !beltVelocitySignal.refresh().getValue().isNear(RotationsPerSecond.zero(), INDEXER_SPEED_TOLERANCE);
   }
 
   /**
