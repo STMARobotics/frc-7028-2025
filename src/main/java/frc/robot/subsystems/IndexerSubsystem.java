@@ -158,6 +158,12 @@ public class IndexerSubsystem extends SubsystemBase {
         .abs(RotationsPerSecond) <= INDEXER_SPEED_TOLERANCE.in(RotationsPerSecond);
   }
 
+  public boolean isIndexerMoving() {
+    return beltVelocitySignal.refresh()
+        .getValue()
+        .abs(RotationsPerSecond) > (INDEXER_SPEED_TOLERANCE.in(RotationsPerSecond));
+  }
+
   /**
    * Checks if there is an object in front of the game piece sensor
    * 

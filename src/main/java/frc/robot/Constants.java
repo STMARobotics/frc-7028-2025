@@ -206,7 +206,7 @@ public class Constants {
     public static final Current ARM_STATOR_CURRENT_LIMIT = Amps.of(40);
     public static final Current ARM_SUPPLY_CURRENT_LIMIT = Amps.of(40);
     public static final double ARM_ROTOR_TO_SENSOR_RATIO = 45;
-    public static final Angle ARM_MAGNETIC_OFFSET = Rotations.of(0.676025);
+    public static final Angle ARM_MAGNETIC_OFFSET = Rotations.of(0.821289);
 
     public static final SlotConfigs ARM_SLOT_CONFIGS = new SlotConfigs().withGravityType(Arm_Cosine)
         .withKP(40.0)

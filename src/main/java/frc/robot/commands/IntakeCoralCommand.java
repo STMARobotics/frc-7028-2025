@@ -16,6 +16,7 @@ public class IntakeCoralCommand extends Command {
   private final GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem;
   private final ArmSubsystem armSubsystem;
   private final Debouncer coralDebouncer = new Debouncer(0.1, DebounceType.kRising);
+  private boolean hasIndexerStartedMoving = false;
 
   /**
    * Constructors a IntakeCoralCommand
@@ -38,6 +39,7 @@ public class IntakeCoralCommand extends Command {
   @Override
   public void initialize() {
     coralDebouncer.calculate(false);
+    hasIndexerStartedMoving = false;
   }
 
   @Override
@@ -55,7 +57,12 @@ public class IntakeCoralCommand extends Command {
 
   @Override
   public boolean isFinished() {
-    return coralDebouncer.calculate(indexerSubsystem.isCoralInPickupPosition());
+    final var isIndexerMoving = coralDebouncer.calculate(indexerSubsystem.isIndexerMoving());
+    if (hasIndexerStartedMoving && false == isIndexerMoving) {
+      return true;
+    }
+    hasIndexerStartedMoving = isIndexerMoving;
+    return false;
   }
 
   @Override
