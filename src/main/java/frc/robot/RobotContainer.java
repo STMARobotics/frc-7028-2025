@@ -95,6 +95,9 @@ public class RobotContainer {
     // visionCommand.schedule();
     questNavCommand.schedule();
     armSubsystem.setDefaultCommand(armSubsystem.run(armSubsystem::park).finallyDo(armSubsystem::stop));
+    gamePieceManipulatorSubsystem.setDefaultCommand(
+        gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::activeHoldGamePiece)
+            .finallyDo(gamePieceManipulatorSubsystem::stop));
   }
 
   private void configureBindings() {
@@ -109,10 +112,15 @@ public class RobotContainer {
     controlBindings.seedFieldCentric()
         .ifPresent(trigger -> trigger.onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric)));
 
-    controlBindings.climb()
+    controlBindings.climbUp()
         .ifPresent(
-            climbSupplier -> climbSubsystem
-                .setDefaultCommand(climbSubsystem.run(() -> climbSubsystem.runClimb(climbSupplier.getAsDouble()))));
+            trigger -> trigger
+                .whileTrue(climbSubsystem.run(() -> climbSubsystem.runClimb(0.88)).finallyDo(climbSubsystem::stop)));
+
+    controlBindings.climbDown()
+        .ifPresent(
+            trigger -> trigger
+                .whileTrue(climbSubsystem.run(() -> climbSubsystem.runClimb(-0.16)).finallyDo(climbSubsystem::stop)));
 
     drivetrain.registerTelemetry(drivetrainTelemetry::telemeterize);
 

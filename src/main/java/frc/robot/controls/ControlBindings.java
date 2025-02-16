@@ -4,7 +4,6 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.Optional;
-import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 /**
@@ -56,11 +55,20 @@ public abstract class ControlBindings {
   }
 
   /**
-   * Supplier for the climb duty cycle
+   * Trigger to move the climb in the direction that makes the robot go up
    *
    * @return duty cycle supplier
    */
-  public Optional<DoubleSupplier> climb() {
+  public Optional<Trigger> climbUp() {
+    return Optional.empty();
+  }
+
+  /**
+   * Trigger to move the climb in the direction that makes the robot go down
+   *
+   * @return duty cycle supplier
+   */
+  public Optional<Trigger> climbDown() {
     return Optional.empty();
   }
 

@@ -12,7 +12,6 @@ import edu.wpi.first.units.measure.MutLinearVelocity;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.Optional;
-import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 /** Control bindings for driving with joysticks */
@@ -69,8 +68,13 @@ public class JoystickControlBindings extends ControlBindings {
   }
 
   @Override
-  public Optional<DoubleSupplier> climb() {
-    return Optional.empty();
+  public Optional<Trigger> climbUp() {
+    return Optional.of(rightJoystick.button(9));
+  }
+
+  @Override
+  public Optional<Trigger> climbDown() {
+    return Optional.of(rightJoystick.button(10));
   }
 
   @Override

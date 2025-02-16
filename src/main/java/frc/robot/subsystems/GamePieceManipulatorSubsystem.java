@@ -5,32 +5,27 @@ package frc.robot.subsystems;
 
 import static com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive;
 import static com.ctre.phoenix6.signals.NeutralModeValue.Coast;
-import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.CANIVORE_BUS_NAME;
 import static frc.robot.Constants.GamePieceManipulatorConstants.DEVICE_ID_MANIPULATOR_MOTOR;
-import static frc.robot.Constants.GamePieceManipulatorConstants.HOLD_SLOT_CONFIGS;
 import static frc.robot.Constants.GamePieceManipulatorConstants.MANIPULATION_SLOT_CONFIGS;
 import static frc.robot.Constants.GamePieceManipulatorConstants.STATOR_CURRENT_LIMIT;
 import static frc.robot.Constants.GamePieceManipulatorConstants.SUPPLY_CURRENT_LIMIT;
 import static frc.robot.Constants.GamePieceManipulatorConstants.TORQUE_CURRENT_LIMIT;
-import static frc.robot.Constants.GamePieceManipulatorConstants.WHEEL_SPEED_TOLERANCE;
+import static frc.robot.Constants.GamePieceManipulatorConstants.WHEEL_HOLDING_CURRENT;
+import static frc.robot.Constants.GamePieceManipulatorConstants.WHEEL_VELOCITY_TOLERANCE;
 
-import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.Slot1Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -45,10 +40,9 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
 
   private final TalonFX wheelMotor = new TalonFX(DEVICE_ID_MANIPULATOR_MOTOR, CANIVORE_BUS_NAME);
 
-  private final StatusSignal<Angle> positionSignal = wheelMotor.getPosition(false);
   private final StatusSignal<AngularVelocity> velocitySignal = wheelMotor.getVelocity(false);
 
-  private final TorqueCurrentFOC wheelCharacterization = new TorqueCurrentFOC(0.0);
+  private final TorqueCurrentFOC wheelTorqueControl = new TorqueCurrentFOC(0.0);
 
   // SysId routine for rollers - NOTE: the output type is amps, NOT volts (even though it says volts)
   // https://www.chiefdelphi.com/t/sysid-with-ctre-swerve-characterization/452631/8
@@ -59,14 +53,13 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
           null,
           state -> SignalLogger.writeString("SysIdGamePieceManipulator_State", state.toString())),
       new SysIdRoutine.Mechanism(
-          amps -> wheelMotor.setControl(wheelCharacterization.withOutput(amps.in(Volts))),
+          amps -> wheelMotor.setControl(wheelTorqueControl.withOutput(amps.in(Volts))),
           null,
           this));
 
   // TODO voltage for week zero
   private final VoltageOut wheelVoltageOut = new VoltageOut(0.0).withEnableFOC(true);
   private final VelocityTorqueCurrentFOC wheelControl = new VelocityTorqueCurrentFOC(0).withSlot(0);
-  private final PositionVoltage holdControl = new PositionVoltage(0.0).withSlot(1);
 
   private final StatusSignal<AngularVelocity> wheelVelocity = wheelMotor.getVelocity();
 
@@ -75,7 +68,7 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
    */
   public GamePieceManipulatorSubsystem() {
     var motorConfig = new TalonFXConfiguration();
-    motorConfig.withSlot0(Slot0Configs.from(MANIPULATION_SLOT_CONFIGS)).withSlot1(Slot1Configs.from(HOLD_SLOT_CONFIGS));
+    motorConfig.withSlot0(Slot0Configs.from(MANIPULATION_SLOT_CONFIGS));
     motorConfig.MotorOutput.withNeutralMode(Coast).withInverted(Clockwise_Positive);
     motorConfig.TorqueCurrent.withPeakForwardTorqueCurrent(TORQUE_CURRENT_LIMIT)
         .withPeakReverseTorqueCurrent(TORQUE_CURRENT_LIMIT.unaryMinus());
@@ -163,12 +156,10 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
   }
 
   /**
-   * Actively holds the wheels in the current position to hold a game piece in place
+   * Runs the wheels with a little bit of torque to hold a game piece
    */
   public void activeHoldGamePiece() {
-    BaseStatusSignal.refreshAll(positionSignal, velocitySignal);
-    var position = BaseStatusSignal.getLatencyCompensatedValue(positionSignal, velocitySignal);
-    wheelMotor.setControl(holdControl.withPosition(position.in(Rotations)));
+    wheelMotor.setControl(wheelTorqueControl.withOutput(WHEEL_HOLDING_CURRENT));
   }
 
   /**
@@ -187,7 +178,7 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
     return wheelVelocity.refresh()
         .getValue()
         .minus(wheelControl.getVelocityMeasure())
-        .abs(RotationsPerSecond) <= WHEEL_SPEED_TOLERANCE.in(RotationsPerSecond);
+        .abs(RotationsPerSecond) <= WHEEL_VELOCITY_TOLERANCE.in(RotationsPerSecond);
   }
 
 }

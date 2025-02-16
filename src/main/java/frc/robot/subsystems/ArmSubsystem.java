@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 
 import static com.ctre.phoenix6.signals.ForwardLimitSourceValue.RemoteCANdiS1;
-import static com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive;
 import static com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
 import static com.ctre.phoenix6.signals.NeutralModeValue.Brake;
 import static com.ctre.phoenix6.signals.NeutralModeValue.Coast;
@@ -199,11 +198,11 @@ public class ArmSubsystem extends SubsystemBase {
     CANdiConfiguration armCanDiConfig = new CANdiConfiguration();
     armCanDiConfig.PWM1.withAbsoluteSensorOffset(ARM_MAGNETIC_OFFSET)
         .withAbsoluteSensorDiscontinuityPoint(0.5)
-        .withSensorDirection(true);
+        .withSensorDirection(false);
     armCanDi.getConfigurator().apply(armCanDiConfig);
 
     var armTalonConfig = new TalonFXConfiguration();
-    armTalonConfig.MotorOutput.withNeutralMode(Brake).withInverted(Clockwise_Positive);
+    armTalonConfig.MotorOutput.withNeutralMode(Brake).withInverted(CounterClockwise_Positive);
     armTalonConfig.withSlot0(Slot0Configs.from(ARM_SLOT_CONFIGS));
     armTalonConfig.CurrentLimits.withSupplyCurrentLimit(ARM_SUPPLY_CURRENT_LIMIT)
         .withSupplyCurrentLimitEnable(true)

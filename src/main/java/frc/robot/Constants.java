@@ -143,7 +143,7 @@ public class Constants {
 
     public static final Angle CLIMB_MAGNETIC_OFFSET_FRONT = Rotations.of(0.0);
 
-    public static final Current CLIMB_STATOR_CURRENT_LIMIT = Amps.of(100);
+    public static final Current CLIMB_STATOR_CURRENT_LIMIT = Amps.of(150);
     public static final Current CLIMB_SUPPLY_CURRENT_LIMIT = Amps.of(40);
     public static final double CLIMB_ROTOR_TO_SENSOR_RATIO = (25 / 1); // 25 rotor turns = 1 mechanism turn
 
@@ -201,24 +201,24 @@ public class Constants {
 
     public static final Distance ELEVATOR_PARK_HEIGHT = Meters.of(0.0);
     public static final Distance ELEVATOR_PARK_TOLERANCE = Meters.of(0.01);
-    public static final Angle ARM_PARK_ANGLE = Rotations.of(0.65);
+    public static final Angle ARM_PARK_ANGLE = Rotations.of(0.726074);
 
     public static final Current ARM_STATOR_CURRENT_LIMIT = Amps.of(40);
     public static final Current ARM_SUPPLY_CURRENT_LIMIT = Amps.of(40);
-    public static final double ARM_ROTOR_TO_SENSOR_RATIO = 45;
-    public static final Angle ARM_MAGNETIC_OFFSET = Rotations.of(0.821289);
+    public static final double ARM_ROTOR_TO_SENSOR_RATIO = (68.0 / 14.0) * (68.0 / 26.0) * (34.0 / 16.0);
+    public static final Angle ARM_MAGNETIC_OFFSET = Rotations.of(-0.767578125);
 
     public static final SlotConfigs ARM_SLOT_CONFIGS = new SlotConfigs().withGravityType(Arm_Cosine)
-        .withKP(40.0)
+        .withKP(30.0)
         .withKD(0.0)
         .withKS(0.15341)
         .withKG(0.4) // Volts
-        .withKV(5.59) // V*s/rotation
+        .withKV(1.0) // V*s/rotation
         .withKA(0.03); // V*s^2/rotation
 
     public static final MotionMagicConfigs ARM_MOTION_MAGIC_CONFIGS = new MotionMagicConfigs()
         .withMotionMagicAcceleration(2.0)
-        .withMotionMagicCruiseVelocity(2.0);
+        .withMotionMagicCruiseVelocity(6.0);
 
     public static final Distance ELEVATOR_INTAKE_POSITION = Meters.of(0);
     public static final Distance LEVEL_2_HEIGHT = Meters.of(0.1946611669921875);
@@ -227,10 +227,10 @@ public class Constants {
     public static final Distance ALGAE_LEVEL_1_HEIGHT = Meters.of(0.35);
     public static final Distance ALGAE_LEVEL_2_HEIGHT = Meters.of(0.9);
 
-    public static final Angle ARM_INTAKE_ANGLE = Rotations.of(-0.230);
-    public static final Angle LEVEL_2_ANGLE = Rotations.of(-0.31787109375);
-    public static final Angle LEVEL_3_ANGLE = Rotations.of(0.195);
-    public static final Angle LEVEL_4_ANGLE = Rotations.of(0.17);
+    public static final Angle ARM_INTAKE_ANGLE = Rotations.of(0.765);
+    public static final Angle LEVEL_2_ANGLE = Rotations.of(0.68212890625);
+    public static final Angle LEVEL_3_ANGLE = Rotations.of(0.172);
+    public static final Angle LEVEL_4_ANGLE = Rotations.of(0.16);
     public static final Angle ALGAE_LEVEL_1_ANGLE = Rotations.of(0.94);
     public static final Angle ALGAE_LEVEL_2_ANGLE = Rotations.of(0.94);
 
@@ -247,7 +247,6 @@ public class Constants {
     public static final int DEVICE_ID_MANIPULATOR_MOTOR = 20;
 
     public static final SlotConfigs MANIPULATION_SLOT_CONFIGS = new SlotConfigs().withKP(0.0).withKD(0.0).withKS(0.0);
-    public static final SlotConfigs HOLD_SLOT_CONFIGS = new SlotConfigs().withKP(0.0).withKD(0.0);
 
     public static final Current STATOR_CURRENT_LIMIT = Amps.of(30);
     public static final Current TORQUE_CURRENT_LIMIT = Amps.of(10);
@@ -257,7 +256,9 @@ public class Constants {
     public static final AngularVelocity EJECT_VELOCITY = RadiansPerSecond.of(-5);
     public static final AngularVelocity SCORE_VELOCITY = RadiansPerSecond.of(-5);
 
-    public static final AngularVelocity WHEEL_SPEED_TOLERANCE = RotationsPerSecond.of(3);
+    public static final AngularVelocity WHEEL_VELOCITY_TOLERANCE = RotationsPerSecond.of(3);
+
+    public static final Current WHEEL_HOLDING_CURRENT = Amps.of(8.0);
 
   }
 
@@ -276,7 +277,7 @@ public class Constants {
     public static final AngularVelocity ROLLER_TESTING_SPEED = RadiansPerSecond.of(5);
     public static final AngularVelocity ROLLER_BACKWARDS_TESTING_SPEED = ROLLER_TESTING_SPEED.unaryMinus();
 
-    public static final Voltage CLIMB_TESTING_VOLTAGE = Volts.of(2);
+    public static final Voltage CLIMB_TESTING_VOLTAGE = Volts.of(5);
   }
 
   /**

@@ -159,15 +159,6 @@ public class IndexerSubsystem extends SubsystemBase {
   }
 
   /**
-   * Checks if the indexer belt is moving, within a tolerance
-   * 
-   * @return true of the belt is moving, otherwise false
-   */
-  public boolean isIndexerMoving() {
-    return !beltVelocitySignal.refresh().getValue().isNear(RotationsPerSecond.zero(), INDEXER_SPEED_TOLERANCE);
-  }
-
-  /**
    * Checks if there is an object in front of the game piece sensor
    * 
    * @return true if there is a game piece detected, otherwise false
