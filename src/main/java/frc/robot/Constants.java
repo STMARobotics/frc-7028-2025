@@ -1,6 +1,7 @@
 package frc.robot;
 
 import static com.ctre.phoenix6.signals.GravityTypeValue.Arm_Cosine;
+import static edu.wpi.first.math.util.Units.degreesToRadians;
 import static edu.wpi.first.math.util.Units.inchesToMeters;
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
@@ -95,20 +96,20 @@ public class Constants {
    * Constants for vision processing
    */
   public static class VisionConstants {
-    public static final String[] CAMERA_NAMES = new String[] { "FrontLeft", "FrontRight", "BackLeft", "BackRight" };
+    public static final String[] CAMERA_NAMES = new String[] { "Left", "Front", "Right", "Back" };
     public static final Transform3d[] ROBOT_TO_CAMERA_TRANSFORMS = new Transform3d[] {
         new Transform3d(
             new Translation3d(inchesToMeters(10.846), inchesToMeters(12.472), inchesToMeters(10.775)),
-            new Rotation3d(0, 0, 1.57079632679)),
+            new Rotation3d(0, 0, degreesToRadians(90))),
         new Transform3d(
             new Translation3d(inchesToMeters(12.610), inchesToMeters(-4.332), inchesToMeters(15.943)),
             new Rotation3d(0, 0, 0)),
         new Transform3d(
             new Translation3d(inchesToMeters(8.286), inchesToMeters(-12.691), inchesToMeters(13.642)),
-            new Rotation3d(0, 0, 4.71238898038)),
+            new Rotation3d(0, 0, degreesToRadians(-90))),
         new Transform3d(
             new Translation3d(inchesToMeters(-13.472), inchesToMeters(-8.088), inchesToMeters(8.541)),
-            new Rotation3d(0, 0, 3.14159265359)) };
+            new Rotation3d(0, 0, degreesToRadians(180))) };
 
     public static final AprilTagFieldLayout APRILTAG_FIELD_LAYOUT = AprilTagFieldLayout
         .loadField(AprilTagFields.k2025ReefscapeWelded);
