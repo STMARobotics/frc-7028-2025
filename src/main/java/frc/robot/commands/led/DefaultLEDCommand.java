@@ -13,6 +13,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.LEDSubsystem;
 import java.util.function.BooleanSupplier;
 
+/**
+ * The default command for controlling the LEDs
+ */
 public class DefaultLEDCommand extends Command {
 
   private enum LEDMode {
@@ -86,13 +89,8 @@ public class DefaultLEDCommand extends Command {
   }
 
   @Override
-  public boolean isFinished() {
-    return false;
-  }
-
-  @Override
   public void end(boolean interrupted) {
-
+    timer.stop();
   }
 
   @Override
@@ -100,6 +98,11 @@ public class DefaultLEDCommand extends Command {
     return true;
   }
 
+  /**
+   * Gets the mode that the LEDs should be running in.
+   * 
+   * @return Current mode that the LEDs should be running in
+   */
   private LEDMode getMode() {
     if (!DriverStation.isDSAttached()) {
       return LEDMode.DISCONNECTED;
