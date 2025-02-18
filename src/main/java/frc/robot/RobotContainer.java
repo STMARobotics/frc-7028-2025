@@ -104,7 +104,7 @@ public class RobotContainer {
             .finallyDo(gamePieceManipulatorSubsystem::stop));
     ledSubsystem.setDefaultCommand(new DefaultLEDCommand(ledSubsystem, () -> false, () -> false));
 
-    SmartDashboard.putData(new LEDBootAnimationCommand(ledSubsystem));
+    new LEDBootAnimationCommand(ledSubsystem).schedule();
   }
 
   private void configureBindings() {
