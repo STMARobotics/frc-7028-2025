@@ -1,10 +1,8 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Seconds;
-import static edu.wpi.first.units.Units.Volts;
 import static edu.wpi.first.wpilibj2.command.Commands.run;
 import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
-import static frc.robot.Constants.TestingConstants.CLIMB_TESTING_VOLTAGE;
 import static frc.robot.Constants.TestingConstants.INDEXER_BACKWARDS_TESTING_SPEED;
 import static frc.robot.Constants.TestingConstants.INDEXER_TESTING_SPEED;
 import static frc.robot.Constants.TestingConstants.MANIPULATOR_BACKWARDS_TESTING_SPEED;
@@ -124,7 +122,7 @@ public class TestMode {
 
   private Command testClimbCommand() {
     return run(() -> {
-      climbSubsystem.runClimb(CLIMB_TESTING_VOLTAGE.in(Volts));
+      climbSubsystem.climb();
     }, climbSubsystem).until(climbSubsystem::isClimbMotorMoving)
         .withTimeout(Seconds.of(5))
         .andThen(() -> climbPublisher.set(climbSubsystem.isClimbMotorMoving()))

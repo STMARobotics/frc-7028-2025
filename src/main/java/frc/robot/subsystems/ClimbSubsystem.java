@@ -6,13 +6,14 @@ import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.CANIVORE_BUS_NAME;
+import static frc.robot.Constants.ClimbConstants.CLIMB_FORWARD_SOFT_LIMIT;
 import static frc.robot.Constants.ClimbConstants.CLIMB_MAGNETIC_OFFSET_FRONT;
 import static frc.robot.Constants.ClimbConstants.CLIMB_ROTOR_TO_SENSOR_RATIO;
 import static frc.robot.Constants.ClimbConstants.CLIMB_STATOR_CURRENT_LIMIT;
 import static frc.robot.Constants.ClimbConstants.CLIMB_SUPPLY_CURRENT_LIMIT;
+import static frc.robot.Constants.ClimbConstants.CLIMB_VOLTAGE;
 import static frc.robot.Constants.ClimbConstants.DEVICE_ID_CLIMB_CANDI;
 import static frc.robot.Constants.ClimbConstants.DEVICE_ID_CLIMB_MOTOR;
-import static frc.robot.Constants.ClimbConstants.MAX_CLIMB_VOLTAGE;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANdiConfiguration;
@@ -22,7 +23,6 @@ import com.ctre.phoenix6.hardware.CANdi;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.Angle;
@@ -48,8 +48,8 @@ public class ClimbSubsystem extends SubsystemBase {
   private final StatusSignal<AngularVelocity> climbVelocitySignal = climbMotor.getVelocity();
   private final StatusSignal<Angle> climbPositionSignal = climbMotor.getPosition();
 
-  private final Mechanism2d climbMechanisms = new Mechanism2d(12, 5);
-  private final MechanismRoot2d climbRoot = climbMechanisms.getRoot("Climb", 3, 3);
+  private final Mechanism2d climbMechanism = new Mechanism2d(6, 5);
+  private final MechanismRoot2d climbRoot = climbMechanism.getRoot("Climb", 3, 3);
   private final MechanismLigament2d climbLigament = climbRoot
       .append(new MechanismLigament2d("Climb Lever", 2, 0, 3, new Color8Bit(Color.kYellow)));
 
@@ -75,21 +75,25 @@ public class ClimbSubsystem extends SubsystemBase {
         .withSupplyCurrentLimitEnable(true);
     if (Robot.isReal()) {
       // CANdi doesn't support sim
-      climbTalonConfig.Feedback.withRotorToSensorRatio(CLIMB_ROTOR_TO_SENSOR_RATIO).withFusedCANdiPwm1(climbCanDi);
+      climbTalonConfig.Feedback.withRotorToSensorRatio(CLIMB_ROTOR_TO_SENSOR_RATIO).withFusedCANdiPwm2(climbCanDi);
     }
 
     climbMotor.getConfigurator().apply(climbTalonConfig);
 
-    SmartDashboard.putData("Climb", climbMechanisms);
+    SmartDashboard.putData("Climb", climbMechanism);
   }
 
   /**
-   * Runs the climb motor
-   * 
-   * @param output percentage of full output to run the motor. Range [-1, 1]
+   * Runs the climb in the direction that makes the robot go up
    */
-  public void runClimb(double output) {
-    climbMotor.setControl(climbControl.withOutput(MAX_CLIMB_VOLTAGE.in(Volts) * MathUtil.clamp(output, -1, 1)));
+  public void climb() {
+    var climbPosition = StatusSignal.getLatencyCompensatedValue(climbPositionSignal, climbVelocitySignal);
+    // Normalize the position to one rotation so it can be used to limit forward motion even when the climb has been
+    // manually moved past one turn
+    var normalizedPosition = ((climbPosition.in(Rotations) % 1.0) + 1.0) % 1.0;
+    climbMotor.setControl(
+        climbControl.withOutput(CLIMB_VOLTAGE)
+            .withLimitForwardMotion(normalizedPosition >= CLIMB_FORWARD_SOFT_LIMIT.in(Rotations)));
   }
 
   public void stop() {

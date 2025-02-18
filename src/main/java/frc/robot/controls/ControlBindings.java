@@ -59,16 +59,7 @@ public abstract class ControlBindings {
    *
    * @return duty cycle supplier
    */
-  public Optional<Trigger> climbUp() {
-    return Optional.empty();
-  }
-
-  /**
-   * Trigger to move the climb in the direction that makes the robot go down
-   *
-   * @return duty cycle supplier
-   */
-  public Optional<Trigger> climbDown() {
+  public Optional<Trigger> climb() {
     return Optional.empty();
   }
 

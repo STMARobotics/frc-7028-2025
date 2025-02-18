@@ -68,13 +68,8 @@ public class JoystickControlBindings extends ControlBindings {
   }
 
   @Override
-  public Optional<Trigger> climbUp() {
+  public Optional<Trigger> climb() {
     return Optional.of(rightJoystick.button(9));
-  }
-
-  @Override
-  public Optional<Trigger> climbDown() {
-    return Optional.of(rightJoystick.button(10));
   }
 
   @Override

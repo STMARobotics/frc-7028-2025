@@ -145,9 +145,11 @@ public class Constants {
 
     public static final Current CLIMB_STATOR_CURRENT_LIMIT = Amps.of(150);
     public static final Current CLIMB_SUPPLY_CURRENT_LIMIT = Amps.of(40);
-    public static final double CLIMB_ROTOR_TO_SENSOR_RATIO = (25 / 1); // 25 rotor turns = 1 mechanism turn
+    public static final double CLIMB_ROTOR_TO_SENSOR_RATIO = 144;
 
-    public static final Voltage MAX_CLIMB_VOLTAGE = Volts.of(2);
+    public static final Angle CLIMB_FORWARD_SOFT_LIMIT = Rotations.of(0.831299);
+
+    public static final Voltage CLIMB_VOLTAGE = Volts.of(6);
   }
 
   /**
@@ -206,7 +208,7 @@ public class Constants {
     public static final Current ARM_STATOR_CURRENT_LIMIT = Amps.of(40);
     public static final Current ARM_SUPPLY_CURRENT_LIMIT = Amps.of(40);
     public static final double ARM_ROTOR_TO_SENSOR_RATIO = (68.0 / 14.0) * (68.0 / 26.0) * (34.0 / 16.0);
-    public static final Angle ARM_MAGNETIC_OFFSET = Rotations.of(-0.767578125);
+    public static final Angle ARM_MAGNETIC_OFFSET = Rotations.of(-0.299316);
 
     public static final SlotConfigs ARM_SLOT_CONFIGS = new SlotConfigs().withGravityType(Arm_Cosine)
         .withKP(30.0)
@@ -276,8 +278,6 @@ public class Constants {
 
     public static final AngularVelocity ROLLER_TESTING_SPEED = RadiansPerSecond.of(5);
     public static final AngularVelocity ROLLER_BACKWARDS_TESTING_SPEED = ROLLER_TESTING_SPEED.unaryMinus();
-
-    public static final Voltage CLIMB_TESTING_VOLTAGE = Volts.of(5);
   }
 
   /**
