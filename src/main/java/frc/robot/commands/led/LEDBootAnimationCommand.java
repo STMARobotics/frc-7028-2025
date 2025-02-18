@@ -11,13 +11,18 @@ import frc.robot.subsystems.LEDSubsystem;
  */
 public class LEDBootAnimationCommand extends Command {
 
-  private LEDSubsystem ledSubsystem;
-  private Timer timer = new Timer();
+  private final LEDSubsystem ledSubsystem;
+  private final Timer timer = new Timer();
 
   private static final double RUN_TIME = 2.0;
 
   private LEDPattern pattern;
 
+  /**
+   * Creates a new LEDBootAnimationCommand
+   * 
+   * @param ledSubsystem LED Subsystem
+   */
   public LEDBootAnimationCommand(LEDSubsystem ledSubsystem) {
     this.ledSubsystem = ledSubsystem;
 
@@ -48,6 +53,7 @@ public class LEDBootAnimationCommand extends Command {
   @Override
   public void end(boolean interrupted) {
     timer.stop();
+    ledSubsystem.runPattern(LEDPattern.kOff);
   }
 
   @Override

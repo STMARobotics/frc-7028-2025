@@ -1,8 +1,7 @@
 package frc.robot.subsystems;
 
-import static frc.robot.Constants.LEDConstants.BACK_LEFT_STRIP_LENGTH;
 import static frc.robot.Constants.LEDConstants.DEVICE_ID_LEDS;
-import static frc.robot.Constants.LEDConstants.FRONT_LEFT_STRIP_LENGTH;
+import static frc.robot.Constants.LEDConstants.LED_STRIP_LENGTH;
 import static frc.robot.Constants.LEDConstants.TOTAL_LEDS;
 
 import edu.wpi.first.wpilibj.AddressableLED;
@@ -24,19 +23,17 @@ public class LEDSubsystem extends SubsystemBase {
   private final AddressableLEDBufferView backLeftStripBuffer;
   private final AddressableLEDBufferView backRightStripBuffer;
 
+  /**
+   * Creates a new LEDSubsystem
+   */
   public LEDSubsystem() {
     leds.setLength(TOTAL_LEDS);
     leds.setData(ledBuffer);
 
-    frontLeftStripBuffer = new AddressableLEDBufferView(ledBuffer, 0, FRONT_LEFT_STRIP_LENGTH - 1);
-    backLeftStripBuffer = new AddressableLEDBufferView(
-        ledBuffer,
-        FRONT_LEFT_STRIP_LENGTH,
-        FRONT_LEFT_STRIP_LENGTH + BACK_LEFT_STRIP_LENGTH - 1).reversed();
-    backRightStripBuffer = new AddressableLEDBufferView(
-        ledBuffer,
-        FRONT_LEFT_STRIP_LENGTH + BACK_LEFT_STRIP_LENGTH,
-        TOTAL_LEDS - 1);
+    frontLeftStripBuffer = new AddressableLEDBufferView(ledBuffer, 0, LED_STRIP_LENGTH - 1);
+    backLeftStripBuffer = new AddressableLEDBufferView(ledBuffer, LED_STRIP_LENGTH, 2 * LED_STRIP_LENGTH - 1)
+        .reversed();
+    backRightStripBuffer = new AddressableLEDBufferView(ledBuffer, 2 * LED_STRIP_LENGTH, TOTAL_LEDS - 1);
 
     leds.start();
   }
@@ -48,7 +45,8 @@ public class LEDSubsystem extends SubsystemBase {
 
   /**
    * This will create a command that runs a pattern on each LED strip individually. This pattern will automatically
-   * update as long as the the command is running, so this method only needs to be called one time for an animation.
+   * update as long as the the command is running, so this method only needs to be called one time for an animation. The
+   * command will turn the LEDs off when it is completed.
    * 
    * @param pattern Pattern to set on each LED strip from bottom to top
    * @return A command that will run the pattern on each LED strip continuously
@@ -58,7 +56,7 @@ public class LEDSubsystem extends SubsystemBase {
       pattern.applyTo(frontLeftStripBuffer);
       pattern.applyTo(backLeftStripBuffer);
       pattern.applyTo(backRightStripBuffer);
-    });
+    }).finallyDo(() -> LEDPattern.kOff.applyTo(ledBuffer));
   }
 
   /**
@@ -80,8 +78,10 @@ public class LEDSubsystem extends SubsystemBase {
    * @param color2 The second color
    */
   public void setCandyCane(Color color1, Color color2) {
-    for (int i = 0; i < TOTAL_LEDS; i++) {
-      ledBuffer.setLED(i, i % 2 == 0 ? color1 : color2);
+    for (int i = 0; i < LED_STRIP_LENGTH; i++) {
+      frontLeftStripBuffer.setLED(i, i % 2 == 0 ? color1 : color2);
+      backLeftStripBuffer.setLED(i, i % 2 == 0 ? color1 : color2);
+      backRightStripBuffer.setLED(i, i % 2 == 0 ? color1 : color2);
     }
   }
 

@@ -293,10 +293,8 @@ public class Constants {
   public static class LEDConstants {
     public static final int DEVICE_ID_LEDS = 9;
 
-    public static final int FRONT_LEFT_STRIP_LENGTH = 20;
-    public static final int BACK_LEFT_STRIP_LENGTH = 20;
-    public static final int BACK_RIGHT_STRIP_LENGTH = 20;
+    public static final int LED_STRIP_LENGTH = 20;
 
-    public static final int TOTAL_LEDS = FRONT_LEFT_STRIP_LENGTH + BACK_LEFT_STRIP_LENGTH + BACK_RIGHT_STRIP_LENGTH;
+    public static final int TOTAL_LEDS = 3 * LED_STRIP_LENGTH;
   }
 }

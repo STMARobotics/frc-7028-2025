@@ -19,14 +19,18 @@ public class DefaultLEDCommand extends Command {
     DEFAULT
   }
 
-  private static final LEDPattern PATTERN_OFF = LEDPattern.solid(Color.kBlack);
+  private final LEDSubsystem ledSubsystem;
 
-  private LEDSubsystem ledSubsystem;
-
-  private Timer timer = new Timer();
+  private final Timer timer = new Timer();
   private boolean candyCaneState = false;
-  private static final double CANDY_CANE_SPEED = 1.0;
+  private static final double RED_AND_WHITE_CANDY_CANE_SPEED = 0.5;
+  private static final double BLUE_AND_YELLOW_CANDY_CANE_SPEED = 1.0;
 
+  /**
+   * Creates a new DefaultLEDCommand
+   * 
+   * @param ledSubsystem LED subsystem
+   */
   public DefaultLEDCommand(LEDSubsystem ledSubsystem) {
     this.ledSubsystem = ledSubsystem;
 
@@ -43,21 +47,21 @@ public class DefaultLEDCommand extends Command {
   public void execute() {
     switch (getMode()) {
       case DISCONNECTED:
-        if (timer.advanceIfElapsed(CANDY_CANE_SPEED)) {
+        if (timer.advanceIfElapsed(RED_AND_WHITE_CANDY_CANE_SPEED)) {
           candyCaneState = !candyCaneState;
         }
         ledSubsystem
             .setCandyCane(candyCaneState ? Color.kWhite : Color.kRed, candyCaneState ? Color.kRed : Color.kWhite);
         break;
       case DISABLED:
-        if (timer.advanceIfElapsed(CANDY_CANE_SPEED)) {
+        if (timer.advanceIfElapsed(BLUE_AND_YELLOW_CANDY_CANE_SPEED)) {
           candyCaneState = !candyCaneState;
         }
         ledSubsystem
             .setCandyCane(candyCaneState ? Color.kBlue : Color.kYellow, candyCaneState ? Color.kYellow : Color.kBlue);
         break;
       default:
-        ledSubsystem.runPattern(PATTERN_OFF);
+        ledSubsystem.runPattern(LEDPattern.kOff);
         break;
     }
   }
@@ -65,6 +69,7 @@ public class DefaultLEDCommand extends Command {
   @Override
   public void end(boolean interrupted) {
     timer.stop();
+    ledSubsystem.runPattern(LEDPattern.kOff);
   }
 
   @Override
