@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.AddressableLEDBufferView;
 import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /**
@@ -56,6 +57,12 @@ public class LEDSubsystem extends SubsystemBase {
     pattern.applyTo(frontLeftStripBuffer);
     pattern.applyTo(backLeftStripBuffer);
     pattern.applyTo(backRightStripBuffer);
+  }
+
+  public void setCandyCane(Color color1, Color color2) {
+    for (int i = 0; i < TOTAL_LEDS; i++) {
+      ledBuffer.setLED(i, i % 2 == 0 ? color1 : color2);
+    }
   }
 
 }

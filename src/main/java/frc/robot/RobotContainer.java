@@ -26,6 +26,7 @@ import frc.robot.commands.EjectCoralCommand;
 import frc.robot.commands.IntakeCoralCommand;
 import frc.robot.commands.QuestNavCommand;
 import frc.robot.commands.TuneArmCommand;
+import frc.robot.commands.led.DefaultLEDCommand;
 import frc.robot.commands.led.LEDBootAnimationCommand;
 import frc.robot.controls.ControlBindings;
 import frc.robot.controls.JoystickControlBindings;
@@ -101,6 +102,7 @@ public class RobotContainer {
     gamePieceManipulatorSubsystem.setDefaultCommand(
         gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::activeHoldGamePiece)
             .finallyDo(gamePieceManipulatorSubsystem::stop));
+    ledSubsystem.setDefaultCommand(new DefaultLEDCommand(ledSubsystem, () -> false, () -> false));
 
     SmartDashboard.putData(new LEDBootAnimationCommand(ledSubsystem));
   }
