@@ -286,4 +286,11 @@ public class Constants {
   public static class MitoCANDriaConstants {
     public static final int DEVICE_ID_MITOCANDRIA = 0;
   }
+
+  public static class AlignmentConstants {
+    public static final int DEVICE_ID_RIGHT_CANRANGE = 38;
+    public static final int DEVICE_ID_LEFT_CANRANGE = 39;
+
+    public static final Distance ALIGNMENT_TOLERANCE = Inches.of(1);
+  }
 }
