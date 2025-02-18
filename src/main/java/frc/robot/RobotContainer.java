@@ -13,18 +13,13 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.config.PIDConstants;
-import com.pathplanner.lib.config.RobotConfig;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.EjectCoralCommand;
 import frc.robot.commands.IntakeCoralCommand;
-import frc.robot.commands.QuestNavCommand;
 import frc.robot.commands.TuneArmCommand;
 import frc.robot.controls.ControlBindings;
 import frc.robot.controls.JoystickControlBindings;
@@ -36,7 +31,6 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.GamePieceManipulatorSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.MitoCANdriaSubsytem;
-import frc.robot.vision.QuestNav;
 
 @Logged(strategy = Logged.Strategy.OPT_IN)
 public class RobotContainer {
@@ -58,15 +52,10 @@ public class RobotContainer {
   private final ClimbSubsystem climbSubsystem = new ClimbSubsystem();
   @Logged
   private final MitoCANdriaSubsytem mitoCANdriaSubsytem = new MitoCANdriaSubsytem();
-  private final QuestNav questNav = new QuestNav();
 
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
   private final DrivetrainTelemetry drivetrainTelemetry = new DrivetrainTelemetry();
   // private final PhotonVisionCommand visionCommand = new PhotonVisionCommand(drivetrain::addVisionMeasurement);
-  private final QuestNavCommand questNavCommand = new QuestNavCommand(questNav);
-
-  /** Swerve request to apply during robot-centric path following */
-  private final SwerveRequest.ApplyRobotSpeeds m_pathApplyRobotSpeeds = new SwerveRequest.ApplyRobotSpeeds();
 
   private final TestMode testMode = new TestMode(
       gamePieceManipulatorSubsystem,
@@ -90,10 +79,8 @@ public class RobotContainer {
     SmartDashboard.putData("Auto Mode", autoChooser);
 
     configureBindings();
-    configurePathPlanner();
 
     // visionCommand.schedule();
-    questNavCommand.schedule();
     armSubsystem.setDefaultCommand(armSubsystem.run(armSubsystem::park).finallyDo(armSubsystem::stop));
     gamePieceManipulatorSubsystem.setDefaultCommand(
         gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::activeHoldGamePiece)
@@ -167,26 +154,6 @@ public class RobotContainer {
             trigger -> trigger.whileTrue(
                 gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectAlgae)
                     .finallyDo(gamePieceManipulatorSubsystem::stop)));
-  }
-
-  private void configurePathPlanner() {
-    try {
-      var config = RobotConfig.fromGUISettings();
-      AutoBuilder.configure(
-          () -> drivetrain.getState().Pose,
-            drivetrain::resetPose,
-            () -> drivetrain.getState().Speeds,
-            (speeds, feedforwards) -> drivetrain.setControl(
-                m_pathApplyRobotSpeeds.withSpeeds(speeds)
-                    .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesXNewtons())
-                    .withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesYNewtons())),
-            new PPHolonomicDriveController(new PIDConstants(10, 0, 0), new PIDConstants(7, 0, 0)),
-            config,
-            () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
-            drivetrain);
-    } catch (Exception ex) {
-      DriverStation.reportError("Failed to load PathPlanner config and configure AutoBuilder", ex.getStackTrace());
-    }
   }
 
   public Command getAutonomousCommand() {
