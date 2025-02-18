@@ -102,7 +102,7 @@ public class RobotContainer {
     gamePieceManipulatorSubsystem.setDefaultCommand(
         gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::activeHoldGamePiece)
             .finallyDo(gamePieceManipulatorSubsystem::stop));
-    ledSubsystem.setDefaultCommand(new DefaultLEDCommand(ledSubsystem, () -> false, () -> false));
+    ledSubsystem.setDefaultCommand(new DefaultLEDCommand(ledSubsystem));
 
     new LEDBootAnimationCommand(ledSubsystem).schedule();
   }
