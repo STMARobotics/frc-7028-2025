@@ -286,4 +286,17 @@ public class Constants {
   public static class MitoCANDriaConstants {
     public static final int DEVICE_ID_MITOCANDRIA = 0;
   }
+
+  /**
+   * Constants for the LEDs
+   */
+  public static class LEDConstants {
+    public static final int DEVICE_ID_LEDS = 9;
+
+    public static final int FRONT_LEFT_STRIP_LENGTH = 20;
+    public static final int BACK_LEFT_STRIP_LENGTH = 20;
+    public static final int BACK_RIGHT_STRIP_LENGTH = 20;
+
+    public static final int TOTAL_LEDS = FRONT_LEFT_STRIP_LENGTH + BACK_LEFT_STRIP_LENGTH + BACK_RIGHT_STRIP_LENGTH;
+  }
 }
