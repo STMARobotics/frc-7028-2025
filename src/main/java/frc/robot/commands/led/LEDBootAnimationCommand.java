@@ -34,10 +34,33 @@ public class LEDBootAnimationCommand extends Command {
     timer.reset();
     timer.start();
 
-    pattern = LEDPattern.progressMaskLayer(() -> timer.get() / RUN_TIME)
-        .mask(LEDPattern.progressMaskLayer(() -> 1.2 - (timer.get() / RUN_TIME)).reversed())
-        .mask(LEDPattern.solid(Color.kYellow))
-        .overlayOn(LEDPattern.solid(Color.kBlue));
+    pattern = overlayOn(
+        LEDPattern.progressMaskLayer(() -> timer.get() / RUN_TIME * 1.2)
+            .mask(LEDPattern.progressMaskLayer(() -> 1.2 - (timer.get() / RUN_TIME * 1.2)).reversed())
+            .mask(LEDPattern.solid(Color.kYellow)),
+          LEDPattern.solid(Color.kBlue));
+  }
+
+  /**
+   * A version of {@link LEDPattern#overlayOn(LEDPattern)} that does what it says, only replacing BLACK LEDs.
+   * 
+   * @param base base pattern
+   * @param overlay overlay pattern
+   * @return new pattern with the base overlayed on the overlay
+   */
+  private LEDPattern overlayOn(LEDPattern base, LEDPattern overlay) {
+    return (reader, writer) -> {
+      // write the base pattern down first...
+      base.applyTo(reader, writer);
+
+      // ... then, overwrite with the illuminated LEDs from the overlay
+      overlay.applyTo(reader, (i, r, g, b) -> {
+        var led = reader.getLED(i);
+        if ((led.blue == 0 && led.green == 0 && led.red == 0) && (r != 0 || g != 0 || b != 0)) {
+          writer.setRGB(i, r, g, b);
+        }
+      });
+    };
   }
 
   @Override
