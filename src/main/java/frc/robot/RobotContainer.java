@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.EjectCoralCommand;
 import frc.robot.commands.IntakeCoralCommand;
+import frc.robot.commands.PhotonVisionCommand;
 import frc.robot.commands.TuneArmCommand;
 import frc.robot.commands.led.DefaultLEDCommand;
 import frc.robot.commands.led.LEDBootAnimationCommand;
@@ -59,7 +60,7 @@ public class RobotContainer {
 
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
   private final DrivetrainTelemetry drivetrainTelemetry = new DrivetrainTelemetry();
-  // private final PhotonVisionCommand visionCommand = new PhotonVisionCommand(drivetrain::addVisionMeasurement);
+  private final PhotonVisionCommand visionCommand = new PhotonVisionCommand(drivetrain::addVisionMeasurement);
 
   private final TestMode testMode = new TestMode(
       gamePieceManipulatorSubsystem,
@@ -84,7 +85,7 @@ public class RobotContainer {
 
     configureBindings();
 
-    // visionCommand.schedule();
+    visionCommand.schedule();
     armSubsystem.setDefaultCommand(armSubsystem.run(armSubsystem::park).finallyDo(armSubsystem::stop));
     gamePieceManipulatorSubsystem.setDefaultCommand(
         gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::activeHoldGamePiece)
