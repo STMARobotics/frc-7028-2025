@@ -11,7 +11,7 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import java.util.function.Supplier;
 
 /**
- * Command to drive to the scoring pose at the nearest reef node.
+ * Command to drive to the scoring pose for the nearest reef branch.
  */
 public class DriveToReefCommand extends DriveToPoseCommand {
 
@@ -26,7 +26,7 @@ public class DriveToReefCommand extends DriveToPoseCommand {
   }
 
   /**
-   * Constructs a DriveToPoseCommand with specific motion profile constraints
+   * Constructs a DriveToReefCommand with specific motion profile constraints
    * 
    * @param drivetrainSubsystem drivetrain subsystem
    * @param poseProvider provider to call to get the robot pose
