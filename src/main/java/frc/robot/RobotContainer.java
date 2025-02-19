@@ -22,6 +22,8 @@ import frc.robot.commands.EjectCoralCommand;
 import frc.robot.commands.IntakeCoralCommand;
 import frc.robot.commands.PhotonVisionCommand;
 import frc.robot.commands.TuneArmCommand;
+import frc.robot.commands.led.DefaultLEDCommand;
+import frc.robot.commands.led.LEDBootAnimationCommand;
 import frc.robot.controls.ControlBindings;
 import frc.robot.controls.JoystickControlBindings;
 import frc.robot.controls.XBoxControlBindings;
@@ -31,6 +33,7 @@ import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.GamePieceManipulatorSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.MitoCANdriaSubsytem;
 
 @Logged(strategy = Logged.Strategy.OPT_IN)
@@ -51,6 +54,7 @@ public class RobotContainer {
   @Logged
   private final ArmSubsystem armSubsystem = new ArmSubsystem();
   private final ClimbSubsystem climbSubsystem = new ClimbSubsystem();
+  private final LEDSubsystem ledSubsystem = new LEDSubsystem();
   @Logged
   private final MitoCANdriaSubsytem mitoCANdriaSubsytem = new MitoCANdriaSubsytem();
 
@@ -86,6 +90,9 @@ public class RobotContainer {
     gamePieceManipulatorSubsystem.setDefaultCommand(
         gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::activeHoldGamePiece)
             .finallyDo(gamePieceManipulatorSubsystem::stop));
+    ledSubsystem.setDefaultCommand(new DefaultLEDCommand(ledSubsystem));
+
+    new LEDBootAnimationCommand(ledSubsystem).schedule();
   }
 
   private void configureBindings() {
