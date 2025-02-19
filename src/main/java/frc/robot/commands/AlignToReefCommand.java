@@ -59,7 +59,7 @@ public class AlignToReefCommand extends Command {
     var rightDistance = alignmentSubsystem.getRightDistance().in(Meters);
 
     var rotation = leftDistance - rightDistance;
-    var averageDistance = leftDistance + rightDistance / 2;
+    var averageDistance = (leftDistance + rightDistance) / 2;
 
     var rotationCorrection = rotationController.calculate(rotation);
     var distanceCorrection = distanceController.calculate(averageDistance);

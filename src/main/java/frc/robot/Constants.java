@@ -297,6 +297,7 @@ public class Constants {
     public static final int DEVICE_ID_MITOCANDRIA = 0;
   }
 
+  /** Constants for aligning to the reef */
   public static class AlignmentConstants {
     public static final int DEVICE_ID_RIGHT_CANRANGE = 38;
     public static final int DEVICE_ID_LEFT_CANRANGE = 39;
