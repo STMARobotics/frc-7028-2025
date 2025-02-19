@@ -24,7 +24,7 @@ public class TunerConstants {
   private static final Slot0Configs steerGains = new Slot0Configs().withKP(100)
       .withKI(0)
       .withKD(0.5)
-      .withKS(0.1)
+      .withKS(0.29)
       .withKV(2.66)
       .withKA(0)
       .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
@@ -33,7 +33,7 @@ public class TunerConstants {
   private static final Slot0Configs driveGains = new Slot0Configs().withKP(0.1)
       .withKI(0)
       .withKD(0)
-      .withKS(0)
+      .withKS(0.22)
       .withKV(0.124);
 
   // The closed-loop output type to use for the steer motors;
@@ -86,7 +86,7 @@ public class TunerConstants {
 
   private static final double kDriveGearRatio = (50.0 / 14.0) * (17.0 / 27.0) * (45.0 / 15.0); // L2
   private static final double kSteerGearRatio = 150.0 / 7.0;
-  private static final Distance kWheelRadius = Inches.of(2.0);
+  private static final Distance kWheelRadius = Inches.of(2.085);
 
   private static final boolean kInvertLeftSide = false;
   private static final boolean kInvertRightSide = true;
