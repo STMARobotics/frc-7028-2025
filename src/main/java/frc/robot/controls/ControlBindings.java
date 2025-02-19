@@ -170,4 +170,8 @@ public abstract class ControlBindings {
   public Optional<Trigger> ejectAlgae() {
     return Optional.empty();
   }
+
+  public Optional<Trigger> slowMode() {
+    return Optional.empty();
+  }
 }
