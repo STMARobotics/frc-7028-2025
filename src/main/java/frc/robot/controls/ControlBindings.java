@@ -156,7 +156,7 @@ public abstract class ControlBindings {
   /**
    * Runs the manipulator wheels to intake algae
    * 
-   * @return
+   * @return optional trigger
    */
   public Optional<Trigger> intakeAlgae() {
     return Optional.empty();
@@ -165,9 +165,18 @@ public abstract class ControlBindings {
   /**
    * Runs the manipulator wheels to eject algae
    * 
-   * @return
+   * @return optional trigger
    */
   public Optional<Trigger> ejectAlgae() {
+    return Optional.empty();
+  }
+
+  /**
+   * Drives to the nearest reef scoring location
+   * 
+   * @return optional trigger
+   */
+  public Optional<Trigger> driveToReef() {
     return Optional.empty();
   }
 }
