@@ -62,6 +62,7 @@ public class RobotContainer {
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
   private final DrivetrainTelemetry drivetrainTelemetry = new DrivetrainTelemetry();
   private final PhotonVisionCommand visionCommand = new PhotonVisionCommand(drivetrain::addVisionMeasurement);
+  private final Command slowModeCommand;
 
   private final TestMode testMode = new TestMode(
       gamePieceManipulatorSubsystem,
@@ -91,6 +92,13 @@ public class RobotContainer {
     gamePieceManipulatorSubsystem.setDefaultCommand(
         gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::activeHoldGamePiece)
             .finallyDo(gamePieceManipulatorSubsystem::stop));
+
+    slowModeCommand = drivetrain
+        .applyRequest(
+            () -> drive.withVelocityX(controlBindings.translationX().get().div(2))
+                .withVelocityY(controlBindings.translationY().get().div(2))
+                .withRotationalRate(controlBindings.omega().get().div(2)))
+        .finallyDo(() -> drivetrain.setControl(new SwerveRequest.Idle()));
 
     // Send the reef poses to the dashboard for debugging
     NetworkTableInstance.getDefault()
@@ -174,6 +182,8 @@ public class RobotContainer {
             trigger -> trigger.whileTrue(
                 gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectAlgae)
                     .finallyDo(gamePieceManipulatorSubsystem::stop)));
+
+    controlBindings.slowMode().ifPresent(trigger -> trigger.whileTrue(slowModeCommand));
 
     controlBindings.driveToReef()
         .ifPresent(trigger -> trigger.whileTrue(new DriveToReefCommand(drivetrain, () -> drivetrain.getState().Pose)));

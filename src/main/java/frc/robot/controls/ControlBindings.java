@@ -179,4 +179,8 @@ public abstract class ControlBindings {
   public Optional<Trigger> driveToReef() {
     return Optional.empty();
   }
+
+  public Optional<Trigger> slowMode() {
+    return Optional.empty();
+  }
 }
