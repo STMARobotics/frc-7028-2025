@@ -121,4 +121,9 @@ public class JoystickControlBindings extends ControlBindings {
   public Optional<Trigger> ejectAlgae() {
     return Optional.of(leftJoystick.button(4));
   }
+
+  @Override
+  public Optional<Trigger> scoreCoralLevel4() {
+    return Optional.of(rightJoystick.button(2));
+  }
 }
