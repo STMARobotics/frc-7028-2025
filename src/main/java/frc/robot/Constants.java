@@ -354,4 +354,15 @@ public class Constants {
         .map(translation -> translation.relativeTo(FLIPPING_POSE))
         .collect(toUnmodifiableList());
   }
+
+  /**
+   * Constants for the LEDs
+   */
+  public static class LEDConstants {
+    public static final int DEVICE_ID_LEDS = 9;
+
+    public static final int LED_STRIP_LENGTH = 20;
+
+    public static final int TOTAL_LEDS = 3 * LED_STRIP_LENGTH;
+  }
 }
