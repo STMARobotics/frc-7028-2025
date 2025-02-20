@@ -172,11 +172,20 @@ public abstract class ControlBindings {
   }
 
   /**
-   * Drives to the nearest reef scoring location and scores on level 4
+   * Drives to the nearest reef branch and scores on level 4
    * 
    * @return optional trigger
    */
   public Optional<Trigger> scoreCoralLevel4() {
+    return Optional.empty();
+  }
+
+  /**
+   * Drives to the nearest reef branch and scores on level 3
+   * 
+   * @return optional trigger
+   */
+  public Optional<Trigger> scoreCoralLevel3() {
     return Optional.empty();
   }
 

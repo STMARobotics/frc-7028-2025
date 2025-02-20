@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kForward;
 import static edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kReverse;
 import static frc.robot.Constants.AlignmentConstants.REEF_BRANCH_POSES_BLUE;
@@ -23,11 +22,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.commands.AlignToReefCommand;
-import frc.robot.commands.DriveToReefCommand;
 import frc.robot.commands.EjectCoralCommand;
 import frc.robot.commands.IntakeCoralCommand;
-import frc.robot.commands.MoveArmToReefLevel4Command;
 import frc.robot.commands.PhotonVisionCommand;
 import frc.robot.commands.TuneArmCommand;
 import frc.robot.controls.ControlBindings;
@@ -69,6 +65,12 @@ public class RobotContainer {
   private final DrivetrainTelemetry drivetrainTelemetry = new DrivetrainTelemetry();
   private final PhotonVisionCommand visionCommand = new PhotonVisionCommand(drivetrain::addVisionMeasurement);
   private final Command slowModeCommand;
+  private final AutoCommands autoCommands = new AutoCommands(
+      drivetrain,
+      armSubsystem,
+      alignmentSubsystem,
+      gamePieceManipulatorSubsystem,
+      indexerSubsystem);
 
   private final TestMode testMode = new TestMode(
       gamePieceManipulatorSubsystem,
@@ -191,16 +193,8 @@ public class RobotContainer {
 
     controlBindings.slowMode().ifPresent(trigger -> trigger.whileTrue(slowModeCommand));
 
-    controlBindings.scoreCoralLevel4()
-        .ifPresent(
-            trigger -> trigger.whileTrue(
-                new DriveToReefCommand(drivetrain, () -> drivetrain.getState().Pose).andThen(
-                    new MoveArmToReefLevel4Command(armSubsystem)
-                        .alongWith(new AlignToReefCommand(drivetrain, alignmentSubsystem, Meters.of(0.34)))
-                        .andThen(
-                            new MoveArmToReefLevel4Command(armSubsystem).repeatedly()
-                                .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectCoral))
-                                .withTimeout(2)))));
+    controlBindings.scoreCoralLevel3().ifPresent(trigger -> trigger.whileTrue(autoCommands.autoScoreCoralLevel3()));
+    controlBindings.scoreCoralLevel4().ifPresent(trigger -> trigger.whileTrue(autoCommands.autoScoreCoralLevel4()));
   }
 
   public Command getAutonomousCommand() {

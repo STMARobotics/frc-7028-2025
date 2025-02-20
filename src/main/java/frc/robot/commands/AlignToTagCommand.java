@@ -13,22 +13,22 @@ import java.util.stream.Stream;
 import org.photonvision.PhotonCamera;
 
 /**
- * Command to align parallel to the reef at a specific distance
+ * Command to align to an AprilTag on the reef
  */
 public class AlignToTagCommand extends Command {
 
-  // TODO get tags on reef
-  private final Set<Integer> FIDUCIAL_IDS = Stream.of(1, 2, 3, 4, 5).collect(toUnmodifiableSet());
+  // ID of the tags on the reef
+  private final Set<Integer> FIDUCIAL_IDS = Stream.of(17, 18, 19, 20, 21, 22, 6, 7, 8, 9, 10, 11)
+      .collect(toUnmodifiableSet());
 
   private final CommandSwerveDrivetrain drivetrain;
   private final PhotonCamera photonCamera;
 
-  private final PIDController distanceController = new PIDController(0, 0, 0);
+  private final PIDController positionController = new PIDController(5.0, 0, 0);
 
   private final SwerveRequest.RobotCentric robotCentricRequest = new SwerveRequest.RobotCentric()
       .withDriveRequestType(DriveRequestType.Velocity)
       .withSteerRequestType(SteerRequestType.MotionMagicExpo);
-  // TODO should we move the center of rotation so it rotates the sensor evenly?
 
   /**
    * Constructs a new command
@@ -44,7 +44,7 @@ public class AlignToTagCommand extends Command {
 
   @Override
   public void initialize() {
-    distanceController.reset();
+    positionController.reset();
   }
 
   @Override
@@ -58,8 +58,8 @@ public class AlignToTagCommand extends Command {
 
     lastTagResult.ifPresentOrElse(tag -> {
       var cameraToTarget = tag.bestCameraToTarget;
-      var correction = distanceController.calculate(cameraToTarget.getY());
-      drivetrain.setControl(robotCentricRequest.withVelocityY(correction));
+      var correction = positionController.calculate(cameraToTarget.getY());
+      drivetrain.setControl(robotCentricRequest.withVelocityX(correction));
     }, () -> {
       // TODO what do you do here?
       // Did we ever see a tag, if so, keep moving that direction for until a timeout? What did we do in 2022?
@@ -69,7 +69,7 @@ public class AlignToTagCommand extends Command {
 
   @Override
   public boolean isFinished() {
-    return false; // TODO when to stop?
+    return positionController.atSetpoint();
   }
 
   @Override
