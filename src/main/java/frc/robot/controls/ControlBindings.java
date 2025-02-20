@@ -172,14 +172,19 @@ public abstract class ControlBindings {
   }
 
   /**
-   * Drives to the nearest reef scoring location
+   * Drives to the nearest reef scoring location and scores on level 4
    * 
    * @return optional trigger
    */
-  public Optional<Trigger> driveToReef() {
+  public Optional<Trigger> scoreCoralLevel4() {
     return Optional.empty();
   }
 
+  /**
+   * Changes the drivetrain into slow mode
+   * 
+   * @return optional trigger
+   */
   public Optional<Trigger> slowMode() {
     return Optional.empty();
   }

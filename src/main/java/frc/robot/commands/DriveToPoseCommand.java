@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
@@ -40,7 +41,7 @@ import java.util.function.Supplier;
  */
 public class DriveToPoseCommand extends Command {
 
-  private static final Distance TRANSLATION_TOLERANCE = Meters.of(0.02);
+  private static final Distance TRANSLATION_TOLERANCE = Inches.of(0.5);
   private static final Angle THETA_TOLERANCE = Degrees.of(1.0);
 
   private static final TrapezoidProfile.Constraints DEFAULT_XY_CONSTRAINTS = new TrapezoidProfile.Constraints(

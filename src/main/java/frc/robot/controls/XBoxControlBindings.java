@@ -70,7 +70,7 @@ public class XBoxControlBindings extends ControlBindings {
   }
 
   @Override
-  public Optional<Trigger> driveToReef() {
+  public Optional<Trigger> scoreCoralLevel4() {
     return Optional.of(driverController.a());
   }
 }

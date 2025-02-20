@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kForward;
 import static edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kReverse;
 import static frc.robot.Constants.AlignmentConstants.REEF_BRANCH_POSES_BLUE;
@@ -22,15 +23,18 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.commands.AlignToReefCommand;
 import frc.robot.commands.DriveToReefCommand;
 import frc.robot.commands.EjectCoralCommand;
 import frc.robot.commands.IntakeCoralCommand;
+import frc.robot.commands.MoveArmToReefLevel4Command;
 import frc.robot.commands.PhotonVisionCommand;
 import frc.robot.commands.TuneArmCommand;
 import frc.robot.controls.ControlBindings;
 import frc.robot.controls.JoystickControlBindings;
 import frc.robot.controls.XBoxControlBindings;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.AlignmentSubsystem;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -43,8 +47,8 @@ public class RobotContainer {
 
   /* Setting up bindings for necessary control of the swerve drive platform */
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-      .withDeadband(MAX_TELEOP_VELOCITY.times(0.1)) // Add a 10% deadband
-      .withRotationalDeadband(MAX_TELEOP_ANGULAR_VELOCITY.times(0.1))
+      .withDeadband(MAX_TELEOP_VELOCITY.times(0.05))
+      .withRotationalDeadband(MAX_TELEOP_ANGULAR_VELOCITY.times(0.05))
       .withDriveRequestType(DriveRequestType.Velocity)
       .withSteerRequestType(SteerRequestType.MotionMagicExpo);
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
@@ -58,6 +62,8 @@ public class RobotContainer {
   private final ClimbSubsystem climbSubsystem = new ClimbSubsystem();
   @Logged
   private final MitoCANdriaSubsytem mitoCANdriaSubsytem = new MitoCANdriaSubsytem();
+  @Logged
+  private final AlignmentSubsystem alignmentSubsystem = new AlignmentSubsystem();
 
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
   private final DrivetrainTelemetry drivetrainTelemetry = new DrivetrainTelemetry();
@@ -185,8 +191,16 @@ public class RobotContainer {
 
     controlBindings.slowMode().ifPresent(trigger -> trigger.whileTrue(slowModeCommand));
 
-    controlBindings.driveToReef()
-        .ifPresent(trigger -> trigger.whileTrue(new DriveToReefCommand(drivetrain, () -> drivetrain.getState().Pose)));
+    controlBindings.scoreCoralLevel4()
+        .ifPresent(
+            trigger -> trigger.whileTrue(
+                new DriveToReefCommand(drivetrain, () -> drivetrain.getState().Pose).andThen(
+                    new MoveArmToReefLevel4Command(armSubsystem)
+                        .alongWith(new AlignToReefCommand(drivetrain, alignmentSubsystem, Meters.of(0.34)))
+                        .andThen(
+                            new MoveArmToReefLevel4Command(armSubsystem).repeatedly()
+                                .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectCoral))
+                                .withTimeout(2)))));
   }
 
   public Command getAutonomousCommand() {

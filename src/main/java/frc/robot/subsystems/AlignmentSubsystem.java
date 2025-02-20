@@ -8,12 +8,14 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANrangeConfiguration;
 import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.signals.UpdateModeValue;
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /**
  * Subsystem with sensors for aligning to a wall
  */
+@Logged
 public class AlignmentSubsystem extends SubsystemBase {
 
   private final CANrange leftCanRange = new CANrange(DEVICE_ID_RIGHT_CANRANGE, CANIVORE_BUS_NAME);
@@ -39,7 +41,7 @@ public class AlignmentSubsystem extends SubsystemBase {
    * @return distance detected by the sensor
    */
   public Distance getLeftDistance() {
-    return leftDistanceSignal.getValue();
+    return leftDistanceSignal.refresh().getValue();
   }
 
   /**

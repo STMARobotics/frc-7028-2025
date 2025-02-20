@@ -180,7 +180,7 @@ public class Constants {
     public static final int DEVICE_ID_ARM_MOTOR = 45;
     public static final int DEVICE_ID_ARM_CANDI = 46;
 
-    public static final SlotConfigs ELEVATOR_SLOT_CONFIGS = new SlotConfigs().withKP(0.01)
+    public static final SlotConfigs ELEVATOR_SLOT_CONFIGS = new SlotConfigs().withKP(0.25)
         .withKD(0.0)
         .withKS(0.0)
         .withKV(0.135)
@@ -242,7 +242,7 @@ public class Constants {
     public static final Distance ELEVATOR_INTAKE_POSITION = Meters.of(0);
     public static final Distance LEVEL_2_HEIGHT = Meters.of(0.1946611669921875);
     public static final Distance LEVEL_3_HEIGHT = Meters.of(0);
-    public static final Distance LEVEL_4_HEIGHT = Meters.of(0.7186891357421875);
+    public static final Distance LEVEL_4_HEIGHT = Meters.of(0.675);
     public static final Distance ALGAE_LEVEL_1_HEIGHT = Meters.of(0.35);
     public static final Distance ALGAE_LEVEL_2_HEIGHT = Meters.of(0.9);
 
@@ -309,13 +309,16 @@ public class Constants {
     public static final int DEVICE_ID_RIGHT_CANRANGE = 38;
     public static final int DEVICE_ID_LEFT_CANRANGE = 39;
 
-    public static final Distance ALIGNMENT_TOLERANCE = Inches.of(1);
+    public static final Distance ALIGNMENT_TOLERANCE = Inches.of(0.5);
 
     public static final double FIELD_LENGTH_METERS = 17.55;
     public static final double FIELD_WIDTH_METERS = 8.05;
 
     /** Pose of the robot relative to a reef branch for scoring */
-    public static final Transform2d RELATIVE_SCORING_POSE = new Transform2d(-1, .25, Rotation2d.fromDegrees(-90));
+    public static final Transform2d RELATIVE_SCORING_POSE = new Transform2d(
+        inchesToMeters(-40),
+        inchesToMeters(12),
+        Rotation2d.fromDegrees(-90));
 
     /** Pose on the opposite side of the field. Use with `relativeTo` to flip a pose to the opposite alliance */
     public static final Pose2d FLIPPING_POSE = new Pose2d(

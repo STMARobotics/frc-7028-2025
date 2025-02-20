@@ -21,13 +21,12 @@ public class AlignToReefCommand extends Command {
   private final AlignmentSubsystem alignmentSubsystem;
   private final Distance targetDistance;
 
-  private final PIDController rotationController = new PIDController(0, 0, 0);
-  private final PIDController distanceController = new PIDController(0, 0, 0);
+  private final PIDController rotationController = new PIDController(5.0, 0, 0);
+  private final PIDController distanceController = new PIDController(5.0, 0, 0);
 
   private final SwerveRequest.RobotCentric robotCentricRequest = new SwerveRequest.RobotCentric()
       .withDriveRequestType(DriveRequestType.Velocity)
       .withSteerRequestType(SteerRequestType.MotionMagicExpo);
-  // TODO should we move the center of rotation so it rotates the sensor evenly?
 
   /**
    * Constructs a new command
@@ -51,6 +50,9 @@ public class AlignToReefCommand extends Command {
   public void initialize() {
     rotationController.reset();
     distanceController.reset();
+
+    distanceController.setSetpoint(targetDistance.in(Meters));
+    rotationController.setSetpoint(0);
   }
 
   @Override
@@ -58,13 +60,20 @@ public class AlignToReefCommand extends Command {
     var leftDistance = alignmentSubsystem.getLeftDistance().in(Meters);
     var rightDistance = alignmentSubsystem.getRightDistance().in(Meters);
 
-    var rotation = leftDistance - rightDistance;
-    var averageDistance = (leftDistance + rightDistance) / 2;
+    if (leftDistance < 1.2 && rightDistance < 1.2) {
+      // We see something to align to
+      var rotation = rightDistance - leftDistance;
+      var averageDistance = (leftDistance + rightDistance) / 2;
 
-    var rotationCorrection = rotationController.calculate(rotation);
-    var distanceCorrection = distanceController.calculate(averageDistance);
+      var rotationCorrection = rotationController.calculate(rotation);
+      var distanceCorrection = -distanceController.calculate(averageDistance);
 
-    drivetrain.setControl(robotCentricRequest.withRotationalRate(rotationCorrection).withVelocityX(distanceCorrection));
+      drivetrain
+          .setControl(robotCentricRequest.withRotationalRate(rotationCorrection).withVelocityY(distanceCorrection));
+    } else {
+      // We don't see anything or it's too far away to safely align
+      drivetrain.setControl(new SwerveRequest.Idle());
+    }
   }
 
   @Override
