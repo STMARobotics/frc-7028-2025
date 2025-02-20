@@ -266,7 +266,7 @@
         "containers": [
           {
             "title": "Rotate Dynam Fwd",
-            "x": 512.0,
+            "x": 768.0,
             "y": 0.0,
             "width": 256.0,
             "height": 128.0,
@@ -293,7 +293,7 @@
           {
             "title": "Drive Dynam Rev",
             "x": 0.0,
-            "y": 256.0,
+            "y": 128.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Command",
@@ -306,7 +306,7 @@
           {
             "title": "Drive Quasi Fwd",
             "x": 0.0,
-            "y": 128.0,
+            "y": 256.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Command",
@@ -330,21 +330,8 @@
             }
           },
           {
-            "title": "Slip Test",
-            "x": 0.0,
-            "y": 512.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Command",
-            "properties": {
-              "topic": "/SmartDashboard/Slip Test",
-              "period": 0.06,
-              "show_type": true
-            }
-          },
-          {
             "title": "Steer Dynam Fwd",
-            "x": 256.0,
+            "x": 512.0,
             "y": 0.0,
             "width": 256.0,
             "height": 128.0,
@@ -357,7 +344,7 @@
           },
           {
             "title": "Steer Dynam Rev",
-            "x": 256.0,
+            "x": 512.0,
             "y": 128.0,
             "width": 256.0,
             "height": 128.0,
@@ -370,7 +357,7 @@
           },
           {
             "title": "Steer Quasi Fwd",
-            "x": 256.0,
+            "x": 512.0,
             "y": 256.0,
             "width": 256.0,
             "height": 128.0,
@@ -383,7 +370,7 @@
           },
           {
             "title": "Steer Quasi Rev",
-            "x": 256.0,
+            "x": 512.0,
             "y": 384.0,
             "width": 256.0,
             "height": 128.0,
@@ -396,7 +383,7 @@
           },
           {
             "title": "Rotate Quasi Rev",
-            "x": 512.0,
+            "x": 768.0,
             "y": 384.0,
             "width": 256.0,
             "height": 128.0,
@@ -409,7 +396,7 @@
           },
           {
             "title": "Rotate Dynam Rev",
-            "x": 512.0,
+            "x": 768.0,
             "y": 128.0,
             "width": 256.0,
             "height": 128.0,
@@ -422,13 +409,65 @@
           },
           {
             "title": "Rotate Quasi Fwd",
-            "x": 512.0,
+            "x": 768.0,
             "y": 256.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Command",
             "properties": {
               "topic": "/SmartDashboard/Rotate Quasi Fwd",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "title": "Drive Torque Dynam Fwd",
+            "x": 256.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Command",
+            "properties": {
+              "topic": "/SmartDashboard/Drive Torque Dynam Fwd",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "title": "Drive Torque Dynam Rev",
+            "x": 256.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Command",
+            "properties": {
+              "topic": "/SmartDashboard/Drive Torque Dynam Rev",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "title": "Drive Torque Quasi Fwd",
+            "x": 256.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Command",
+            "properties": {
+              "topic": "/SmartDashboard/Drive Torque Quasi Fwd",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "title": "Drive Torque Quasi Rev",
+            "x": 256.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Command",
+            "properties": {
+              "topic": "/SmartDashboard/Drive Torque Quasi Rev",
               "period": 0.06,
               "show_type": true
             }

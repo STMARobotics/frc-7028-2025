@@ -1,12 +1,21 @@
 package frc.robot.commands;
 
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
 import static frc.robot.Constants.AlignmentConstants.ALIGNMENT_TOLERANCE;
+import static frc.robot.Constants.AlignmentConstants.MAX_ALIGN_ANGULAR_ACCELERATION;
+import static frc.robot.Constants.AlignmentConstants.MAX_ALIGN_ANGULAR_VELOCITY;
+import static frc.robot.Constants.AlignmentConstants.MAX_ALIGN_TRANSLATION_ACCELERATION;
+import static frc.robot.Constants.AlignmentConstants.MAX_ALIGN_TRANSLATION_VELOCITY;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.AlignmentSubsystem;
@@ -21,8 +30,19 @@ public class AlignToReefCommand extends Command {
   private final AlignmentSubsystem alignmentSubsystem;
   private final Distance targetDistance;
 
-  private final PIDController rotationController = new PIDController(5.0, 0, 0);
-  private final PIDController distanceController = new PIDController(5.0, 0, 0);
+  private static final TrapezoidProfile.Constraints TRANSLATION_CONSTRAINTS = new TrapezoidProfile.Constraints(
+      MAX_ALIGN_TRANSLATION_VELOCITY.in(MetersPerSecond),
+      MAX_ALIGN_TRANSLATION_ACCELERATION.in(MetersPerSecondPerSecond));
+  private static final TrapezoidProfile.Constraints OMEGA_CONSTRAINTS = new TrapezoidProfile.Constraints(
+      MAX_ALIGN_ANGULAR_VELOCITY.in(RadiansPerSecond),
+      MAX_ALIGN_ANGULAR_ACCELERATION.in(RadiansPerSecondPerSecond));
+
+  private final ProfiledPIDController rotationController = new ProfiledPIDController(
+      5.0,
+      0.0,
+      0.0,
+      TRANSLATION_CONSTRAINTS);
+  private final ProfiledPIDController distanceController = new ProfiledPIDController(5.0, 0.0, 0.0, OMEGA_CONSTRAINTS);
 
   private final SwerveRequest.RobotCentric robotCentricRequest = new SwerveRequest.RobotCentric()
       .withDriveRequestType(DriveRequestType.Velocity)
@@ -48,11 +68,16 @@ public class AlignToReefCommand extends Command {
 
   @Override
   public void initialize() {
-    rotationController.reset();
-    distanceController.reset();
+    var leftDistance = alignmentSubsystem.getLeftDistance().in(Meters);
+    var rightDistance = alignmentSubsystem.getRightDistance().in(Meters);
+    var rotation = rightDistance - leftDistance;
+    var averageDistance = (leftDistance + rightDistance) / 2;
 
-    distanceController.setSetpoint(targetDistance.in(Meters));
-    rotationController.setSetpoint(0);
+    rotationController.reset(rotation);
+    distanceController.reset(averageDistance);
+
+    distanceController.setGoal(targetDistance.in(Meters));
+    rotationController.setGoal(0);
   }
 
   @Override

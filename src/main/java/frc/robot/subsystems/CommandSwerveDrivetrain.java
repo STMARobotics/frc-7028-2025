@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
+import frc.robot.subsystems.sysid.SysIdSwerveTranslationTorque;
 import java.util.function.Supplier;
 
 /**
@@ -53,8 +54,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   private final SwerveRequest.SysIdSwerveTranslation m_translationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
   private final SwerveRequest.SysIdSwerveSteerGains m_steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
   private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
+  private final SysIdSwerveTranslationTorque m_translationCharacterizationTorque = new SysIdSwerveTranslationTorque();
 
-  /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
+  /*
+   * SysId routine for characterizing translation with Voltage output mode. This is used to find PID gains for the drive
+   * motors.
+   */
   private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
       new SysIdRoutine.Config(
           null, // Use default ramp rate (1 V/s)
@@ -63,6 +68,24 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
           // Log state with SignalLogger class
           state -> SignalLogger.writeString("SysIdTranslation_State", state.toString())),
       new SysIdRoutine.Mechanism(output -> setControl(m_translationCharacterization.withVolts(output)), null, this));
+
+  /*
+   * SysId routine for characterizing translation with TorqueCurrentFOC output mode. This is used to find PID gains for
+   * the drive motors.
+   * NOTE: the output type is amps, NOT volts (even though it says volts)
+   * https://www.chiefdelphi.com/t/sysid-with-ctre-swerve-characterization/452631/8
+   */
+  private final SysIdRoutine m_sysIdRoutineTranslationTorque = new SysIdRoutine(
+      new SysIdRoutine.Config(
+          Volts.of(5).per(Second), // Use ramp rate of 5 A/s
+          Volts.of(10), // Use dynamic step of 10 A
+          Seconds.of(5), // Use timeout of 5 seconds
+          // Log state with SignalLogger class
+          state -> SignalLogger.writeString("SysIdTranslation_State", state.toString())),
+      new SysIdRoutine.Mechanism(
+          output -> setControl(m_translationCharacterizationTorque.withTorqueCurrent(output.in(Volts))),
+          null,
+          this));
 
   /* SysId routine for characterizing steer. This is used to find PID gains for the steer motors. */
   private final SysIdRoutine m_sysIdRoutineSteer = new SysIdRoutine(
@@ -94,14 +117,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         /* also log the requested output for SysId */
         SignalLogger.writeDouble("Rotational_Rate", output.in(Volts));
       }, null, this));
-
-  private final SysIdRoutine slipSysIdRoutine = new SysIdRoutine(
-      new SysIdRoutine.Config(
-          Volts.of(0.25).per(Second),
-          null,
-          null,
-          state -> SignalLogger.writeString("SysIdSlip_State", state.toString())),
-      new SysIdRoutine.Mechanism((volts) -> setControl(m_translationCharacterization.withVolts(volts)), null, this));
 
   /**
    * Constructs a CTRE SwerveDrivetrain using the specified constants.
@@ -220,72 +235,81 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   }
 
   /**
-   * Runs the SysId Quasistatic test in the given direction for the translation routine
+   * Create a command to run the SysId Quasistatic test in the given direction for the translation routine
    *
    * @param direction Direction of the SysId Quasistatic test
-   * @return Command to run
+   * @return new command
    */
   public Command sysIdTranslationQuasiCommand(SysIdRoutine.Direction direction) {
     return m_sysIdRoutineTranslation.quasistatic(direction).withName("Translation dynam " + direction);
   }
 
   /**
-   * Runs the SysId Dynamic test in the given direction for the translation routine
+   * Create a command to run the SysId Dynamic test in the given direction for the translation routine
    *
    * @param direction Direction of the SysId Dynamic test
-   * @return Command to run
+   * @return new command
    */
   public Command sysIdTranslationDynamCommand(SysIdRoutine.Direction direction) {
     return m_sysIdRoutineTranslation.dynamic(direction).withName("Translation dynam " + direction);
   }
 
   /**
-   * Runs the SysId Quasistatic test in the given direction for the steer routine
+   * Create a command to run the SysId Quasistatic test in the given direction for the steer routine
    *
    * @param direction Direction of the SysId Quasistatic test
-   * @return Command to run
+   * @return new command
    */
   public Command sysIdSteerQuasiCommand(SysIdRoutine.Direction direction) {
     return m_sysIdRoutineSteer.quasistatic(direction).withName("Steer dynam " + direction);
   }
 
   /**
-   * Runs the SysId Dynamic test in the given direction for the steer routine
+   * Create a command to run the SysId Dynamic test in the given direction for the steer routine
    *
    * @param direction Direction of the SysId Dynamic test
-   * @return Command to run
+   * @return new command
    */
   public Command sysIdSteerDynamCommand(SysIdRoutine.Direction direction) {
     return m_sysIdRoutineSteer.dynamic(direction).withName("Steer dynam " + direction);
   }
 
   /**
-   * Runs the SysId Quasistatic test in the given direction for the rotation routine
+   * Create a command to run the SysId Quasistatic test in the given direction for the rotation routine
    *
    * @param direction Direction of the SysId Quasistatic test
-   * @return Command to run
+   * @return new command
    */
   public Command sysIdRotationQuasiCommand(SysIdRoutine.Direction direction) {
     return m_sysIdRoutineRotation.quasistatic(direction).withName("Rotation dynam " + direction);
   }
 
   /**
-   * Runs the SysId Dynamic test in the given direction for the rotation routine
+   * Create a command to run the SysId Dynamic test in the given direction for the rotation routine
    *
    * @param direction Direction of the SysId Dynamic test
-   * @return Command to run
+   * @return new command
    */
   public Command sysIdRotationDynamCommand(SysIdRoutine.Direction direction) {
     return m_sysIdRoutineRotation.dynamic(direction).withName("Rotation dynam " + direction);
   }
 
   /**
-   * Runs the SysId test for the slip routine
-   *
-   * @return Command to run
+   * Creates a command to run the SysID quasistatic routine for translation with TorqueCurrentFOC output mode.
+   * 
+   * @return new command
    */
-  public Command sysIdDriveSlipCommand() {
-    return slipSysIdRoutine.quasistatic(SysIdRoutine.Direction.kForward).withName("SysId Drive Slip");
+  public Command sysIdTranslationQuasiTorqueCommand(SysIdRoutine.Direction direction) {
+    return m_sysIdRoutineTranslationTorque.quasistatic(direction).withName("Translation torque quasi");
+  }
+
+  /**
+   * Creates a command to run the SysID dynaic routine for translation with TorqueCurrentFOC output mode.
+   * 
+   * @return new command
+   */
+  public Command sysIdTranslationDynamTorqueCommand(SysIdRoutine.Direction direction) {
+    return m_sysIdRoutineTranslationTorque.dynamic(direction).withName("Translation torque dynam");
   }
 
   @Override

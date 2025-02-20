@@ -20,8 +20,6 @@ import static java.util.stream.Collectors.toUnmodifiableList;
 
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.SlotConfigs;
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -117,9 +115,6 @@ public class Constants {
         new Transform3d(
             new Translation3d(inchesToMeters(-13.472), inchesToMeters(-8.088), inchesToMeters(8.541)),
             new Rotation3d(0, 0, degreesToRadians(180))) };
-
-    public static final AprilTagFieldLayout APRILTAG_FIELD_LAYOUT = AprilTagFieldLayout
-        .loadField(AprilTagFields.k2025ReefscapeWelded);
 
     // The standard deviations of our vision estimated poses, which affect correction rate
     public static final Matrix<N3, N1> SINGLE_TAG_STD_DEVS = VecBuilder.fill(4, 4, 8);
@@ -311,8 +306,15 @@ public class Constants {
 
     public static final Distance ALIGNMENT_TOLERANCE = Inches.of(0.5);
 
-    public static final double FIELD_LENGTH_METERS = 17.55;
-    public static final double FIELD_WIDTH_METERS = 8.05;
+    // These are the dimensions for the WELDED field
+    public static final double FIELD_LENGTH_METERS = 17.548;
+    public static final double FIELD_WIDTH_METERS = 8.052;
+
+    public static final LinearVelocity MAX_ALIGN_TRANSLATION_VELOCITY = MAX_TELEOP_VELOCITY.div(2.0);
+    public static final LinearAcceleration MAX_ALIGN_TRANSLATION_ACCELERATION = MetersPerSecondPerSecond.of(2.0);
+    public static final AngularVelocity MAX_ALIGN_ANGULAR_VELOCITY = MAX_TELEOP_ANGULAR_VELOCITY.times(0.75);
+    public static final AngularAcceleration MAX_ALIGN_ANGULAR_ACCELERATION = RadiansPerSecondPerSecond
+        .of(6.0 * Math.PI);
 
     /** Pose of the robot relative to a reef branch for scoring */
     public static final Transform2d RELATIVE_SCORING_POSE = new Transform2d(
