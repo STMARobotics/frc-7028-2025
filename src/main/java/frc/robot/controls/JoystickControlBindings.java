@@ -122,8 +122,8 @@ public class JoystickControlBindings extends ControlBindings {
     return Optional.of(rightJoystick.button(2));
   }
 
-  // @Override
-  // public Optional<Trigger> slowMode() {
-  // return Optional.of(leftJoystick.button(3));
-  // }
+  @Override
+  public Optional<Trigger> slowMode() {
+    return Optional.of(leftJoystick.button(3));
+  }
 }

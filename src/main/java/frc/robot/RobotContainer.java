@@ -17,6 +17,7 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -96,26 +97,30 @@ public class RobotContainer {
       controlBindings = new JoystickControlBindings();
     }
 
+    // Configure PathPlanner
+    NamedCommands.registerCommand("scoreCoralLevel4", autoCommands.autoScoreCoralLevel4());
+    NamedCommands.registerCommand("scoreCoralLevel3", autoCommands.autoScoreCoralLevel3());
     autoChooser = AutoBuilder.buildAutoChooser("Tests");
     SmartDashboard.putData("Auto Mode", autoChooser);
 
-    configureBindings();
-
-    visionCommand.schedule();
-    armSubsystem.setDefaultCommand(armSubsystem.run(armSubsystem::park).finallyDo(armSubsystem::stop));
-    gamePieceManipulatorSubsystem.setDefaultCommand(
-        gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::activeHoldGamePiece)
-            .finallyDo(gamePieceManipulatorSubsystem::stop));
-    ledSubsystem.setDefaultCommand(new DefaultLEDCommand(ledSubsystem));
-
-    new LEDBootAnimationCommand(ledSubsystem).schedule();
-
+    // Configure controls
     slowModeCommand = drivetrain
         .applyRequest(
             () -> drive.withVelocityX(controlBindings.translationX().get().div(2))
                 .withVelocityY(controlBindings.translationY().get().div(2))
                 .withRotationalRate(controlBindings.omega().get().div(2)))
         .finallyDo(() -> drivetrain.setControl(new SwerveRequest.Idle()));
+
+    configureBindings();
+
+    // Set up default and background commands
+    visionCommand.schedule();
+    armSubsystem.setDefaultCommand(armSubsystem.run(armSubsystem::park).finallyDo(armSubsystem::stop));
+    gamePieceManipulatorSubsystem.setDefaultCommand(
+        gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::activeHoldGamePiece)
+            .finallyDo(gamePieceManipulatorSubsystem::stop));
+    ledSubsystem.setDefaultCommand(new DefaultLEDCommand(ledSubsystem));
+    new LEDBootAnimationCommand(ledSubsystem).schedule();
 
     // Send the reef poses to the dashboard for debugging
     NetworkTableInstance.getDefault()
@@ -129,7 +134,6 @@ public class RobotContainer {
         .getStructArrayTopic("branches", Pose2d.struct)
         .publish()
         .set(REEF_BRANCH_POSES_RED.toArray(new Pose2d[REEF_BRANCH_POSES_RED.size()]));
-
   }
 
   private void configureBindings() {
