@@ -305,7 +305,7 @@ public class Constants {
     public static final double FIELD_WIDTH_METERS = 8.052;
 
     public static final LinearVelocity MAX_ALIGN_TRANSLATION_VELOCITY = MAX_TELEOP_VELOCITY.div(2.0);
-    public static final LinearAcceleration MAX_ALIGN_TRANSLATION_ACCELERATION = MetersPerSecondPerSecond.of(2.0);
+    public static final LinearAcceleration MAX_ALIGN_TRANSLATION_ACCELERATION = MetersPerSecondPerSecond.of(6.0);
     public static final AngularVelocity MAX_ALIGN_ANGULAR_VELOCITY = MAX_TELEOP_ANGULAR_VELOCITY.times(0.75);
     public static final AngularAcceleration MAX_ALIGN_ANGULAR_ACCELERATION = RadiansPerSecondPerSecond
         .of(6.0 * Math.PI);
@@ -332,12 +332,12 @@ public class Constants {
               new Pose2d(3.942648, 3.840490, Rotation2d.fromDegrees(0)),
               new Pose2d(3.942648, 4.169106, Rotation2d.fromDegrees(0)),
               new Pose2d(4.062584, 4.398912, Rotation2d.fromDegrees(-60)),
-              new Pose2d(4.347175, 4.553856, Rotation2d.fromDegrees(-60)),
+              new Pose2d(4.347175, 4.515, Rotation2d.fromDegrees(-60)),
               new Pose2d(4.588763, 4.542161, Rotation2d.fromDegrees(-120)),
               new Pose2d(4.873926, 4.378820, Rotation2d.fromDegrees(-120)),
-              new Pose2d(4.994328, 4.169103, Rotation2d.fromDegrees(180)),
+              new Pose2d(4.98, 4.215, Rotation2d.fromDegrees(180)),
               new Pose2d(4.994328, 3.841097, Rotation2d.fromDegrees(180)),
-              new Pose2d(4.873353, 3.632614, Rotation2d.fromDegrees(120)),
+              new Pose2d(4.95, 3.76, Rotation2d.fromDegrees(120)),
               new Pose2d(4.589334, 3.466500, Rotation2d.fromDegrees(120)))
         .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE))
         .collect(toUnmodifiableList());
