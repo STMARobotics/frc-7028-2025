@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
@@ -40,7 +41,7 @@ import java.util.function.Supplier;
  */
 public class DriveToPoseCommand extends Command {
 
-  private static final Distance TRANSLATION_TOLERANCE = Meters.of(0.02);
+  private static final Distance TRANSLATION_TOLERANCE = Inches.of(0.5);
   private static final Angle THETA_TOLERANCE = Degrees.of(1.0);
 
   private static final TrapezoidProfile.Constraints DEFAULT_XY_CONSTRAINTS = new TrapezoidProfile.Constraints(
@@ -55,25 +56,20 @@ public class DriveToPoseCommand extends Command {
   private final ProfiledPIDController thetaController;
 
   private final CommandSwerveDrivetrain drivetrainSubsystem;
-  private final Supplier<Pose2d> poseProvider;
-  private final Pose2d goalPose;
   private final FieldCentric fieldCentricSwerveRequest = new FieldCentric()
       .withSteerRequestType(SteerRequestType.MotionMagicExpo)
       .withDriveRequestType(DriveRequestType.Velocity)
       .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance); // Always Blue coordinate system for auto drive
+  protected final Supplier<Pose2d> poseProvider;
 
   /**
    * Constructs a DriveToPoseCommand
    * 
    * @param drivetrainSubsystem drivetrain subsystem
-   * @param poseProvider provider to call to get the robot pose
    * @param goalPose goal pose to drive to
    */
-  public DriveToPoseCommand(
-      CommandSwerveDrivetrain drivetrainSubsystem,
-      Supplier<Pose2d> poseProvider,
-      Pose2d goalPose) {
-    this(drivetrainSubsystem, poseProvider, goalPose, DEFAULT_XY_CONSTRAINTS, DEFAULT_OMEGA_CONSTRAINTS);
+  public DriveToPoseCommand(CommandSwerveDrivetrain drivetrainSubsystem, Supplier<Pose2d> poseProvider) {
+    this(drivetrainSubsystem, poseProvider, DEFAULT_XY_CONSTRAINTS, DEFAULT_OMEGA_CONSTRAINTS);
   }
 
   /**
@@ -81,20 +77,17 @@ public class DriveToPoseCommand extends Command {
    * 
    * @param drivetrainSubsystem drivetrain subsystem
    * @param poseProvider provider to call to get the robot pose
-   * @param goalPose goal pose to drive to
    * @param translationConstraints translation motion profile constraints
    * @param omegaConstraints rotation motion profile constraints
    */
   public DriveToPoseCommand(
       CommandSwerveDrivetrain drivetrainSubsystem,
       Supplier<Pose2d> poseProvider,
-      Pose2d goalPose,
       TrapezoidProfile.Constraints translationConstraints,
       TrapezoidProfile.Constraints omegaConstraints) {
 
     this.drivetrainSubsystem = drivetrainSubsystem;
     this.poseProvider = poseProvider;
-    this.goalPose = goalPose;
 
     xController = new ProfiledPIDController(X_kP, X_kI, X_kD, translationConstraints);
     xController.setTolerance(TRANSLATION_TOLERANCE.in(Meters));
@@ -109,16 +102,23 @@ public class DriveToPoseCommand extends Command {
     addRequirements(drivetrainSubsystem);
   }
 
+  /**
+   * Sets the goal to drive to. This should be set before the command is scheduled.
+   * 
+   * @param goalPose goal pose
+   */
+  public void setGoal(Pose2d goalPose) {
+    thetaController.setGoal(goalPose.getRotation().getRadians());
+    xController.setGoal(goalPose.getX());
+    yController.setGoal(goalPose.getY());
+  }
+
   @Override
   public void initialize() {
     var robotPose = poseProvider.get();
     thetaController.reset(robotPose.getRotation().getRadians());
     xController.reset(robotPose.getX());
     yController.reset(robotPose.getY());
-
-    thetaController.setGoal(goalPose.getRotation().getRadians());
-    xController.setGoal(goalPose.getX());
-    yController.setGoal(goalPose.getY());
   }
 
   @Override

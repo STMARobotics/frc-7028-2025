@@ -6,6 +6,8 @@ package frc.robot;
 
 import static edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kForward;
 import static edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kReverse;
+import static frc.robot.Constants.AlignmentConstants.REEF_BRANCH_POSES_BLUE;
+import static frc.robot.Constants.AlignmentConstants.REEF_BRANCH_POSES_RED;
 import static frc.robot.Constants.TeleopDriveConstants.MAX_TELEOP_ANGULAR_VELOCITY;
 import static frc.robot.Constants.TeleopDriveConstants.MAX_TELEOP_VELOCITY;
 
@@ -14,6 +16,8 @@ import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -28,6 +32,7 @@ import frc.robot.controls.ControlBindings;
 import frc.robot.controls.JoystickControlBindings;
 import frc.robot.controls.XBoxControlBindings;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.AlignmentSubsystem;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -41,8 +46,8 @@ public class RobotContainer {
 
   /* Setting up bindings for necessary control of the swerve drive platform */
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-      .withDeadband(MAX_TELEOP_VELOCITY.times(0.1)) // Add a 10% deadband
-      .withRotationalDeadband(MAX_TELEOP_ANGULAR_VELOCITY.times(0.1))
+      .withDeadband(MAX_TELEOP_VELOCITY.times(0.05))
+      .withRotationalDeadband(MAX_TELEOP_ANGULAR_VELOCITY.times(0.05))
       .withDriveRequestType(DriveRequestType.Velocity)
       .withSteerRequestType(SteerRequestType.MotionMagicExpo);
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
@@ -57,10 +62,19 @@ public class RobotContainer {
   private final LEDSubsystem ledSubsystem = new LEDSubsystem();
   @Logged
   private final MitoCANdriaSubsytem mitoCANdriaSubsytem = new MitoCANdriaSubsytem();
+  @Logged
+  private final AlignmentSubsystem alignmentSubsystem = new AlignmentSubsystem();
 
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
   private final DrivetrainTelemetry drivetrainTelemetry = new DrivetrainTelemetry();
   private final PhotonVisionCommand visionCommand = new PhotonVisionCommand(drivetrain::addVisionMeasurement);
+  private final Command slowModeCommand;
+  private final AutoCommands autoCommands = new AutoCommands(
+      drivetrain,
+      armSubsystem,
+      alignmentSubsystem,
+      gamePieceManipulatorSubsystem,
+      indexerSubsystem);
 
   private final TestMode testMode = new TestMode(
       gamePieceManipulatorSubsystem,
@@ -93,6 +107,27 @@ public class RobotContainer {
     ledSubsystem.setDefaultCommand(new DefaultLEDCommand(ledSubsystem));
 
     new LEDBootAnimationCommand(ledSubsystem).schedule();
+
+    slowModeCommand = drivetrain
+        .applyRequest(
+            () -> drive.withVelocityX(controlBindings.translationX().get().div(2))
+                .withVelocityY(controlBindings.translationY().get().div(2))
+                .withRotationalRate(controlBindings.omega().get().div(2)))
+        .finallyDo(() -> drivetrain.setControl(new SwerveRequest.Idle()));
+
+    // Send the reef poses to the dashboard for debugging
+    NetworkTableInstance.getDefault()
+        .getTable("reef_blue")
+        .getStructArrayTopic("branches", Pose2d.struct)
+        .publish()
+        .set(REEF_BRANCH_POSES_BLUE.toArray(new Pose2d[REEF_BRANCH_POSES_BLUE.size()]));
+
+    NetworkTableInstance.getDefault()
+        .getTable("reef_red")
+        .getStructArrayTopic("branches", Pose2d.struct)
+        .publish()
+        .set(REEF_BRANCH_POSES_RED.toArray(new Pose2d[REEF_BRANCH_POSES_RED.size()]));
+
   }
 
   private void configureBindings() {
@@ -162,6 +197,11 @@ public class RobotContainer {
             trigger -> trigger.whileTrue(
                 gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectAlgae)
                     .finallyDo(gamePieceManipulatorSubsystem::stop)));
+
+    controlBindings.slowMode().ifPresent(trigger -> trigger.whileTrue(slowModeCommand));
+
+    controlBindings.scoreCoralLevel3().ifPresent(trigger -> trigger.whileTrue(autoCommands.autoScoreCoralLevel3()));
+    controlBindings.scoreCoralLevel4().ifPresent(trigger -> trigger.whileTrue(autoCommands.autoScoreCoralLevel4()));
   }
 
   public Command getAutonomousCommand() {
