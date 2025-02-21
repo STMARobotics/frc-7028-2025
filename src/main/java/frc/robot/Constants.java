@@ -101,7 +101,7 @@ public class Constants {
    * Constants for vision processing
    */
   public static class VisionConstants {
-    public static final String[] CAMERA_NAMES = new String[] { "Left", "Front", "Right", "Back" };
+    public static final String[] CAMERA_NAMES = new String[] { "Left", "Back" };
     public static final Transform3d[] ROBOT_TO_CAMERA_TRANSFORMS = new Transform3d[] {
         new Transform3d(
             new Translation3d(inchesToMeters(10.846), inchesToMeters(12.472), inchesToMeters(10.775)),
