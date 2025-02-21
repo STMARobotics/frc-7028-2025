@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kForward;
 import static edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kReverse;
 import static frc.robot.Constants.AlignmentConstants.REEF_BRANCH_POSES_BLUE;
@@ -181,22 +183,32 @@ public class RobotContainer {
 
     controlBindings.moveArmToReefAlgaeLevel1()
         .ifPresent(
-            trigger -> trigger.onTrue(armSubsystem.run(armSubsystem::moveToAlgaeLevel1).finallyDo(armSubsystem::stop)));
+            trigger -> trigger.onTrue(
+                armSubsystem.run(armSubsystem::moveToAlgaeLevel1)
+                    .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::intakeAlgae))
+                    .finallyDo(() -> {
+                      armSubsystem.stop();
+                      gamePieceManipulatorSubsystem.stop();
+                    })));
     controlBindings.moveArmToReefAlgaeLevel2()
         .ifPresent(
-            trigger -> trigger.onTrue(armSubsystem.run(armSubsystem::moveToAlgaeLevel2).finallyDo(armSubsystem::stop)));
-
-    controlBindings.intakeAlgae()
-        .ifPresent(
-            trigger -> trigger.whileTrue(
-                gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::intakeAlgae)
-                    .finallyDo(gamePieceManipulatorSubsystem::stop)));
+            trigger -> trigger.onTrue(
+                armSubsystem.run(armSubsystem::moveToAlgaeLevel2)
+                    .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::intakeAlgae))
+                    .finallyDo(() -> {
+                      armSubsystem.stop();
+                      gamePieceManipulatorSubsystem.stop();
+                    })));
 
     controlBindings.ejectAlgae()
         .ifPresent(
             trigger -> trigger.whileTrue(
                 gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectAlgae)
-                    .finallyDo(gamePieceManipulatorSubsystem::stop)));
+                    .alongWith(armSubsystem.run(() -> armSubsystem.moveToPosition(Meters.zero(), Rotations.of(0.5))))
+                    .finallyDo(() -> {
+                      gamePieceManipulatorSubsystem.stop();
+                      armSubsystem.stop();
+                    })));
 
     controlBindings.slowMode().ifPresent(trigger -> trigger.whileTrue(slowModeCommand));
 

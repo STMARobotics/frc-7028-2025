@@ -144,7 +144,7 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
    */
   public void intakeAlgae() {
     // TODO voltage for week zero
-    wheelMotor.setControl(wheelVoltageOut.withOutput(-3.0));
+    wheelMotor.setControl(wheelVoltageOut.withOutput(-5.0));
   }
 
   /**

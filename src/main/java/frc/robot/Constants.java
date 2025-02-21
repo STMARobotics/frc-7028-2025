@@ -107,12 +107,6 @@ public class Constants {
             new Translation3d(inchesToMeters(10.846), inchesToMeters(12.472), inchesToMeters(10.775)),
             new Rotation3d(0, 0, degreesToRadians(90))),
         new Transform3d(
-            new Translation3d(inchesToMeters(12.610), inchesToMeters(-4.332), inchesToMeters(15.943)),
-            new Rotation3d(0, 0, 0)),
-        new Transform3d(
-            new Translation3d(inchesToMeters(8.286), inchesToMeters(-12.691), inchesToMeters(13.642)),
-            new Rotation3d(0, 0, degreesToRadians(-90))),
-        new Transform3d(
             new Translation3d(inchesToMeters(-13.472), inchesToMeters(-8.088), inchesToMeters(8.541)),
             new Rotation3d(0, 0, degreesToRadians(180))) };
 
@@ -239,7 +233,7 @@ public class Constants {
     public static final Distance LEVEL_3_HEIGHT = Meters.of(0);
     public static final Distance LEVEL_4_HEIGHT = Meters.of(0.675);
     public static final Distance ALGAE_LEVEL_1_HEIGHT = Meters.of(0.35);
-    public static final Distance ALGAE_LEVEL_2_HEIGHT = Meters.of(0.9);
+    public static final Distance ALGAE_LEVEL_2_HEIGHT = Meters.of(0.7);
 
     public static final Angle ARM_INTAKE_ANGLE = Rotations.of(0.765);
     public static final Angle LEVEL_2_ANGLE = Rotations.of(0.68212890625);

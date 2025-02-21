@@ -154,15 +154,6 @@ public abstract class ControlBindings {
   }
 
   /**
-   * Runs the manipulator wheels to intake algae
-   * 
-   * @return optional trigger
-   */
-  public Optional<Trigger> intakeAlgae() {
-    return Optional.empty();
-  }
-
-  /**
    * Runs the manipulator wheels to eject algae
    * 
    * @return optional trigger

@@ -25,11 +25,6 @@ public class JoystickControlBindings extends ControlBindings {
   private final MutAngularVelocity omega = RadiansPerSecond.mutable(0);
 
   @Override
-  public Optional<Trigger> wheelsToX() {
-    return Optional.of(leftJoystick.button(3));
-  }
-
-  @Override
   public Supplier<LinearVelocity> translationX() {
     return () -> translationX
         .mut_replace(MAX_TELEOP_VELOCITY.in(MetersPerSecond) * -squareAxis(leftJoystick.getY()), MetersPerSecond);
@@ -84,7 +79,7 @@ public class JoystickControlBindings extends ControlBindings {
 
   @Override
   public Optional<Trigger> ejectCoral() {
-    return Optional.of(rightJoystick.button(3));
+    return Optional.of(leftJoystick.povRight());
   }
 
   @Override
@@ -113,17 +108,22 @@ public class JoystickControlBindings extends ControlBindings {
   }
 
   @Override
-  public Optional<Trigger> intakeAlgae() {
+  public Optional<Trigger> ejectAlgae() {
     return Optional.of(leftJoystick.button(2));
   }
 
   @Override
-  public Optional<Trigger> ejectAlgae() {
-    return Optional.of(leftJoystick.button(4));
+  public Optional<Trigger> scoreCoralLevel3() {
+    return Optional.of(rightJoystick.button(3));
   }
 
   @Override
   public Optional<Trigger> scoreCoralLevel4() {
     return Optional.of(rightJoystick.button(2));
   }
+
+  // @Override
+  // public Optional<Trigger> slowMode() {
+  // return Optional.of(leftJoystick.button(3));
+  // }
 }
