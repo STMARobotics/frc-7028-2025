@@ -6,6 +6,7 @@ import static edu.wpi.first.wpilibj.util.Color.kGreen;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.AlignToReefCommand;
+import frc.robot.commands.DriveToReefAlgaeCommand;
 import frc.robot.commands.DriveToReefCommand;
 import frc.robot.subsystems.AlignmentSubsystem;
 import frc.robot.subsystems.ArmSubsystem;
@@ -78,6 +79,36 @@ public class AutoCommands {
     return autoScoreCoral(armSubsystem::moveToLevel3);
   }
 
+  /**
+   * Creates a command that will:
+   * <ol>
+   * <li>Drive to the nearest algae location</li>
+   * <li>Align to the reef using the CANranges</li>
+   * <li>Get the arm and elevator into position to grab the algae on level 1</li>
+   * <li>Intake the algae</li>
+   * </ol>
+   * 
+   * @return new command
+   */
+  public Command autoScoreAlgaeLevel1() {
+    return autoScoreAlgae(armSubsystem::moveToAlgaeLevel1);
+  }
+
+  /**
+   * Creates a command that will:
+   * <ol>
+   * <li>Drive to the nearest algae location</li>
+   * <li>Align to the reef using the CANranges</li>
+   * <li>Get the arm and elevator into position to grab the algae on level 2</li>
+   * <li>Intake the algae</li>
+   * </ol>
+   * 
+   * @return new command
+   */
+  public Command autoScoreAlgaeLevel2() {
+    return autoScoreAlgae(armSubsystem::moveToAlgaeLevel2);
+  }
+
   private Command autoScoreCoral(Runnable armMethod) {
     // I'd like to try raising the arm right away
     var driveToReef = new DriveToReefCommand(drivetrain, () -> drivetrain.getState().Pose);
@@ -94,4 +125,12 @@ public class AutoCommands {
                     gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectCoral).withTimeout(1.0)));
   }
 
+  private Command autoScoreAlgae(Runnable armMethod) {
+    var driveToReef = new DriveToReefAlgaeCommand(drivetrain, () -> drivetrain.getState().Pose);
+    var alignToReef = new AlignToReefCommand(drivetrain, alignmentSubsystem, Meters.of(0.34));
+    return driveToReef.andThen(alignToReef)
+        .andThen(drivetrain.applyRequest(SwerveRequest.SwerveDriveBrake::new))
+        .andThen(armSubsystem.run(armMethod))
+        .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::intakeAlgae));
+  }
 }
