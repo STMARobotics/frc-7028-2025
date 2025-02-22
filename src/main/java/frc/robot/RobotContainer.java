@@ -31,6 +31,7 @@ import frc.robot.commands.PhotonVisionCommand;
 import frc.robot.commands.TuneArmCommand;
 import frc.robot.commands.led.DefaultLEDCommand;
 import frc.robot.commands.led.LEDBootAnimationCommand;
+import frc.robot.commands.led.LEDProgressBarCommand;
 import frc.robot.controls.ControlBindings;
 import frc.robot.controls.JoystickControlBindings;
 import frc.robot.controls.XBoxControlBindings;
@@ -231,7 +232,9 @@ public class RobotContainer {
    */
   public void populateTestModeDashboard() {
     // Test mode command
-    SmartDashboard.putData("Run Tests", testMode.testCommand());
+    SmartDashboard.putData(
+        "Run Tests",
+          testMode.testCommand().deadlineFor(new LEDProgressBarCommand(ledSubsystem, testMode.getTestResults())));
     SmartDashboard.putData("Arm in coast", armSubsystem.runOnce(armSubsystem::coast).ignoringDisable(true));
     SmartDashboard.putData("Arm in brake", armSubsystem.runOnce(armSubsystem::brake).ignoringDisable(true));
 
