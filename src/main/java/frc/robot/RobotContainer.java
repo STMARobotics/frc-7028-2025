@@ -102,6 +102,10 @@ public class RobotContainer {
     // Configure PathPlanner
     NamedCommands.registerCommand("scoreCoralLevel4", autoCommands.autoScoreCoralLevel4());
     NamedCommands.registerCommand("scoreCoralLevel3", autoCommands.autoScoreCoralLevel3());
+    NamedCommands.registerCommand(
+        "intakeCoral",
+          new IntakeCoralCommand(indexerSubsystem, gamePieceManipulatorSubsystem, armSubsystem));
+    NamedCommands.registerCommand("parkArm", armSubsystem.runOnce(armSubsystem::park).finallyDo(armSubsystem::stop));
     autoChooser = AutoBuilder.buildAutoChooser("Tests");
     SmartDashboard.putData("Auto Mode", autoChooser);
 

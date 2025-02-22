@@ -114,7 +114,7 @@ public class Constants {
             new Rotation3d(0, degreesToRadians(70), degreesToRadians(90))) };
 
     // The standard deviations of our vision estimated poses, which affect correction rate
-    public static final Matrix<N3, N1> SINGLE_TAG_STD_DEVS = VecBuilder.fill(4, 4, 8);
+    public static final Matrix<N3, N1> SINGLE_TAG_STD_DEVS = VecBuilder.fill(2, 2, 8);
     public static final Matrix<N3, N1> MULTI_TAG_STD_DEVS = VecBuilder.fill(0.5, 0.5, 1);
   }
 
@@ -130,7 +130,7 @@ public class Constants {
     public static final AngularVelocity SCORE_VELOCITY_LEVEL_1 = RadiansPerSecond.of(-1);
     public static final AngularVelocity EJECT_VELOCITY = RadiansPerSecond.of(-2);
     public static final AngularVelocity INDEXER_SPEED_TOLERANCE = RotationsPerSecond.of(3);
-    public static final Distance CORAL_DETECTION_THRESHOLD = Meters.of(0.076);
+    public static final Distance CORAL_DETECTION_THRESHOLD = Meters.of(0.06);
 
     public static final Current INDEXER_STATOR_CURRENT_LIMIT = Amps.of(40);
     public static final Current INDEXER_TORQUE_CURRENT_LIMIT = Amps.of(40);

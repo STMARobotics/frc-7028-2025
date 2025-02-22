@@ -15,7 +15,7 @@ public class IntakeCoralCommand extends Command {
   private final IndexerSubsystem indexerSubsystem;
   private final GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem;
   private final ArmSubsystem armSubsystem;
-  private final Debouncer coralDebouncer = new Debouncer(0.1, DebounceType.kRising);
+  private final Debouncer coralDebouncer = new Debouncer(0.15, DebounceType.kRising);
 
   /**
    * Constructors a IntakeCoralCommand
