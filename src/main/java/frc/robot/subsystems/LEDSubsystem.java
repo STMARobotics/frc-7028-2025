@@ -19,9 +19,8 @@ public class LEDSubsystem extends SubsystemBase {
 
   private final AddressableLED leds = new AddressableLED(DEVICE_ID_LEDS);
   private final AddressableLEDBuffer ledBuffer = new AddressableLEDBuffer(TOTAL_LEDS);
-  private final AddressableLEDBufferView frontLeftStripBuffer;
-  private final AddressableLEDBufferView backLeftStripBuffer;
-  private final AddressableLEDBufferView backRightStripBuffer;
+  private final AddressableLEDBufferView frontStripBuffer;
+  private final AddressableLEDBufferView backStripBuffer;
 
   /**
    * Creates a new LEDSubsystem
@@ -30,10 +29,8 @@ public class LEDSubsystem extends SubsystemBase {
     leds.setLength(TOTAL_LEDS);
     leds.setData(ledBuffer);
 
-    frontLeftStripBuffer = new AddressableLEDBufferView(ledBuffer, 0, LED_STRIP_LENGTH - 1);
-    backLeftStripBuffer = new AddressableLEDBufferView(ledBuffer, LED_STRIP_LENGTH, 2 * LED_STRIP_LENGTH - 1)
-        .reversed();
-    backRightStripBuffer = new AddressableLEDBufferView(ledBuffer, 2 * LED_STRIP_LENGTH, TOTAL_LEDS - 1);
+    frontStripBuffer = new AddressableLEDBufferView(ledBuffer, 0, LED_STRIP_LENGTH - 1);
+    backStripBuffer = new AddressableLEDBufferView(ledBuffer, LED_STRIP_LENGTH, 2 * LED_STRIP_LENGTH - 1).reversed();
 
     leds.start();
   }
@@ -53,9 +50,8 @@ public class LEDSubsystem extends SubsystemBase {
    */
   public Command runPatternAsCommand(LEDPattern pattern) {
     return run(() -> {
-      pattern.applyTo(frontLeftStripBuffer);
-      pattern.applyTo(backLeftStripBuffer);
-      pattern.applyTo(backRightStripBuffer);
+      pattern.applyTo(frontStripBuffer);
+      pattern.applyTo(backStripBuffer);
     }).finallyDo(() -> LEDPattern.kOff.applyTo(ledBuffer));
   }
 
@@ -66,9 +62,8 @@ public class LEDSubsystem extends SubsystemBase {
    * @param pattern Pattern to set on each LED strip from bottom to top
    */
   public void runPattern(LEDPattern pattern) {
-    pattern.applyTo(frontLeftStripBuffer);
-    pattern.applyTo(backLeftStripBuffer);
-    pattern.applyTo(backRightStripBuffer);
+    pattern.applyTo(frontStripBuffer);
+    pattern.applyTo(backStripBuffer);
   }
 
   /**
@@ -79,10 +74,40 @@ public class LEDSubsystem extends SubsystemBase {
    */
   public void setCandyCane(Color color1, Color color2) {
     for (int i = 0; i < LED_STRIP_LENGTH; i++) {
-      frontLeftStripBuffer.setLED(i, i % 2 == 0 ? color1 : color2);
-      backLeftStripBuffer.setLED(i, i % 2 == 0 ? color1 : color2);
-      backRightStripBuffer.setLED(i, i % 2 == 0 ? color1 : color2);
+      frontStripBuffer.setLED(i, i % 2 == 0 ? color1 : color2);
+      backStripBuffer.setLED(i, i % 2 == 0 ? color1 : color2);
     }
+  }
+
+  /**
+   * Sets the RGB value for an LED at a specific index.
+   *
+   * @param index the index of the LED to write to
+   * @param color the color to set
+   */
+  public void setLED(int index, Color color) {
+    frontStripBuffer.setLED(index, color);
+    backStripBuffer.setLED(index, color);
+  }
+
+  /**
+   * Sets the RGB value for all LEDs.
+   * 
+   * @param color the color to set
+   */
+  public void setColor(Color color) {
+    LEDPattern solidColor = LEDPattern.solid(color);
+    solidColor.applyTo(frontStripBuffer);
+    solidColor.applyTo(backStripBuffer);
+  }
+
+  /**
+   * Gets the length of the LED strips.
+   * 
+   * @return length of the strips
+   */
+  public int getStripLength() {
+    return LED_STRIP_LENGTH;
   }
 
 }
