@@ -154,6 +154,33 @@ public abstract class ControlBindings {
   }
 
   /**
+   * Moves the arm to the position to score algae on the barge.
+   * 
+   * @return optional command
+   */
+  public Optional<Trigger> moveArmToBarge() {
+    return Optional.empty();
+  }
+
+  /**
+   * Shoots the algae in the barge.
+   * 
+   * @return optional command
+   */
+  public Optional<Trigger> shootAlgae() {
+    return Optional.empty();
+  }
+
+  /**
+   * Moves the arm to the position to score in the processor.
+   * 
+   * @return optional command
+   */
+  public Optional<Trigger> moveArmToProcessor() {
+    return Optional.empty();
+  }
+
+  /**
    * Runs the manipulator wheels to eject algae
    * 
    * @return optional trigger

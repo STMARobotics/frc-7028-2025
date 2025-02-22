@@ -14,7 +14,8 @@ import static frc.robot.Constants.GamePieceManipulatorConstants.MANIPULATION_SLO
 import static frc.robot.Constants.GamePieceManipulatorConstants.STATOR_CURRENT_LIMIT;
 import static frc.robot.Constants.GamePieceManipulatorConstants.SUPPLY_CURRENT_LIMIT;
 import static frc.robot.Constants.GamePieceManipulatorConstants.TORQUE_CURRENT_LIMIT;
-import static frc.robot.Constants.GamePieceManipulatorConstants.WHEEL_HOLDING_CURRENT;
+import static frc.robot.Constants.GamePieceManipulatorConstants.WHEEL_HOLD_ALGAE_CURRENT;
+import static frc.robot.Constants.GamePieceManipulatorConstants.WHEEL_HOLD_CORAL_CURRENT;
 import static frc.robot.Constants.GamePieceManipulatorConstants.WHEEL_VELOCITY_TOLERANCE;
 
 import com.ctre.phoenix6.SignalLogger;
@@ -156,10 +157,24 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
   }
 
   /**
+   * Runs the wheels to shoot the algae
+   */
+  public void shootAlgae() {
+    wheelMotor.setControl(wheelVoltageOut.withOutput(12));
+  }
+
+  /**
    * Runs the wheels with a little bit of torque to hold a game piece
    */
-  public void activeHoldGamePiece() {
-    wheelMotor.setControl(wheelTorqueControl.withOutput(WHEEL_HOLDING_CURRENT));
+  public void activeHoldCoral() {
+    wheelMotor.setControl(wheelTorqueControl.withOutput(WHEEL_HOLD_CORAL_CURRENT));
+  }
+
+  /**
+   * Runs the wheels with a little bit of torque to hold a game piece
+   */
+  public void activeHoldAlgae() {
+    wheelMotor.setControl(wheelTorqueControl.withOutput(WHEEL_HOLD_ALGAE_CURRENT));
   }
 
   /**
