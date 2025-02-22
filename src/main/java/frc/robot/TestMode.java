@@ -155,6 +155,11 @@ public class TestMode {
         .finallyDo(armSubsystem::park);
   }
 
+  /**
+   * Returns the results of the tests ran during the TestMode routine
+   * 
+   * @return test results
+   */
   public BooleanSupplier[] getTestResults() {
     BooleanSupplier[] results = new BooleanSupplier[testResults.length];
     for (int i = 0; i < testResults.length; i++) {
