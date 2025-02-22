@@ -108,11 +108,6 @@ public class JoystickControlBindings extends ControlBindings {
   }
 
   @Override
-  public Optional<Trigger> ejectAlgae() {
-    return Optional.of(leftJoystick.button(2));
-  }
-
-  @Override
   public Optional<Trigger> scoreCoralLevel3() {
     return Optional.of(rightJoystick.button(3));
   }
@@ -125,5 +120,20 @@ public class JoystickControlBindings extends ControlBindings {
   @Override
   public Optional<Trigger> slowMode() {
     return Optional.of(leftJoystick.button(3));
+  }
+
+  @Override
+  public Optional<Trigger> moveArmToBarge() {
+    return Optional.of(leftJoystick.button(10));
+  }
+
+  @Override
+  public Optional<Trigger> shootAlgae() {
+    return Optional.of(leftJoystick.button(2));
+  }
+
+  @Override
+  public Optional<Trigger> moveArmToProcessor() {
+    return Optional.of(leftJoystick.button(9));
   }
 }

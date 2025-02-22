@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.commands.EjectCoralCommand;
 import frc.robot.commands.IntakeCoralCommand;
 import frc.robot.commands.PhotonVisionCommand;
@@ -119,7 +120,7 @@ public class RobotContainer {
     visionCommand.schedule();
     armSubsystem.setDefaultCommand(armSubsystem.run(armSubsystem::park).finallyDo(armSubsystem::stop));
     gamePieceManipulatorSubsystem.setDefaultCommand(
-        gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::activeHoldGamePiece)
+        gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::activeHoldCoral)
             .finallyDo(gamePieceManipulatorSubsystem::stop));
     ledSubsystem.setDefaultCommand(new DefaultLEDCommand(ledSubsystem));
     new LEDBootAnimationCommand(ledSubsystem).schedule();
@@ -205,6 +206,21 @@ public class RobotContainer {
                       armSubsystem.stop();
                       gamePieceManipulatorSubsystem.stop();
                     })));
+
+    controlBindings.moveArmToBarge().ifPresent(trigger -> trigger.onTrue(Commands.run(() -> {
+      armSubsystem.moveToBarge();
+      gamePieceManipulatorSubsystem.activeHoldAlgae();
+    }, armSubsystem, gamePieceManipulatorSubsystem).finallyDo(armSubsystem::stop)));
+
+    controlBindings.shootAlgae().ifPresent(trigger -> trigger.whileTrue(Commands.run(() -> {
+      armSubsystem.moveToBarge();
+      gamePieceManipulatorSubsystem.shootAlgae();
+    }, armSubsystem, gamePieceManipulatorSubsystem).finallyDo(gamePieceManipulatorSubsystem::stop)));
+
+    controlBindings.moveArmToProcessor().ifPresent(trigger -> trigger.onTrue(Commands.run(() -> {
+      armSubsystem.moveToProcessor();
+      gamePieceManipulatorSubsystem.activeHoldAlgae();
+    }, armSubsystem, gamePieceManipulatorSubsystem)));
 
     controlBindings.ejectAlgae()
         .ifPresent(
