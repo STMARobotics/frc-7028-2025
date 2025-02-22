@@ -110,19 +110,22 @@ public class AutoCommands {
   }
 
   private Command autoScoreCoral(Runnable armMethod) {
-    // I'd like to try raising the arm right away
-    var driveToReef = new DriveToReefCommand(drivetrain, () -> drivetrain.getState().Pose);
     var alignToReef = new AlignToReefCommand(drivetrain, alignmentSubsystem, Meters.of(0.34));
+    var driveToReef = new DriveToReefCommand(drivetrain, () -> drivetrain.getState().Pose);
+
     return ledSubsystem
         .setLEDSegmentsAsCommand(kGreen, armSubsystem::isAtPosition, driveToReef::isFinished, alignToReef::isFinished)
-        .alongWith(
-            armSubsystem.run(armMethod)
-                .until(armSubsystem::isAtPosition)
-                .alongWith(
-                    driveToReef.andThen(alignToReef)
-                        .andThen(drivetrain.applyRequest(SwerveRequest.SwerveDriveBrake::new)))
-                .andThen(
-                    gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectCoral).withTimeout(1.0)));
+        .withDeadline(
+            driveToReef.andThen(
+                armSubsystem.run(armMethod)
+                    .until(armSubsystem::isAtPosition)
+                    .alongWith(alignToReef)
+                    .andThen(
+                        armSubsystem.run(armMethod)
+                            .alongWith(
+                                gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectCoral)
+                                    .alongWith(drivetrain.applyRequest(SwerveRequest.SwerveDriveBrake::new)))
+                            .withTimeout(1.0))));
   }
 
   private Command autoScoreAlgae(Runnable armMethod) {

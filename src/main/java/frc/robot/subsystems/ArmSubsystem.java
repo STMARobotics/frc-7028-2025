@@ -12,6 +12,8 @@ import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
+import static frc.robot.Constants.ArmConstants.ALGAE_BARGE_ANGLE;
+import static frc.robot.Constants.ArmConstants.ALGAE_BARGE_HEIGHT;
 import static frc.robot.Constants.ArmConstants.ALGAE_LEVEL_1_ANGLE;
 import static frc.robot.Constants.ArmConstants.ALGAE_LEVEL_1_HEIGHT;
 import static frc.robot.Constants.ArmConstants.ALGAE_LEVEL_2_ANGLE;
@@ -423,6 +425,20 @@ public class ArmSubsystem extends SubsystemBase {
    */
   public void moveToAlgaeLevel2() {
     moveToPosition(ALGAE_LEVEL_2_HEIGHT, ALGAE_LEVEL_2_ANGLE);
+  }
+
+  /**
+   * Moves the arm to the position to score on the barge.
+   */
+  public void moveToBarge() {
+    moveToPosition(ALGAE_BARGE_HEIGHT, ALGAE_BARGE_ANGLE);
+  }
+
+  /**
+   * Moves the arm to the position to score in the processor.
+   */
+  public void moveToProcessor() {
+    moveToPosition(LEVEL_4_HEIGHT, armTarget);
   }
 
   /**
