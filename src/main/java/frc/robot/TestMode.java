@@ -142,4 +142,15 @@ public class TestMode {
         .andThen(() -> armPublisher.set(armSubsystem.isArmAtAngle()))
         .finallyDo(armSubsystem::park);
   }
+
+  public Boolean[] getTestResults() {
+    return new Boolean[] {
+        indexerForwardPublisher.getTopic().subscribe(false).get(),
+        indexerBackwardPublisher.getTopic().subscribe(false).get(),
+        manipulatorForwardPublisher.getTopic().subscribe(false).get(),
+        manipulatorBackwardPublisher.getTopic().subscribe(false).get(),
+        climbPublisher.getTopic().subscribe(false).get(),
+        elevatorPubliser.getTopic().subscribe(false).get(),
+        armPublisher.getTopic().subscribe(false).get() };
+  }
 }

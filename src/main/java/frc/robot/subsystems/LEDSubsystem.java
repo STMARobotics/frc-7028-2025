@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import java.util.function.BooleanSupplier;
 
 /**
  * Subsystem for controlling the LEDs
@@ -85,4 +86,23 @@ public class LEDSubsystem extends SubsystemBase {
     }
   }
 
+  public void setLEDSegments(Color color, BooleanSupplier[] segmentValues) {
+    int ledsPerStatus = LED_STRIP_LENGTH / segmentValues.length;
+    for (int stripId = 1; stripId < 3; stripId++) {
+      int ledIndex = 0;
+      for (int segmentId = 0; segmentId < segmentValues.length; segmentId++) {
+        for (; ledIndex < (ledsPerStatus * (segmentId + 1)); ledIndex++) {
+          frontLeftStripBuffer.setLED(ledIndex, segmentValues[segmentId].getAsBoolean() ? color : Color.kBlack);
+        }
+      }
+      for (; ledIndex < LED_STRIP_LENGTH; ledIndex++) {
+        frontLeftStripBuffer.setLED(ledIndex, Color.kBlack);
+      }
+    }
+    for (int stripId = 0; stripId < 3; stripId += 3) {
+      for (int ledId = 0; ledId < LED_STRIP_LENGTH; ledId++) {
+        frontLeftStripBuffer.setLED(ledId, Color.kBlack);
+      }
+    }
+  }
 }
