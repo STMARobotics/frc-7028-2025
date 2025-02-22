@@ -1,7 +1,6 @@
 package frc.robot.commands.led;
 
-import static edu.wpi.first.wpilibj.util.Color.kBlack;
-
+import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -26,7 +25,7 @@ public class LEDBootAnimationCommand extends Command {
 
   @Override
   public void initialize() {
-    ledSubsystem.setCandyCane(kBlack, kBlack);
+    ledSubsystem.runPattern(LEDPattern.kOff);
     blipIndex = -1;
     timer.start();
     done = false;
@@ -37,7 +36,7 @@ public class LEDBootAnimationCommand extends Command {
   public void execute() {
     if (timer.advanceIfElapsed(0.05) || !initialized) {
       if (!initialized) {
-        ledSubsystem.setColor(kBlack);
+        ledSubsystem.runPattern(LEDPattern.kOff);
         initialized = true;
       }
       for (int index = 0; index < ledSubsystem.getStripLength(); index++) {
@@ -64,6 +63,6 @@ public class LEDBootAnimationCommand extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    ledSubsystem.setColor(kBlack);
+    ledSubsystem.runPattern(LEDPattern.kOff);
   }
 }

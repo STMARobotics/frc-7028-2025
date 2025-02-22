@@ -1,6 +1,7 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.wpilibj.util.Color.kGreen;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -11,6 +12,7 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.GamePieceManipulatorSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 
 /**
  * Library of commands to perform complex actions
@@ -21,6 +23,7 @@ public class AutoCommands {
   private final ArmSubsystem armSubsystem;
   private final AlignmentSubsystem alignmentSubsystem;
   private final GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem;
+  private final LEDSubsystem ledSubsystem;
 
   /**
    * Constructs a new AutoCommands object
@@ -36,11 +39,13 @@ public class AutoCommands {
       ArmSubsystem armSubsystem,
       AlignmentSubsystem alignmentSubsystem,
       GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem,
-      IndexerSubsystem indexerSubsystem) {
+      IndexerSubsystem indexerSubsystem,
+      LEDSubsystem ledSubsystem) {
     this.drivetrain = drivetrain;
     this.armSubsystem = armSubsystem;
     this.alignmentSubsystem = alignmentSubsystem;
     this.gamePieceManipulatorSubsystem = gamePieceManipulatorSubsystem;
+    this.ledSubsystem = ledSubsystem;
   }
 
   /**
@@ -74,16 +79,19 @@ public class AutoCommands {
   }
 
   private Command autoScoreCoral(Runnable armMethod) {
-    return new DriveToReefCommand(drivetrain, () -> drivetrain.getState().Pose).andThen(
-        armSubsystem.run(armMethod)
-            .until(armSubsystem::isAtPosition)
-            .alongWith(new AlignToReefCommand(drivetrain, alignmentSubsystem, Meters.of(0.34)))
-            .andThen(
-                armSubsystem.run(armMethod)
-                    .alongWith(
-                        gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectCoral)
-                            .alongWith(drivetrain.applyRequest(SwerveRequest.SwerveDriveBrake::new)))
-                    .withTimeout(1.0)));
+    // I'd like to try raising the arm right away
+    var driveToReef = new DriveToReefCommand(drivetrain, () -> drivetrain.getState().Pose);
+    var alignToReef = new AlignToReefCommand(drivetrain, alignmentSubsystem, Meters.of(0.34));
+    return ledSubsystem
+        .setLEDSegmentsAsCommand(kGreen, armSubsystem::isAtPosition, driveToReef::isFinished, alignToReef::isFinished)
+        .alongWith(
+            armSubsystem.run(armMethod)
+                .until(armSubsystem::isAtPosition)
+                .alongWith(
+                    driveToReef.andThen(alignToReef)
+                        .andThen(drivetrain.applyRequest(SwerveRequest.SwerveDriveBrake::new)))
+                .andThen(
+                    gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectCoral).withTimeout(1.0)));
   }
 
 }

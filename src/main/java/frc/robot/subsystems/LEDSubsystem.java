@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import java.util.function.BooleanSupplier;
 
 /**
  * Subsystem for controlling the LEDs
@@ -91,14 +92,32 @@ public class LEDSubsystem extends SubsystemBase {
   }
 
   /**
-   * Sets the RGB value for all LEDs.
-   * 
-   * @param color the color to set
+   * Lights up the LEDs in segments. Useful for indicating ready state, for example.
+   *
+   * @param color the color of the segments when lit
+   * @param segmentValues array of boolean suppliers. The strip will be split into segments one segment for each element
+   *          of the array.
    */
-  public void setColor(Color color) {
-    LEDPattern solidColor = LEDPattern.solid(color);
-    solidColor.applyTo(frontStripBuffer);
-    solidColor.applyTo(backStripBuffer);
+  public void setLEDSegments(Color color, BooleanSupplier... segmentValues) {
+    final int ledsPerStatus = LED_STRIP_LENGTH / segmentValues.length;
+    int ledIndex = 0;
+    for (int segmentId = 0; segmentId < segmentValues.length; segmentId++) {
+      for (; ledIndex < (ledsPerStatus * (segmentId + 1)); ledIndex++) {
+        setLED(ledIndex, segmentValues[segmentId].getAsBoolean() ? color : Color.kBlack);
+      }
+    }
+  }
+
+  /**
+   * Creates a command to light up the LED strips in segments. Useful for indicating ready state, for example.
+   * 
+   * @param color the color of the segments when lit
+   * @param segmentValues array of boolean suppliers. The strip will be split into segments one segment for each element
+   *          of the array.
+   * @return command to light up the LED segments
+   */
+  public Command setLEDSegmentsAsCommand(Color color, BooleanSupplier... segmentValues) {
+    return run(() -> setLEDSegments(color, segmentValues));
   }
 
   /**

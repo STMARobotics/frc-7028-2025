@@ -77,7 +77,8 @@ public class RobotContainer {
       armSubsystem,
       alignmentSubsystem,
       gamePieceManipulatorSubsystem,
-      indexerSubsystem);
+      indexerSubsystem,
+      ledSubsystem);
 
   private final TestMode testMode = new TestMode(
       gamePieceManipulatorSubsystem,
