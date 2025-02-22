@@ -101,14 +101,17 @@ public class Constants {
    * Constants for vision processing
    */
   public static class VisionConstants {
-    public static final String[] CAMERA_NAMES = new String[] { "Left", "Back" };
+    public static final String[] CAMERA_NAMES = new String[] { "Left", "Back", "High" };
     public static final Transform3d[] ROBOT_TO_CAMERA_TRANSFORMS = new Transform3d[] {
         new Transform3d(
             new Translation3d(inchesToMeters(10.846), inchesToMeters(12.472), inchesToMeters(10.775)),
             new Rotation3d(0, 0, degreesToRadians(90))),
         new Transform3d(
             new Translation3d(inchesToMeters(-13.472), inchesToMeters(-8.088), inchesToMeters(8.541)),
-            new Rotation3d(0, 0, degreesToRadians(180))) };
+            new Rotation3d(0, 0, degreesToRadians(180))),
+        new Transform3d(
+            new Translation3d(inchesToMeters(7.154), inchesToMeters(12.266), inchesToMeters(37.065)),
+            new Rotation3d(0, degreesToRadians(-70), degreesToRadians(90))) };
 
     // The standard deviations of our vision estimated poses, which affect correction rate
     public static final Matrix<N3, N1> SINGLE_TAG_STD_DEVS = VecBuilder.fill(4, 4, 8);
@@ -214,7 +217,7 @@ public class Constants {
     public static final Current ARM_STATOR_CURRENT_LIMIT = Amps.of(40);
     public static final Current ARM_SUPPLY_CURRENT_LIMIT = Amps.of(40);
     public static final double ARM_ROTOR_TO_SENSOR_RATIO = (68.0 / 14.0) * (68.0 / 26.0) * (34.0 / 16.0);
-    public static final Angle ARM_MAGNETIC_OFFSET = Rotations.of(-0.299316);
+    public static final Angle ARM_MAGNETIC_OFFSET = Rotations.of(-0.297363);
 
     public static final SlotConfigs ARM_SLOT_CONFIGS = new SlotConfigs().withGravityType(Arm_Cosine)
         .withKP(30.0)
@@ -383,8 +386,8 @@ public class Constants {
   public static class LEDConstants {
     public static final int DEVICE_ID_LEDS = 9;
 
-    public static final int LED_STRIP_LENGTH = 20;
+    public static final int LED_STRIP_LENGTH = 49;
 
-    public static final int TOTAL_LEDS = 3 * LED_STRIP_LENGTH;
+    public static final int TOTAL_LEDS = 2 * LED_STRIP_LENGTH;
   }
 }
