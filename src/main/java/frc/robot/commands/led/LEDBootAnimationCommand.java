@@ -6,23 +6,17 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.LEDSubsystem;
 
-/**
- * Command that runs the boot animation on the LEDs
- */
+/** Command to run the boot animation on the LED strips */
 public class LEDBootAnimationCommand extends Command {
 
+  private static final int BLIP_SIZE = 5;
   private final LEDSubsystem ledSubsystem;
   private final Timer timer = new Timer();
 
-  private static final double RUN_TIME = 2.0;
+  private int blipIndex = -1;
+  private boolean done = false;
+  private boolean initialized = false;
 
-  private LEDPattern pattern;
-
-  /**
-   * Creates a new LEDBootAnimationCommand
-   * 
-   * @param ledSubsystem LED Subsystem
-   */
   public LEDBootAnimationCommand(LEDSubsystem ledSubsystem) {
     this.ledSubsystem = ledSubsystem;
 
@@ -31,52 +25,35 @@ public class LEDBootAnimationCommand extends Command {
 
   @Override
   public void initialize() {
-    timer.reset();
+    ledSubsystem.runPattern(LEDPattern.kOff);
+    blipIndex = -1;
     timer.start();
-
-    pattern = overlayOn(
-        LEDPattern.progressMaskLayer(() -> timer.get() / RUN_TIME * 1.2)
-            .mask(LEDPattern.progressMaskLayer(() -> 1.2 - (timer.get() / RUN_TIME * 1.2)).reversed())
-            .mask(LEDPattern.solid(Color.kYellow)),
-          LEDPattern.solid(Color.kBlue));
-  }
-
-  /**
-   * A version of {@link LEDPattern#overlayOn(LEDPattern)} that does what it says, only replacing BLACK LEDs.
-   * 
-   * @param base base pattern
-   * @param overlay overlay pattern
-   * @return new pattern with the base overlayed on the overlay
-   */
-  private LEDPattern overlayOn(LEDPattern base, LEDPattern overlay) {
-    return (reader, writer) -> {
-      // write the base pattern down first...
-      base.applyTo(reader, writer);
-
-      // ... then, overwrite with the illuminated LEDs from the overlay
-      overlay.applyTo(reader, (i, r, g, b) -> {
-        var led = reader.getLED(i);
-        if ((led.blue == 0 && led.green == 0 && led.red == 0) && (r != 0 || g != 0 || b != 0)) {
-          writer.setRGB(i, r, g, b);
-        }
-      });
-    };
+    done = false;
+    initialized = false;
   }
 
   @Override
   public void execute() {
-    ledSubsystem.runPattern(pattern);
+    if (timer.advanceIfElapsed(0.05) || !initialized) {
+      if (!initialized) {
+        ledSubsystem.runPattern(LEDPattern.kOff);
+        initialized = true;
+      }
+      for (int index = 0; index < ledSubsystem.getStripLength(); index++) {
+        if (index <= blipIndex && index >= blipIndex - (BLIP_SIZE - 1)) {
+          ledSubsystem.setLED(index, Color.kOrange);
+        } else {
+          ledSubsystem.setLED(index, Color.kBlue);
+        }
+      }
+      blipIndex++;
+      done = blipIndex - (BLIP_SIZE + 1) >= ledSubsystem.getStripLength();
+    }
   }
 
   @Override
   public boolean isFinished() {
-    return timer.get() >= RUN_TIME;
-  }
-
-  @Override
-  public void end(boolean interrupted) {
-    timer.stop();
-    ledSubsystem.runPattern(LEDPattern.kOff);
+    return done;
   }
 
   @Override
@@ -84,4 +61,8 @@ public class LEDBootAnimationCommand extends Command {
     return true;
   }
 
+  @Override
+  public void end(boolean interrupted) {
+    ledSubsystem.runPattern(LEDPattern.kOff);
+  }
 }

@@ -16,15 +16,18 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.TeleopDriveConstants.MAX_TELEOP_ANGULAR_VELOCITY;
 import static frc.robot.Constants.TeleopDriveConstants.MAX_TELEOP_VELOCITY;
+import static java.util.stream.Collectors.toUnmodifiableList;
 
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.SlotConfigs;
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -42,6 +45,8 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.commands.DriveToPoseCommand;
 import frc.robot.generated.TunerConstants;
+import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -96,23 +101,17 @@ public class Constants {
    * Constants for vision processing
    */
   public static class VisionConstants {
-    public static final String[] CAMERA_NAMES = new String[] { "Left", "Front", "Right", "Back" };
+    public static final String[] CAMERA_NAMES = new String[] { "Left", "Back", "High" };
     public static final Transform3d[] ROBOT_TO_CAMERA_TRANSFORMS = new Transform3d[] {
         new Transform3d(
             new Translation3d(inchesToMeters(10.846), inchesToMeters(12.472), inchesToMeters(10.775)),
             new Rotation3d(0, 0, degreesToRadians(90))),
         new Transform3d(
-            new Translation3d(inchesToMeters(12.610), inchesToMeters(-4.332), inchesToMeters(15.943)),
-            new Rotation3d(0, 0, 0)),
-        new Transform3d(
-            new Translation3d(inchesToMeters(8.286), inchesToMeters(-12.691), inchesToMeters(13.642)),
-            new Rotation3d(0, 0, degreesToRadians(-90))),
-        new Transform3d(
             new Translation3d(inchesToMeters(-13.472), inchesToMeters(-8.088), inchesToMeters(8.541)),
-            new Rotation3d(0, 0, degreesToRadians(180))) };
-
-    public static final AprilTagFieldLayout APRILTAG_FIELD_LAYOUT = AprilTagFieldLayout
-        .loadField(AprilTagFields.k2025ReefscapeWelded);
+            new Rotation3d(0, 0, degreesToRadians(180))),
+        new Transform3d(
+            new Translation3d(inchesToMeters(7.154), inchesToMeters(12.266), inchesToMeters(37.065)),
+            new Rotation3d(0, degreesToRadians(-70), degreesToRadians(90))) };
 
     // The standard deviations of our vision estimated poses, which affect correction rate
     public static final Matrix<N3, N1> SINGLE_TAG_STD_DEVS = VecBuilder.fill(4, 4, 8);
@@ -173,7 +172,7 @@ public class Constants {
     public static final int DEVICE_ID_ARM_MOTOR = 45;
     public static final int DEVICE_ID_ARM_CANDI = 46;
 
-    public static final SlotConfigs ELEVATOR_SLOT_CONFIGS = new SlotConfigs().withKP(0.01)
+    public static final SlotConfigs ELEVATOR_SLOT_CONFIGS = new SlotConfigs().withKP(0.25)
         .withKD(0.0)
         .withKS(0.0)
         .withKV(0.135)
@@ -218,7 +217,7 @@ public class Constants {
     public static final Current ARM_STATOR_CURRENT_LIMIT = Amps.of(40);
     public static final Current ARM_SUPPLY_CURRENT_LIMIT = Amps.of(40);
     public static final double ARM_ROTOR_TO_SENSOR_RATIO = (68.0 / 14.0) * (68.0 / 26.0) * (34.0 / 16.0);
-    public static final Angle ARM_MAGNETIC_OFFSET = Rotations.of(-0.299316);
+    public static final Angle ARM_MAGNETIC_OFFSET = Rotations.of(-0.297363);
 
     public static final SlotConfigs ARM_SLOT_CONFIGS = new SlotConfigs().withGravityType(Arm_Cosine)
         .withKP(30.0)
@@ -235,9 +234,9 @@ public class Constants {
     public static final Distance ELEVATOR_INTAKE_POSITION = Meters.of(0);
     public static final Distance LEVEL_2_HEIGHT = Meters.of(0.1946611669921875);
     public static final Distance LEVEL_3_HEIGHT = Meters.of(0);
-    public static final Distance LEVEL_4_HEIGHT = Meters.of(0.7186891357421875);
+    public static final Distance LEVEL_4_HEIGHT = Meters.of(0.675);
     public static final Distance ALGAE_LEVEL_1_HEIGHT = Meters.of(0.35);
-    public static final Distance ALGAE_LEVEL_2_HEIGHT = Meters.of(0.9);
+    public static final Distance ALGAE_LEVEL_2_HEIGHT = Meters.of(0.7);
 
     public static final Angle ARM_INTAKE_ANGLE = Rotations.of(0.765);
     public static final Angle LEVEL_2_ANGLE = Rotations.of(0.68212890625);
@@ -297,14 +296,98 @@ public class Constants {
     public static final int DEVICE_ID_MITOCANDRIA = 0;
   }
 
+  /** Constants for aligning to the reef */
+  public static class AlignmentConstants {
+    public static final int DEVICE_ID_RIGHT_CANRANGE = 38;
+    public static final int DEVICE_ID_LEFT_CANRANGE = 39;
+
+    public static final Distance ALIGNMENT_TOLERANCE = Inches.of(0.5);
+
+    // These are the dimensions for the WELDED field
+    public static final double FIELD_LENGTH_METERS = 17.548;
+    public static final double FIELD_WIDTH_METERS = 8.052;
+
+    public static final LinearVelocity MAX_ALIGN_TRANSLATION_VELOCITY = MAX_TELEOP_VELOCITY.div(2.0);
+    public static final LinearAcceleration MAX_ALIGN_TRANSLATION_ACCELERATION = MetersPerSecondPerSecond.of(6.0);
+    public static final AngularVelocity MAX_ALIGN_ANGULAR_VELOCITY = MAX_TELEOP_ANGULAR_VELOCITY.times(0.75);
+    public static final AngularAcceleration MAX_ALIGN_ANGULAR_ACCELERATION = RadiansPerSecondPerSecond
+        .of(6.0 * Math.PI);
+
+    /** Pose of the robot relative to a reef branch for scoring */
+    public static final Transform2d RELATIVE_SCORING_POSE = new Transform2d(
+        inchesToMeters(-40),
+        inchesToMeters(12),
+        Rotation2d.fromDegrees(-90));
+
+    /** Pose on the opposite side of the field. Use with `relativeTo` to flip a pose to the opposite alliance */
+    public static final Pose2d FLIPPING_POSE = new Pose2d(
+        new Translation2d(FIELD_LENGTH_METERS, FIELD_WIDTH_METERS),
+        new Rotation2d(Math.PI));
+
+    // spotless:off
+    /* The reef branches are in the arrays like this:
+     *    ----------------------------------------
+     *    |     5  / \ 6      |     11 / \ 0     |
+     *    B    4 /     \ 7    |   10 /     \ 1   |
+     *    L   3 |       | 8   |   9 |       | 2  R
+     * +X U   2 |       | 9   |   8 |       | 3  E
+     *    E    1 \     / 10   |    7 \     / 4   D
+     *    |      0 \ / 11     |      6 \ / 5     |
+     *    |___________________|__________________|
+     * (0, 0)               +Y
+     */
+    // spotless:on
+    /**
+     * Poses of the branches on the blue reef. Translation is the branch pipe base, rotation is pointing toward reef
+     * center.
+     */
+    public static final List<Pose2d> REEF_BRANCH_POSES_BLUE = Stream
+        .of(
+            new Pose2d(4.347746, 3.467, Rotation2d.fromDegrees(60)), // 0
+              new Pose2d(4.062584, 3.630770, Rotation2d.fromDegrees(60)), // 1
+              new Pose2d(3.942648, 3.840490, Rotation2d.fromDegrees(0)), // 2
+              new Pose2d(3.942648, 4.169106, Rotation2d.fromDegrees(0)), // 3
+              new Pose2d(4.062584, 4.398912, Rotation2d.fromDegrees(-60)), // 4
+              new Pose2d(4.347175, 4.515, Rotation2d.fromDegrees(-60)), // 5
+              new Pose2d(4.588763, 4.542161, Rotation2d.fromDegrees(-120)), // 6
+              new Pose2d(4.873926, 4.378820, Rotation2d.fromDegrees(-120)), // 7
+              new Pose2d(4.98, 4.215, Rotation2d.fromDegrees(180)), // 8
+              new Pose2d(4.994328, 3.841097, Rotation2d.fromDegrees(180)), // 9
+              new Pose2d(4.95, 3.76, Rotation2d.fromDegrees(120)), // 10
+              new Pose2d(4.589334, 3.466500, Rotation2d.fromDegrees(120)))// 11
+        .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE))
+        .collect(toUnmodifiableList());
+
+    /**
+     * Poses of the branches on the red reef. Translation is the branch pipe base, rotation is pointing toward reef
+     * center.
+     */
+    public static final List<Pose2d> REEF_BRANCH_POSES_RED = Stream
+        .of(
+            new Pose2d(13.200254, 4.585000, Rotation2d.fromDegrees(-120)), // 0
+              new Pose2d(13.485416, 4.421230, Rotation2d.fromDegrees(-120)), // 1
+              new Pose2d(13.605352, 4.211510, Rotation2d.fromDegrees(-180)), // 2
+              new Pose2d(13.605352, 3.882894, Rotation2d.fromDegrees(-180)), // 3
+              new Pose2d(13.485416, 3.653088, Rotation2d.fromDegrees(120)), // 4
+              new Pose2d(13.200825, 3.537000, Rotation2d.fromDegrees(120)), // 5
+              new Pose2d(12.959237, 3.509839, Rotation2d.fromDegrees(60)), // 6
+              new Pose2d(12.674074, 3.673180, Rotation2d.fromDegrees(60)), // 7
+              new Pose2d(12.568000, 3.837000, Rotation2d.fromDegrees(0)), // 8
+              new Pose2d(12.553672, 4.210903, Rotation2d.fromDegrees(0)), // 9
+              new Pose2d(12.598000, 4.292000, Rotation2d.fromDegrees(-60)), // 10
+              new Pose2d(12.958666, 4.585500, Rotation2d.fromDegrees(-60)))// 11
+        .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE))
+        .collect(toUnmodifiableList());
+  }
+
   /**
    * Constants for the LEDs
    */
   public static class LEDConstants {
     public static final int DEVICE_ID_LEDS = 9;
 
-    public static final int LED_STRIP_LENGTH = 20;
+    public static final int LED_STRIP_LENGTH = 49;
 
-    public static final int TOTAL_LEDS = 3 * LED_STRIP_LENGTH;
+    public static final int TOTAL_LEDS = 2 * LED_STRIP_LENGTH;
   }
 }

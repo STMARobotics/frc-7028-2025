@@ -4,8 +4,12 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kForward;
 import static edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kReverse;
+import static frc.robot.Constants.AlignmentConstants.REEF_BRANCH_POSES_BLUE;
+import static frc.robot.Constants.AlignmentConstants.REEF_BRANCH_POSES_RED;
 import static frc.robot.Constants.TeleopDriveConstants.MAX_TELEOP_ANGULAR_VELOCITY;
 import static frc.robot.Constants.TeleopDriveConstants.MAX_TELEOP_VELOCITY;
 
@@ -13,7 +17,10 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -28,6 +35,7 @@ import frc.robot.controls.ControlBindings;
 import frc.robot.controls.JoystickControlBindings;
 import frc.robot.controls.XBoxControlBindings;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.AlignmentSubsystem;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -41,8 +49,8 @@ public class RobotContainer {
 
   /* Setting up bindings for necessary control of the swerve drive platform */
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-      .withDeadband(MAX_TELEOP_VELOCITY.times(0.1)) // Add a 10% deadband
-      .withRotationalDeadband(MAX_TELEOP_ANGULAR_VELOCITY.times(0.1))
+      .withDeadband(MAX_TELEOP_VELOCITY.times(0.05))
+      .withRotationalDeadband(MAX_TELEOP_ANGULAR_VELOCITY.times(0.05))
       .withDriveRequestType(DriveRequestType.Velocity)
       .withSteerRequestType(SteerRequestType.MotionMagicExpo);
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
@@ -57,10 +65,20 @@ public class RobotContainer {
   private final LEDSubsystem ledSubsystem = new LEDSubsystem();
   @Logged
   private final MitoCANdriaSubsytem mitoCANdriaSubsytem = new MitoCANdriaSubsytem();
+  @Logged
+  private final AlignmentSubsystem alignmentSubsystem = new AlignmentSubsystem();
 
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
   private final DrivetrainTelemetry drivetrainTelemetry = new DrivetrainTelemetry();
   private final PhotonVisionCommand visionCommand = new PhotonVisionCommand(drivetrain::addVisionMeasurement);
+  private final Command slowModeCommand;
+  private final AutoCommands autoCommands = new AutoCommands(
+      drivetrain,
+      armSubsystem,
+      alignmentSubsystem,
+      gamePieceManipulatorSubsystem,
+      indexerSubsystem,
+      ledSubsystem);
 
   private final TestMode testMode = new TestMode(
       gamePieceManipulatorSubsystem,
@@ -80,19 +98,43 @@ public class RobotContainer {
       controlBindings = new JoystickControlBindings();
     }
 
+    // Configure PathPlanner
+    NamedCommands.registerCommand("scoreCoralLevel4", autoCommands.autoScoreCoralLevel4());
+    NamedCommands.registerCommand("scoreCoralLevel3", autoCommands.autoScoreCoralLevel3());
     autoChooser = AutoBuilder.buildAutoChooser("Tests");
     SmartDashboard.putData("Auto Mode", autoChooser);
 
+    // Configure controls
+    slowModeCommand = drivetrain
+        .applyRequest(
+            () -> drive.withVelocityX(controlBindings.translationX().get().div(2))
+                .withVelocityY(controlBindings.translationY().get().div(2))
+                .withRotationalRate(controlBindings.omega().get().div(2)))
+        .finallyDo(() -> drivetrain.setControl(new SwerveRequest.Idle()));
+
     configureBindings();
 
+    // Set up default and background commands
     visionCommand.schedule();
     armSubsystem.setDefaultCommand(armSubsystem.run(armSubsystem::park).finallyDo(armSubsystem::stop));
     gamePieceManipulatorSubsystem.setDefaultCommand(
         gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::activeHoldGamePiece)
             .finallyDo(gamePieceManipulatorSubsystem::stop));
     ledSubsystem.setDefaultCommand(new DefaultLEDCommand(ledSubsystem));
-
     new LEDBootAnimationCommand(ledSubsystem).schedule();
+
+    // Send the reef poses to the dashboard for debugging
+    NetworkTableInstance.getDefault()
+        .getTable("reef_blue")
+        .getStructArrayTopic("branches", Pose2d.struct)
+        .publish()
+        .set(REEF_BRANCH_POSES_BLUE.toArray(new Pose2d[REEF_BRANCH_POSES_BLUE.size()]));
+
+    NetworkTableInstance.getDefault()
+        .getTable("reef_red")
+        .getStructArrayTopic("branches", Pose2d.struct)
+        .publish()
+        .set(REEF_BRANCH_POSES_RED.toArray(new Pose2d[REEF_BRANCH_POSES_RED.size()]));
   }
 
   private void configureBindings() {
@@ -146,22 +188,37 @@ public class RobotContainer {
 
     controlBindings.moveArmToReefAlgaeLevel1()
         .ifPresent(
-            trigger -> trigger.onTrue(armSubsystem.run(armSubsystem::moveToAlgaeLevel1).finallyDo(armSubsystem::stop)));
+            trigger -> trigger.onTrue(
+                armSubsystem.run(armSubsystem::moveToAlgaeLevel1)
+                    .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::intakeAlgae))
+                    .finallyDo(() -> {
+                      armSubsystem.stop();
+                      gamePieceManipulatorSubsystem.stop();
+                    })));
     controlBindings.moveArmToReefAlgaeLevel2()
         .ifPresent(
-            trigger -> trigger.onTrue(armSubsystem.run(armSubsystem::moveToAlgaeLevel2).finallyDo(armSubsystem::stop)));
-
-    controlBindings.intakeAlgae()
-        .ifPresent(
-            trigger -> trigger.whileTrue(
-                gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::intakeAlgae)
-                    .finallyDo(gamePieceManipulatorSubsystem::stop)));
+            trigger -> trigger.onTrue(
+                armSubsystem.run(armSubsystem::moveToAlgaeLevel2)
+                    .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::intakeAlgae))
+                    .finallyDo(() -> {
+                      armSubsystem.stop();
+                      gamePieceManipulatorSubsystem.stop();
+                    })));
 
     controlBindings.ejectAlgae()
         .ifPresent(
             trigger -> trigger.whileTrue(
                 gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectAlgae)
-                    .finallyDo(gamePieceManipulatorSubsystem::stop)));
+                    .alongWith(armSubsystem.run(() -> armSubsystem.moveToPosition(Meters.zero(), Rotations.of(0.5))))
+                    .finallyDo(() -> {
+                      gamePieceManipulatorSubsystem.stop();
+                      armSubsystem.stop();
+                    })));
+
+    controlBindings.slowMode().ifPresent(trigger -> trigger.whileTrue(slowModeCommand));
+
+    controlBindings.scoreCoralLevel3().ifPresent(trigger -> trigger.whileTrue(autoCommands.autoScoreCoralLevel3()));
+    controlBindings.scoreCoralLevel4().ifPresent(trigger -> trigger.whileTrue(autoCommands.autoScoreCoralLevel4()));
   }
 
   public Command getAutonomousCommand() {
@@ -185,7 +242,12 @@ public class RobotContainer {
     SmartDashboard.putData("Drive Quasi Rev", drivetrain.sysIdTranslationQuasiCommand(kReverse));
     SmartDashboard.putData("Drive Dynam Fwd", drivetrain.sysIdTranslationDynamCommand(kForward));
     SmartDashboard.putData("Drive Dynam Rev", drivetrain.sysIdTranslationDynamCommand(kReverse));
-    SmartDashboard.putData("Slip Test", drivetrain.sysIdDriveSlipCommand());
+
+    // Drive TorqueFOC
+    SmartDashboard.putData("Drive Torque Quasi Fwd", drivetrain.sysIdTranslationQuasiTorqueCommand(kForward));
+    SmartDashboard.putData("Drive Torque Quasi Rev", drivetrain.sysIdTranslationQuasiTorqueCommand(kReverse));
+    SmartDashboard.putData("Drive Torque Dynam Fwd", drivetrain.sysIdTranslationDynamTorqueCommand(kForward));
+    SmartDashboard.putData("Drive Torque Dynam Rev", drivetrain.sysIdTranslationDynamTorqueCommand(kReverse));
 
     // Steer
     SmartDashboard.putData("Steer Quasi Fwd", drivetrain.sysIdSteerQuasiCommand(kForward));

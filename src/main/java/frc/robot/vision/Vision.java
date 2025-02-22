@@ -24,15 +24,17 @@
 
 package frc.robot.vision;
 
-import static frc.robot.Constants.VisionConstants.APRILTAG_FIELD_LAYOUT;
 import static frc.robot.Constants.VisionConstants.MULTI_TAG_STD_DEVS;
 import static frc.robot.Constants.VisionConstants.SINGLE_TAG_STD_DEVS;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.DriverStation;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
@@ -47,7 +49,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
  */
 public class Vision {
   private final PhotonCamera camera;
-  private final PhotonPoseEstimator photonEstimator;
+  private PhotonPoseEstimator photonEstimator;
   private Matrix<N3, N1> curStdDevs;
 
   /**
@@ -56,11 +58,19 @@ public class Vision {
   public Vision(String cameraName, Transform3d robotToCameraTransform) {
     camera = new PhotonCamera(cameraName);
 
-    photonEstimator = new PhotonPoseEstimator(
-        APRILTAG_FIELD_LAYOUT,
-        PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-        robotToCameraTransform);
-    photonEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+    AprilTagFieldLayout aprilTagFieldLayout;
+    try {
+      aprilTagFieldLayout = AprilTagFieldLayout
+          .loadFromResource("/frc/robot/vision/2025-reefscape-welded-reef-only.json");
+      photonEstimator = new PhotonPoseEstimator(
+          aprilTagFieldLayout,
+          PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+          robotToCameraTransform);
+      photonEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+    } catch (IOException e) {
+      DriverStation.reportError("Failed to load apriltag field layout", true);
+      photonEstimator = null;
+    }
   }
 
   /**
@@ -75,6 +85,10 @@ public class Vision {
    *         used for estimation.
    */
   public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
+    if (photonEstimator == null) {
+      // Configuration failed, there's nothing we can do
+      return Optional.empty();
+    }
     Optional<EstimatedRobotPose> visionEst = Optional.empty();
     for (var change : camera.getAllUnreadResults()) {
       visionEst = photonEstimator.update(change);

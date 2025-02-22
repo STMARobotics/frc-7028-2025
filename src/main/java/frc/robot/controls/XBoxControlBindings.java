@@ -68,4 +68,14 @@ public class XBoxControlBindings extends ControlBindings {
   public Optional<Trigger> tuneArm() {
     return Optional.of(driverController.start());
   }
+
+  @Override
+  public Optional<Trigger> scoreCoralLevel4() {
+    return Optional.of(driverController.x());
+  }
+
+  @Override
+  public Optional<Trigger> scoreCoralLevel3() {
+    return Optional.of(driverController.a());
+  }
 }

@@ -52,15 +52,16 @@ public class DefaultLEDCommand extends Command {
         if (timer.advanceIfElapsed(RED_AND_WHITE_CANDY_CANE_SPEED)) {
           candyCaneState = !candyCaneState;
         }
-        ledSubsystem
-            .setCandyCane(candyCaneState ? Color.kWhite : Color.kRed, candyCaneState ? Color.kRed : Color.kWhite);
+        ledSubsystem.setCandyCane(
+            candyCaneState ? Color.kDarkRed : Color.kIndianRed,
+              candyCaneState ? Color.kIndianRed : Color.kDarkRed);
         break;
       case DISABLED:
         if (timer.advanceIfElapsed(BLUE_AND_YELLOW_CANDY_CANE_SPEED)) {
           candyCaneState = !candyCaneState;
         }
         ledSubsystem
-            .setCandyCane(candyCaneState ? Color.kBlue : Color.kYellow, candyCaneState ? Color.kYellow : Color.kBlue);
+            .setCandyCane(candyCaneState ? Color.kBlue : Color.kOrange, candyCaneState ? Color.kOrange : Color.kBlue);
         break;
       case TEST:
         if (timer.advanceIfElapsed(ORANGE_AND_BLACK_CANDY_CANE_SPEED)) {

@@ -40,9 +40,6 @@ public class MitoCANdriaSubsytem {
    */
   public MitoCANdriaSubsytem() {
     try {
-      // Enable USB channels for Orange Pi
-      mitoCANdria.setChannelEnabled(MITOCANDRIA_CHANNEL_USB1, true);
-      mitoCANdria.setChannelEnabled(MITOCANDRIA_CHANNEL_USB2, true);
       // Enable 5VA channel for LEDs
       mitoCANdria.setChannelEnabled(MITOCANDRIA_CHANNEL_5VA, true);
       // Disable channels not used
