@@ -24,6 +24,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.EjectCoralCommand;
 import frc.robot.commands.IntakeCoralCommand;
@@ -31,7 +32,6 @@ import frc.robot.commands.PhotonVisionCommand;
 import frc.robot.commands.TuneArmCommand;
 import frc.robot.commands.led.DefaultLEDCommand;
 import frc.robot.commands.led.LEDBootAnimationCommand;
-import frc.robot.commands.led.LEDProgressBarCommand;
 import frc.robot.controls.ControlBindings;
 import frc.robot.controls.JoystickControlBindings;
 import frc.robot.controls.XBoxControlBindings;
@@ -234,7 +234,8 @@ public class RobotContainer {
     // Test mode command
     SmartDashboard.putData(
         "Run Tests",
-          testMode.testCommand().deadlineFor(new LEDProgressBarCommand(ledSubsystem, testMode.getTestResults())));
+          testMode.testCommand()
+              .deadlineFor(ledSubsystem.setLEDSegmentsAsCommand(Color.kBlue, testMode.getTestResults())));
     SmartDashboard.putData("Arm in coast", armSubsystem.runOnce(armSubsystem::coast).ignoringDisable(true));
     SmartDashboard.putData("Arm in brake", armSubsystem.runOnce(armSubsystem::brake).ignoringDisable(true));
 
