@@ -133,18 +133,16 @@ public class AutoCommands {
   }
 
   /**
-   * Creates a command that will:
-   * <ol>
-   * <li>Drive to the nearest L2 reef scoring location</li>
-   * <li>Align to the reef using the CANranges</li>
-   * <li>Get the arm and elevator into position to score on level 3</li>
-   * <li>Eject the coral</li>
-   * </ol>
+   * Creates a command that will drive to the nearest L2 reef scoring location
    * 
    * @return new command
    */
-  public Command autoScoreCoralLevel2() {
-    return autoScoreCoral(armSubsystem::moveToLevel2, REEF_L2_SCORE_POSES_RED, REEF_L2_SCORE_POSE_BLUE);
+  public Command driveToCoralLevel2() {
+    return new DriveToNearestPose(
+        drivetrain,
+        () -> drivetrain.getState().Pose,
+        REEF_L2_SCORE_POSES_RED,
+        REEF_L2_SCORE_POSE_BLUE);
   }
 
   private Command autoScoreCoral(Runnable armMethod, List<Pose2d> redPoses, List<Pose2d> bluePoses) {
