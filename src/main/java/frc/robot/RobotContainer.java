@@ -44,6 +44,7 @@ import frc.robot.subsystems.GamePieceManipulatorSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.MitoCANdriaSubsytem;
+import org.photonvision.PhotonCamera;
 
 @Logged(strategy = Logged.Strategy.OPT_IN)
 public class RobotContainer {
@@ -69,6 +70,8 @@ public class RobotContainer {
   @Logged
   private final AlignmentSubsystem alignmentSubsystem = new AlignmentSubsystem();
 
+  private final PhotonCamera highCamera = new PhotonCamera("High");
+
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
   private final DrivetrainTelemetry drivetrainTelemetry = new DrivetrainTelemetry();
   private final PhotonVisionCommand visionCommand = new PhotonVisionCommand(drivetrain::addVisionMeasurement);
@@ -79,7 +82,8 @@ public class RobotContainer {
       alignmentSubsystem,
       gamePieceManipulatorSubsystem,
       indexerSubsystem,
-      ledSubsystem);
+      ledSubsystem,
+      highCamera);
 
   private final TestMode testMode = new TestMode(
       gamePieceManipulatorSubsystem,
@@ -102,6 +106,10 @@ public class RobotContainer {
     // Configure PathPlanner
     NamedCommands.registerCommand("scoreCoralLevel4", autoCommands.autoScoreCoralLevel4());
     NamedCommands.registerCommand("scoreCoralLevel3", autoCommands.autoScoreCoralLevel3());
+    NamedCommands.registerCommand(
+        "intakeCoral",
+          new IntakeCoralCommand(indexerSubsystem, gamePieceManipulatorSubsystem, armSubsystem));
+    NamedCommands.registerCommand("parkArm", armSubsystem.runOnce(armSubsystem::park).finallyDo(armSubsystem::stop));
     autoChooser = AutoBuilder.buildAutoChooser("Tests");
     SmartDashboard.putData("Auto Mode", autoChooser);
 

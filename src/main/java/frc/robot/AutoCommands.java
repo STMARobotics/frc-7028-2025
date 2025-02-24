@@ -14,6 +14,7 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.GamePieceManipulatorSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
+import org.photonvision.PhotonCamera;
 
 /**
  * Library of commands to perform complex actions
@@ -25,6 +26,7 @@ public class AutoCommands {
   private final AlignmentSubsystem alignmentSubsystem;
   private final GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem;
   private final LEDSubsystem ledSubsystem;
+  private final PhotonCamera highCamera;
 
   /**
    * Constructs a new AutoCommands object
@@ -41,12 +43,14 @@ public class AutoCommands {
       AlignmentSubsystem alignmentSubsystem,
       GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem,
       IndexerSubsystem indexerSubsystem,
-      LEDSubsystem ledSubsystem) {
+      LEDSubsystem ledSubsystem,
+      PhotonCamera highCamera) {
     this.drivetrain = drivetrain;
     this.armSubsystem = armSubsystem;
     this.alignmentSubsystem = alignmentSubsystem;
     this.gamePieceManipulatorSubsystem = gamePieceManipulatorSubsystem;
     this.ledSubsystem = ledSubsystem;
+    this.highCamera = highCamera;
   }
 
   /**
@@ -116,16 +120,15 @@ public class AutoCommands {
     return ledSubsystem
         .setLEDSegmentsAsCommand(kGreen, armSubsystem::isAtPosition, driveToReef::isFinished, alignToReef::isFinished)
         .withDeadline(
-            driveToReef.andThen(
-                armSubsystem.run(armMethod)
-                    .until(armSubsystem::isAtPosition)
-                    .alongWith(alignToReef)
-                    .andThen(
-                        armSubsystem.run(armMethod)
-                            .alongWith(
-                                gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectCoral)
-                                    .alongWith(drivetrain.applyRequest(SwerveRequest.SwerveDriveBrake::new)))
-                            .withTimeout(1.0))));
+            driveToReef.andThen(drivetrain.runOnce(() -> drivetrain.setControl(new SwerveRequest.SwerveDriveBrake())))
+                .andThen(
+                    armSubsystem.run(armMethod)
+                        .until(armSubsystem::isAtPosition)
+                        .alongWith(alignToReef)
+                        .andThen(
+                            armSubsystem.run(armMethod)
+                                .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectCoral))
+                                .withTimeout(1.0))));
   }
 
   private Command autoScoreAlgae(Runnable armMethod) {
