@@ -101,20 +101,20 @@ public class Constants {
    * Constants for vision processing
    */
   public static class VisionConstants {
-    public static final String[] CAMERA_NAMES = new String[] { "Left", "Back", "High" };
+    public static final String[] CAMERA_NAMES = new String[] { "Left", "Back" };
     public static final Transform3d[] ROBOT_TO_CAMERA_TRANSFORMS = new Transform3d[] {
         new Transform3d(
-            new Translation3d(inchesToMeters(10.846), inchesToMeters(12.472), inchesToMeters(10.775)),
-            new Rotation3d(0, 0, degreesToRadians(90))),
+            new Translation3d(inchesToMeters(10.846), inchesToMeters(13.55), inchesToMeters(10.775)),
+            new Rotation3d(0, 0, degreesToRadians(91))),
         new Transform3d(
             new Translation3d(inchesToMeters(-13.472), inchesToMeters(-8.088), inchesToMeters(8.541)),
             new Rotation3d(0, 0, degreesToRadians(180))),
         new Transform3d(
-            new Translation3d(inchesToMeters(7.154), inchesToMeters(12.266), inchesToMeters(37.065)),
+            new Translation3d(inchesToMeters(8.5), inchesToMeters(13.5), inchesToMeters(37.065)),
             new Rotation3d(0, degreesToRadians(70), degreesToRadians(90))) };
 
     // The standard deviations of our vision estimated poses, which affect correction rate
-    public static final Matrix<N3, N1> SINGLE_TAG_STD_DEVS = VecBuilder.fill(4, 4, 8);
+    public static final Matrix<N3, N1> SINGLE_TAG_STD_DEVS = VecBuilder.fill(2, 2, 8);
     public static final Matrix<N3, N1> MULTI_TAG_STD_DEVS = VecBuilder.fill(0.5, 0.5, 1);
   }
 
@@ -130,7 +130,7 @@ public class Constants {
     public static final AngularVelocity SCORE_VELOCITY_LEVEL_1 = RadiansPerSecond.of(-1);
     public static final AngularVelocity EJECT_VELOCITY = RadiansPerSecond.of(-2);
     public static final AngularVelocity INDEXER_SPEED_TOLERANCE = RotationsPerSecond.of(3);
-    public static final Distance CORAL_DETECTION_THRESHOLD = Meters.of(0.076);
+    public static final Distance CORAL_DETECTION_THRESHOLD = Meters.of(0.06);
 
     public static final Current INDEXER_STATOR_CURRENT_LIMIT = Amps.of(40);
     public static final Current INDEXER_TORQUE_CURRENT_LIMIT = Amps.of(40);
@@ -358,7 +358,7 @@ public class Constants {
               new Pose2d(4.873926, 4.378820, Rotation2d.fromDegrees(-120)), // 7
               new Pose2d(4.98, 4.215, Rotation2d.fromDegrees(180)), // 8
               new Pose2d(4.994328, 3.841097, Rotation2d.fromDegrees(180)), // 9
-              new Pose2d(4.95, 3.76, Rotation2d.fromDegrees(120)), // 10
+              new Pose2d(4.873353, 3.632614, Rotation2d.fromDegrees(120)), // 10
               new Pose2d(4.589334, 3.466500, Rotation2d.fromDegrees(120)))// 11
         .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE))
         .collect(toUnmodifiableList());

@@ -26,6 +26,9 @@ public class AlignToTagCommand extends Command {
 
   private final PIDController positionController = new PIDController(5.0, 0, 0);
 
+  private final double leftAlign = -0.2;
+  private final double rightAlignY = 0.2;
+
   private final SwerveRequest.RobotCentric robotCentricRequest = new SwerveRequest.RobotCentric()
       .withDriveRequestType(DriveRequestType.Velocity)
       .withSteerRequestType(SteerRequestType.MotionMagicExpo);
@@ -58,6 +61,12 @@ public class AlignToTagCommand extends Command {
 
     lastTagResult.ifPresentOrElse(tag -> {
       var cameraToTarget = tag.bestCameraToTarget;
+      if (Math.abs(cameraToTarget.getY() - leftAlign) < Math.abs(cameraToTarget.getY() - rightAlignY)) {
+        positionController.setSetpoint(leftAlign);
+      } else {
+        positionController.setSetpoint(rightAlignY);
+      }
+
       var correction = positionController.calculate(cameraToTarget.getY());
       drivetrain.setControl(robotCentricRequest.withVelocityX(correction));
     }, () -> {
