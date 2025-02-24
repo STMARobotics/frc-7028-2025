@@ -2,6 +2,9 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.wpilibj.util.Color.kGreen;
+import static frc.robot.Constants.AlignmentConstants.REEF_L1_SCORE_POSES_BLUE;
+import static frc.robot.Constants.AlignmentConstants.REEF_L1_SCORE_POSES_RED;
+import static frc.robot.Constants.AlignmentConstants.REEF_L1_SCORE_POSE_BLUE;
 import static frc.robot.Constants.AlignmentConstants.REEF_L2_SCORE_POSES_RED;
 import static frc.robot.Constants.AlignmentConstants.REEF_L2_SCORE_POSE_BLUE;
 import static frc.robot.Constants.AlignmentConstants.REEF_L3_SCORE_POSES_RED;
@@ -15,6 +18,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.AlignToReefCommand;
 import frc.robot.commands.DriveToNearestPose;
+import frc.robot.commands.EjectCoralCommand;
 import frc.robot.subsystems.AlignmentSubsystem;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -35,28 +39,30 @@ public class AutoCommands {
   private final GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem;
   private final LEDSubsystem ledSubsystem;
   private final PhotonCamera highCamera;
-
-  /**
-   * Constructs a new AutoCommands object
-   * 
-   * @param drivetrain drivetrain subsystem
-   * @param armSubsystem arm subsystem
-   * @param alignmentSubsystem alinment subsystem
-   * @param gamePieceManipulatorSubsystem game piece manipulator subsystem
-   * @param indexerSubsystem indexer subsystem
-   */
-  public AutoCommands(
-      CommandSwerveDrivetrain drivetrain,
-      ArmSubsystem armSubsystem,
-      AlignmentSubsystem alignmentSubsystem,
-      GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem,
-      IndexerSubsystem indexerSubsystem,
-      LEDSubsystem ledSubsystem,
-      PhotonCamera highCamera) {
-    this.drivetrain = drivetrain;
-    this.armSubsystem = armSubsystem;
-    this.alignmentSubsystem = alignmentSubsystem;
-    this.gamePieceManipulatorSubsystem = gamePieceManipulatorSubsystem;
+  private final IndexerSubsystem indexerSubsystem;
+  
+    /**
+     * Constructs a new AutoCommands object
+     * 
+     * @param drivetrain drivetrain subsystem
+     * @param armSubsystem arm subsystem
+     * @param alignmentSubsystem alinment subsystem
+     * @param gamePieceManipulatorSubsystem game piece manipulator subsystem
+     * @param indexerSubsystem indexer subsystem
+     */
+    public AutoCommands(
+        CommandSwerveDrivetrain drivetrain,
+        ArmSubsystem armSubsystem,
+        AlignmentSubsystem alignmentSubsystem,
+        GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem,
+        IndexerSubsystem indexerSubsystem,
+        LEDSubsystem ledSubsystem,
+        PhotonCamera highCamera) {
+      this.drivetrain = drivetrain;
+      this.armSubsystem = armSubsystem;
+      this.alignmentSubsystem = alignmentSubsystem;
+      this.gamePieceManipulatorSubsystem = gamePieceManipulatorSubsystem;
+      this.indexerSubsystem = indexerSubsystem;
     this.ledSubsystem = ledSubsystem;
     this.highCamera = highCamera;
 
@@ -100,6 +106,18 @@ public class AutoCommands {
         .getStructArrayTopic("branches", Pose2d.struct)
         .publish()
         .set(REEF_L2_SCORE_POSES_RED.toArray(new Pose2d[REEF_L2_SCORE_POSES_RED.size()]));
+
+    NetworkTableInstance.getDefault()
+        .getTable("reef_blue_L1")
+        .getStructArrayTopic("branches", Pose2d.struct)
+        .publish()
+        .set(REEF_L1_SCORE_POSES_BLUE.toArray(new Pose2d[REEF_L1_SCORE_POSES_BLUE.size()]));
+
+    NetworkTableInstance.getDefault()
+      .getTable("reef_red_L1")
+      .getStructArrayTopic("trough", Pose2d.struct)
+      .publish()
+      .set(REEF_L1_SCORE_POSES_RED.toArray(new Pose2d[REEF_L1_SCORE_POSES_RED.size()]));
   }
 
   /**
@@ -145,6 +163,11 @@ public class AutoCommands {
         REEF_L2_SCORE_POSE_BLUE);
   }
 
+  public Command autoScoreCoralLevel1() {
+    // TODO: actually add controls for this
+    return autoScoreCoralL1(indexerSubsystem::scoreLevel1, REEF_L1_SCORE_POSES_RED, REEF_L1_SCORE_POSES_BLUE);
+  }
+
   private Command autoScoreCoral(Runnable armMethod, List<Pose2d> redPoses, List<Pose2d> bluePoses) {
     var alignToReef = new AlignToReefCommand(drivetrain, alignmentSubsystem, Meters.of(0.34));
     var driveToReef = new DriveToNearestPose(drivetrain, () -> drivetrain.getState().Pose, redPoses, bluePoses);
@@ -163,4 +186,18 @@ public class AutoCommands {
                                 .withTimeout(1.0))));
   }
 
+  public Command autoScoreCoralL1(Runnable scoreLevel1, List<Pose2d> redPoses, List<Pose2d> bluePoses) {
+    // TODO: fix numbers
+    // Also I'm not entirely sure that this would align properly? If not
+    // then just find rotation via point we are scoring at
+
+    var alignToReef = new AlignToReefCommand(drivetrain, alignmentSubsystem, Meters.of(0));
+    var driveToReef = new DriveToNearestPose(drivetrain, () -> drivetrain.getState().Pose, redPoses, bluePoses);
+
+    return driveToReef.andThen(drivetrain.runOnce(() -> drivetrain.setControl(new SwerveRequest.SwerveDriveBrake())))
+      .alongWith(alignToReef)
+        .andThen(
+          indexerSubsystem.runOnce(scoreLevel1)
+        );
+  }
 }

@@ -333,6 +333,13 @@ public class Constants {
         inchesToMeters(-40),
         inchesToMeters(12),
         Rotation2d.fromDegrees(90));
+      
+    /** Pose of the robot relative to a reef branch for scoring coral on L2 */
+    public static final Transform2d RELATIVE_SCORING_POSE_CORAL_L1 = new Transform2d(
+      // TODO: Get actual numbers here
+      inchesToMeters(0),
+      inchesToMeters(0),
+      Rotation2d.fromDegrees(0));
 
     // spotless:off
     /* The reef branches are in the arrays like this:
@@ -366,6 +373,18 @@ public class Constants {
               new Pose2d(4.873353, 3.632614, Rotation2d.fromDegrees(120)), // 10
               new Pose2d(4.589334, 3.466500, Rotation2d.fromDegrees(120)))// 11
         .collect(toUnmodifiableList());
+
+      /*
+       * Poses for the trough
+       * We actually want the trough poses to be different from the branches
+       * Becuase we won't be alligned in the same way as scoring on any of the higher levels
+       */
+      public static final List<Pose2d> REEF_L1_SCORE_POSES_BLUE = Stream
+        .of(
+          // TODO: Actually add the poses later
+          new Pose2d(1, 1, Rotation2d.fromDegrees(0))
+        )
+      .collect(toUnmodifiableList());
 
     /**
      * Poses of the branches on the red reef. Translation is the branch pipe base, rotation is pointing toward reef
@@ -415,6 +434,16 @@ public class Constants {
     /** Poses of the robot for scoring on L2 on the blue alliance */
     public static final List<Pose2d> REEF_L2_SCORE_POSE_BLUE = REEF_BRANCH_POSES_BLUE.stream()
         .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE_CORAL_L2))
+        .collect(toUnmodifiableList());
+
+    /** Poses of the robot for scoring on L1 on the red alliance */
+    public static final List<Pose2d> REEF_L1_SCORE_POSES_RED = REEF_BRANCH_POSES_RED.stream()
+        .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE_CORAL_L1))
+        .collect(toUnmodifiableList());
+
+    /** Poses of the robot for scoring on L1 on the blue alliance */
+    public static final List<Pose2d> REEF_L1_SCORE_POSE_BLUE = REEF_BRANCH_POSES_BLUE.stream()
+        .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE_CORAL_L1))
         .collect(toUnmodifiableList());
   }
 
