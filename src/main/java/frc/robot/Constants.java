@@ -325,7 +325,7 @@ public class Constants {
         Rotation2d.fromDegrees(-90));
 
     /** Pose of the robot relative to a reef branch for scoring */
-    public static final Transform2d RELATIVE_ALGAE_SCORING_POSE = new Transform2d(
+    public static final Transform2d RELATIVE_ALGAE_INTAKE_POSE = new Transform2d(
         inchesToMeters(-40),
         inchesToMeters(12),
         Rotation2d.fromDegrees(-90));
@@ -410,7 +410,7 @@ public class Constants {
               new Pose2d(12.734, 3.452, Rotation2d.fromDegrees(-120)), // 3
               new Pose2d(12.375, 4.020, Rotation2d.fromDegrees(-180)), // 4
               new Pose2d(12.734, 4.618, Rotation2d.fromDegrees(120))) // 5
-        .map(reefPose -> reefPose.plus(RELATIVE_ALGAE_SCORING_POSE))
+        .map(reefPose -> reefPose.plus(RELATIVE_ALGAE_INTAKE_POSE))
         .collect(toUnmodifiableList());
 
     public static final List<Pose2d> REEF_ALGAE_POSES_BLUE = Stream
@@ -419,9 +419,9 @@ public class Constants {
               new Pose2d(3.799, 4.020, Rotation2d.fromDegrees(-180)), // 1
               new Pose2d(4.138, 4.618, Rotation2d.fromDegrees(120)), // 2
               new Pose2d(4.836, 4.618, Rotation2d.fromDegrees(60)), // 3
-              new Pose2d(4.598, 4.020, Rotation2d.fromDegrees(0)), // 4
+              new Pose2d(3.799, 4.020, Rotation2d.fromDegrees(0)), // 4
               new Pose2d(4.836, 3.452, Rotation2d.fromDegrees(-60))) // 5
-        .map(reefPose -> reefPose.plus(RELATIVE_ALGAE_SCORING_POSE))
+        .map(reefPose -> reefPose.plus(RELATIVE_ALGAE_INTAKE_POSE))
         .collect(toUnmodifiableList());
   }
 

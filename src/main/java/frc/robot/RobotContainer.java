@@ -8,6 +8,8 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kForward;
 import static edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kReverse;
+import static frc.robot.Constants.AlignmentConstants.REEF_ALGAE_POSES_BLUE;
+import static frc.robot.Constants.AlignmentConstants.REEF_ALGAE_POSES_RED;
 import static frc.robot.Constants.AlignmentConstants.REEF_BRANCH_POSES_BLUE;
 import static frc.robot.Constants.AlignmentConstants.REEF_BRANCH_POSES_RED;
 import static frc.robot.Constants.TeleopDriveConstants.MAX_TELEOP_ANGULAR_VELOCITY;
@@ -144,6 +146,18 @@ public class RobotContainer {
         .getStructArrayTopic("branches", Pose2d.struct)
         .publish()
         .set(REEF_BRANCH_POSES_RED.toArray(new Pose2d[REEF_BRANCH_POSES_RED.size()]));
+
+    NetworkTableInstance.getDefault()
+        .getTable("reef_blue")
+        .getStructArrayTopic("algae", Pose2d.struct)
+        .publish()
+        .set(REEF_BRANCH_POSES_BLUE.toArray(new Pose2d[REEF_ALGAE_POSES_BLUE.size()]));
+
+    NetworkTableInstance.getDefault()
+        .getTable("reef_red")
+        .getStructArrayTopic("algae", Pose2d.struct)
+        .publish()
+        .set(REEF_BRANCH_POSES_RED.toArray(new Pose2d[REEF_ALGAE_POSES_RED.size()]));
   }
 
   private void configureBindings() {

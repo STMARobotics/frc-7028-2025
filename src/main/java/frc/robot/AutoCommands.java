@@ -94,8 +94,8 @@ public class AutoCommands {
    * 
    * @return new command
    */
-  public Command autoScoreAlgaeLevel1() {
-    return autoScoreAlgae(armSubsystem::moveToAlgaeLevel1);
+  public Command autoIntakeAlgaeLevel1() {
+    return autoIntakeAlgae(armSubsystem::moveToAlgaeLevel1);
   }
 
   /**
@@ -109,8 +109,8 @@ public class AutoCommands {
    * 
    * @return new command
    */
-  public Command autoScoreAlgaeLevel2() {
-    return autoScoreAlgae(armSubsystem::moveToAlgaeLevel2);
+  public Command autoIntakeAlgaeLevel2() {
+    return autoIntakeAlgae(armSubsystem::moveToAlgaeLevel2);
   }
 
   private Command autoScoreCoral(Runnable armMethod) {
@@ -131,7 +131,7 @@ public class AutoCommands {
                                 .withTimeout(1.0))));
   }
 
-  private Command autoScoreAlgae(Runnable armMethod) {
+  private Command autoIntakeAlgae(Runnable armMethod) {
     var driveToReef = new DriveToReefAlgaeCommand(drivetrain, () -> drivetrain.getState().Pose);
     var alignToReef = new AlignToReefCommand(drivetrain, alignmentSubsystem, Meters.of(0.34));
     return driveToReef.andThen(alignToReef)
