@@ -163,8 +163,7 @@ public class TestMode {
   public BooleanSupplier[] getTestResults() {
     BooleanSupplier[] results = new BooleanSupplier[testResults.length];
     for (int i = 0; i < testResults.length; i++) {
-      final int index = i;
-      results[index] = () -> testResults[index].get();
+      results[i] = testResults[i]::get;
     }
     return results;
   }
