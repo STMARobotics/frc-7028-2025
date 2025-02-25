@@ -5,15 +5,34 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "deadline",
           "data": {
-            "pathName": "One Coral"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "One Coral"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ledDefault"
+                }
+              }
+            ]
           }
         },
         {
           "type": "named",
           "data": {
             "name": "scoreCoralLevel4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "parkArm"
           }
         }
       ]

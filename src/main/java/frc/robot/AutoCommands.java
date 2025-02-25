@@ -1,6 +1,9 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Percent;
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.wpilibj.util.Color.kGreen;
 import static frc.robot.Constants.AlignmentConstants.REEF_L2_SCORE_POSES_RED;
 import static frc.robot.Constants.AlignmentConstants.REEF_L2_SCORE_POSE_BLUE;
@@ -11,9 +14,13 @@ import static frc.robot.Constants.AlignmentConstants.REEF_L4_SCORE_POSE_BLUE;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.LEDPattern.GradientType;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.AlignToReefCommand;
 import frc.robot.commands.DriveToNearestPose;
+import frc.robot.commands.IntakeCoralCommand;
 import frc.robot.subsystems.AlignmentSubsystem;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -30,6 +37,7 @@ public class AutoCommands {
 
   private final CommandSwerveDrivetrain drivetrain;
   private final ArmSubsystem armSubsystem;
+  private final IndexerSubsystem indexerSubsystem;
   private final AlignmentSubsystem alignmentSubsystem;
   private final GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem;
   private final LEDSubsystem ledSubsystem;
@@ -40,6 +48,7 @@ public class AutoCommands {
    * 
    * @param drivetrain drivetrain subsystem
    * @param armSubsystem arm subsystem
+   * @param indexerSubsystem indexer subsystem
    * @param alignmentSubsystem alinment subsystem
    * @param gamePieceManipulatorSubsystem game piece manipulator subsystem
    * @param indexerSubsystem indexer subsystem
@@ -47,6 +56,7 @@ public class AutoCommands {
   public AutoCommands(
       CommandSwerveDrivetrain drivetrain,
       ArmSubsystem armSubsystem,
+      IndexerSubsystem indexerSubsysteml,
       AlignmentSubsystem alignmentSubsystem,
       GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem,
       IndexerSubsystem indexerSubsystem,
@@ -54,6 +64,7 @@ public class AutoCommands {
       PhotonCamera highCamera) {
     this.drivetrain = drivetrain;
     this.armSubsystem = armSubsystem;
+    this.indexerSubsystem = indexerSubsystem;
     this.alignmentSubsystem = alignmentSubsystem;
     this.gamePieceManipulatorSubsystem = gamePieceManipulatorSubsystem;
     this.ledSubsystem = ledSubsystem;
@@ -112,8 +123,8 @@ public class AutoCommands {
    * 
    * @return new command
    */
-  public Command autoScoreCoralLevel4() {
-    return autoScoreCoral(armSubsystem::moveToLevel4, REEF_L4_SCORE_POSES_RED, REEF_L4_SCORE_POSE_BLUE);
+  public Command scoreCoralLevel4() {
+    return scoreCoralTeleop(armSubsystem::moveToLevel4, REEF_L4_SCORE_POSES_RED, REEF_L4_SCORE_POSE_BLUE);
   }
 
   /**
@@ -127,8 +138,8 @@ public class AutoCommands {
    * 
    * @return new command
    */
-  public Command autoScoreCoralLevel3() {
-    return autoScoreCoral(armSubsystem::moveToLevel3, REEF_L3_SCORE_POSES_RED, REEF_L3_SCORE_POSE_BLUE);
+  public Command scoreCoralLevel3() {
+    return scoreCoralTeleop(armSubsystem::moveToLevel3, REEF_L3_SCORE_POSES_RED, REEF_L3_SCORE_POSE_BLUE);
   }
 
   /**
@@ -144,12 +155,17 @@ public class AutoCommands {
         REEF_L2_SCORE_POSE_BLUE);
   }
 
-  private Command autoScoreCoral(Runnable armMethod, List<Pose2d> redPoses, List<Pose2d> bluePoses) {
+  private Command scoreCoralTeleop(Runnable armMethod, List<Pose2d> redPoses, List<Pose2d> bluePoses) {
     var driveToReef = new DriveToNearestPose(drivetrain, () -> drivetrain.getState().Pose, redPoses, bluePoses);
     var alignToReef = new AlignToReefCommand(drivetrain, alignmentSubsystem, Meters.of(0.34), highCamera);
 
     return ledSubsystem
-        .setLEDSegmentsAsCommand(kGreen, armSubsystem::isAtPosition, driveToReef::isFinished, alignToReef::isFinished)
+        .setLEDSegmentsAsCommand(
+            kGreen,
+              driveToReef::isFinished,
+              armSubsystem::isAtPosition,
+              alignToReef::atDistanceGoal,
+              alignToReef::atLateralGoal)
         .withDeadline(
             driveToReef.andThen(
                 armSubsystem.run(armMethod)
@@ -161,16 +177,24 @@ public class AutoCommands {
                             .withTimeout(0.25))));
   }
 
-  public Command autoScoreCoralLevel4Auto() {
+  /**
+   * Creates a command to score coral on level 4 using the sequence for autonomous
+   * 
+   * @return new command
+   */
+  public Command scoreCoralLevel4Auto() {
     return autoScoreCoralAuto(armSubsystem::moveToLevel4, REEF_L4_SCORE_POSES_RED, REEF_L4_SCORE_POSE_BLUE);
   }
 
   private Command autoScoreCoralAuto(Runnable armMethod, List<Pose2d> redPoses, List<Pose2d> bluePoses) {
-    var driveToReef = new DriveToNearestPose(drivetrain, () -> drivetrain.getState().Pose, redPoses, bluePoses);
     var alignToReef = new AlignToReefCommand(drivetrain, alignmentSubsystem, Meters.of(0.34), highCamera);
 
     return ledSubsystem
-        .setLEDSegmentsAsCommand(kGreen, armSubsystem::isAtPosition, driveToReef::isFinished, alignToReef::isFinished)
+        .setLEDSegmentsAsCommand(
+            kGreen,
+              armSubsystem::isAtPosition,
+              alignToReef::atDistanceGoal,
+              alignToReef::atLateralGoal)
         .withDeadline(
             armSubsystem.run(armMethod)
                 .until(armSubsystem::isAtPosition)
@@ -178,7 +202,16 @@ public class AutoCommands {
                 .andThen(
                     armSubsystem.run(armMethod)
                         .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectCoral))
-                        .withTimeout(0.25)));
+                        .withTimeout(0.25)))
+        .finallyDo(() -> ledSubsystem.runPattern(LEDPattern.kOff));
+  }
+
+  public Command intakeCoral() {
+    return new IntakeCoralCommand(indexerSubsystem, gamePieceManipulatorSubsystem, armSubsystem).deadlineFor(
+        ledSubsystem.runPatternAsCommand(
+            LEDPattern.gradient(GradientType.kContinuous, Color.kGray, Color.kWhite)
+                .scrollAtRelativeSpeed(Percent.per(Second).of(100))
+                .breathe(Seconds.of(0.75))));
   }
 
 }

@@ -23,7 +23,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.commands.EjectCoralCommand;
-import frc.robot.commands.IntakeCoralCommand;
 import frc.robot.commands.PhotonVisionCommand;
 import frc.robot.commands.TuneArmCommand;
 import frc.robot.commands.led.DefaultLEDCommand;
@@ -75,6 +74,7 @@ public class RobotContainer {
   private final AutoCommands autoCommands = new AutoCommands(
       drivetrain,
       armSubsystem,
+      indexerSubsystem,
       alignmentSubsystem,
       gamePieceManipulatorSubsystem,
       indexerSubsystem,
@@ -100,11 +100,10 @@ public class RobotContainer {
     }
 
     // Configure PathPlanner
-    NamedCommands.registerCommand("scoreCoralLevel4", autoCommands.autoScoreCoralLevel4Auto());
-    NamedCommands.registerCommand("scoreCoralLevel3", autoCommands.autoScoreCoralLevel3());
-    NamedCommands.registerCommand(
-        "intakeCoral",
-          new IntakeCoralCommand(indexerSubsystem, gamePieceManipulatorSubsystem, armSubsystem));
+    NamedCommands.registerCommand("scoreCoralLevel4", autoCommands.scoreCoralLevel4Auto());
+    NamedCommands.registerCommand("ledDefault", new DefaultLEDCommand(ledSubsystem));
+    NamedCommands
+        .registerCommand("intakeCoral", autoCommands.intakeCoral().andThen(new DefaultLEDCommand(ledSubsystem)));
     NamedCommands.registerCommand("parkArm", armSubsystem.runOnce(armSubsystem::park).finallyDo(armSubsystem::stop));
     autoChooser = AutoBuilder.buildAutoChooser("Tests");
     SmartDashboard.putData("Auto Mode", autoChooser);
@@ -149,10 +148,7 @@ public class RobotContainer {
     drivetrain.registerTelemetry(drivetrainTelemetry::telemeterize);
 
     // Coral bindings
-    controlBindings.intakeCoral()
-        .ifPresent(
-            trigger -> trigger
-                .onTrue(new IntakeCoralCommand(indexerSubsystem, gamePieceManipulatorSubsystem, armSubsystem)));
+    controlBindings.intakeCoral().ifPresent(trigger -> trigger.onTrue(autoCommands.intakeCoral()));
     controlBindings.ejectCoral()
         .ifPresent(
             trigger -> trigger
@@ -224,8 +220,8 @@ public class RobotContainer {
 
     controlBindings.slowMode().ifPresent(trigger -> trigger.whileTrue(slowModeCommand));
 
-    controlBindings.scoreCoralLevel3().ifPresent(trigger -> trigger.whileTrue(autoCommands.autoScoreCoralLevel3()));
-    controlBindings.scoreCoralLevel4().ifPresent(trigger -> trigger.whileTrue(autoCommands.autoScoreCoralLevel4()));
+    controlBindings.scoreCoralLevel3().ifPresent(trigger -> trigger.whileTrue(autoCommands.scoreCoralLevel3()));
+    controlBindings.scoreCoralLevel4().ifPresent(trigger -> trigger.whileTrue(autoCommands.scoreCoralLevel4()));
   }
 
   public Command getAutonomousCommand() {

@@ -5,9 +5,22 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "deadline",
           "data": {
-            "pathName": "One Coral"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "One Coral"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ledDefault"
+                }
+              }
+            ]
           }
         },
         {
