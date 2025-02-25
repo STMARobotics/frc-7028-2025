@@ -123,7 +123,7 @@ public class JoystickControlBindings extends ControlBindings {
   }
 
   @Override
-  public Optional<Trigger> moveArmToBarge() {
+  public Optional<Trigger> holdAlgae() {
     return Optional.of(leftJoystick.button(10));
   }
 

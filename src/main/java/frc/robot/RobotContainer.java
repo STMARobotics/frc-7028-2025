@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.commands.AlgaeBargeCommand;
 import frc.robot.commands.EjectCoralCommand;
 import frc.robot.commands.PhotonVisionCommand;
 import frc.robot.commands.TuneArmCommand;
@@ -193,15 +194,15 @@ public class RobotContainer {
                       gamePieceManipulatorSubsystem.stop();
                     })));
 
-    controlBindings.moveArmToBarge().ifPresent(trigger -> trigger.onTrue(Commands.run(() -> {
-      armSubsystem.moveToBarge();
+    controlBindings.holdAlgae().ifPresent(trigger -> trigger.onTrue(Commands.run(() -> {
+      armSubsystem.moveToHoldAlgae();
       gamePieceManipulatorSubsystem.activeHoldAlgae();
     }, armSubsystem, gamePieceManipulatorSubsystem).finallyDo(armSubsystem::stop)));
 
-    controlBindings.shootAlgae().ifPresent(trigger -> trigger.whileTrue(Commands.run(() -> {
-      armSubsystem.moveToBarge();
-      gamePieceManipulatorSubsystem.shootAlgae();
-    }, armSubsystem, gamePieceManipulatorSubsystem).finallyDo(gamePieceManipulatorSubsystem::stop)));
+    controlBindings.shootAlgae()
+        .ifPresent(
+            trigger -> trigger
+                .whileTrue(new AlgaeBargeCommand(armSubsystem, gamePieceManipulatorSubsystem, ledSubsystem)));
 
     controlBindings.moveArmToProcessor().ifPresent(trigger -> trigger.onTrue(Commands.run(() -> {
       armSubsystem.moveToProcessor();

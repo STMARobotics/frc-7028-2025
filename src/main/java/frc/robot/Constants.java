@@ -238,6 +238,7 @@ public class Constants {
     public static final Distance ALGAE_LEVEL_2_HEIGHT = Meters.of(0.317);
     public static final Distance ALGAE_BARGE_HEIGHT = Meters.of(0.72);
     public static final Distance ALGAE_PROCESSOR_HEIGHT = Meters.of(0.0);
+    public static final Distance ALGAE_HOLD_HEIGHT = Meters.zero();
 
     public static final Angle ARM_INTAKE_ANGLE = Rotations.of(0.765);
     public static final Angle LEVEL_2_ANGLE = Rotations.of(0.68212890625);
@@ -247,6 +248,7 @@ public class Constants {
     public static final Angle ALGAE_LEVEL_2_ANGLE = Rotations.of(0.105);
     public static final Angle ALGAE_BARGE_ANGLE = Rotation.of(0.405);
     public static final Angle ALGAE_PROCESSOR_ANGLE = Rotation.of(0.963);
+    public static final Angle ALGAE_HOLD_ANGLE = Rotations.of(0.35);
 
     // Values for Mechanism2d visualization
     public static final Distance ARM_PIVOT_LENGTH = Meters.of(0.577);
