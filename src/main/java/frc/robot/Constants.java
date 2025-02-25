@@ -27,7 +27,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -318,16 +317,22 @@ public class Constants {
     public static final AngularAcceleration MAX_ALIGN_ANGULAR_ACCELERATION = RadiansPerSecondPerSecond
         .of(6.0 * Math.PI);
 
-    /** Pose of the robot relative to a reef branch for scoring */
-    public static final Transform2d RELATIVE_SCORING_POSE = new Transform2d(
+    /** Pose of the robot relative to a reef branch for scoring coral on L4 */
+    public static final Transform2d RELATIVE_SCORING_POSE_CORAL_L4 = new Transform2d(
+        inchesToMeters(-40),
+        inchesToMeters(12),
+        Rotation2d.fromDegrees(-90));
+    /** Pose of the robot relative to a reef branch for scoring coral on L3 */
+    public static final Transform2d RELATIVE_SCORING_POSE_CORAL_L3 = new Transform2d(
         inchesToMeters(-40),
         inchesToMeters(12),
         Rotation2d.fromDegrees(-90));
 
-    /** Pose on the opposite side of the field. Use with `relativeTo` to flip a pose to the opposite alliance */
-    public static final Pose2d FLIPPING_POSE = new Pose2d(
-        new Translation2d(FIELD_LENGTH_METERS, FIELD_WIDTH_METERS),
-        new Rotation2d(Math.PI));
+    /** Pose of the robot relative to a reef branch for scoring coral on L2 */
+    public static final Transform2d RELATIVE_SCORING_POSE_CORAL_L2 = new Transform2d(
+        inchesToMeters(-40),
+        inchesToMeters(12),
+        Rotation2d.fromDegrees(90));
 
     // spotless:off
     /* The reef branches are in the arrays like this:
@@ -360,7 +365,6 @@ public class Constants {
               new Pose2d(4.994328, 3.841097, Rotation2d.fromDegrees(180)), // 9
               new Pose2d(4.873353, 3.632614, Rotation2d.fromDegrees(120)), // 10
               new Pose2d(4.589334, 3.466500, Rotation2d.fromDegrees(120)))// 11
-        .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE))
         .collect(toUnmodifiableList());
 
     /**
@@ -381,7 +385,36 @@ public class Constants {
               new Pose2d(12.553672, 4.210903, Rotation2d.fromDegrees(0)), // 9
               new Pose2d(12.598000, 4.292000, Rotation2d.fromDegrees(-60)), // 10
               new Pose2d(12.958666, 4.585500, Rotation2d.fromDegrees(-60)))// 11
-        .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE))
+        .collect(toUnmodifiableList());
+
+    /** Poses of the robot for scoring on L4 on the red alliance */
+    public static final List<Pose2d> REEF_L4_SCORE_POSES_RED = REEF_BRANCH_POSES_RED.stream()
+        .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE_CORAL_L4))
+        .collect(toUnmodifiableList());
+
+    /** Poses of the robot for scoring on L4 on the blue alliance */
+    public static final List<Pose2d> REEF_L4_SCORE_POSE_BLUE = REEF_BRANCH_POSES_BLUE.stream()
+        .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE_CORAL_L4))
+        .collect(toUnmodifiableList());
+
+    /** Poses of the robot for scoring on L3 on the red alliance */
+    public static final List<Pose2d> REEF_L3_SCORE_POSES_RED = REEF_BRANCH_POSES_RED.stream()
+        .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE_CORAL_L3))
+        .collect(toUnmodifiableList());
+
+    /** Poses of the robot for scoring on L3 on the blue alliance */
+    public static final List<Pose2d> REEF_L3_SCORE_POSE_BLUE = REEF_BRANCH_POSES_BLUE.stream()
+        .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE_CORAL_L3))
+        .collect(toUnmodifiableList());
+
+    /** Poses of the robot for scoring on L2 on the red alliance */
+    public static final List<Pose2d> REEF_L2_SCORE_POSES_RED = REEF_BRANCH_POSES_RED.stream()
+        .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE_CORAL_L2))
+        .collect(toUnmodifiableList());
+
+    /** Poses of the robot for scoring on L2 on the blue alliance */
+    public static final List<Pose2d> REEF_L2_SCORE_POSE_BLUE = REEF_BRANCH_POSES_BLUE.stream()
+        .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE_CORAL_L2))
         .collect(toUnmodifiableList());
   }
 

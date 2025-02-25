@@ -44,10 +44,10 @@ public class DriveToPoseCommand extends Command {
   private static final Distance TRANSLATION_TOLERANCE = Inches.of(0.5);
   private static final Angle THETA_TOLERANCE = Degrees.of(1.0);
 
-  private static final TrapezoidProfile.Constraints DEFAULT_XY_CONSTRAINTS = new TrapezoidProfile.Constraints(
+  protected static final TrapezoidProfile.Constraints DEFAULT_XY_CONSTRAINTS = new TrapezoidProfile.Constraints(
       MAX_DRIVE_TO_POSE_TRANSLATION_VELOCITY.in(MetersPerSecond),
       MAX_DRIVE_TO_POSE_TRANSLATION_ACCELERATION.in(MetersPerSecondPerSecond));
-  private static final TrapezoidProfile.Constraints DEFAULT_OMEGA_CONSTRAINTS = new TrapezoidProfile.Constraints(
+  protected static final TrapezoidProfile.Constraints DEFAULT_OMEGA_CONSTRAINTS = new TrapezoidProfile.Constraints(
       MAX_DRIVE_TO_POSE_ANGULAR_VELOCITY.in(RadiansPerSecond),
       MAX_DRIVE_TO_POSE_ANGULAR_ACCELERATION.in(RadiansPerSecondPerSecond));
 
