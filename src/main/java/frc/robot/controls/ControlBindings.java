@@ -140,7 +140,7 @@ public abstract class ControlBindings {
    * 
    * @return optional trigger
    */
-  public Optional<Trigger> moveArmToReefAlgaeLevel1() {
+  public Optional<Trigger> moveArmToReefLowerAlgae() {
     return Optional.empty();
   }
 
@@ -149,7 +149,7 @@ public abstract class ControlBindings {
    * 
    * @return optional trigger
    */
-  public Optional<Trigger> moveArmToReefAlgaeLevel2() {
+  public Optional<Trigger> moveArmToReefUpperAlgae() {
     return Optional.empty();
   }
 

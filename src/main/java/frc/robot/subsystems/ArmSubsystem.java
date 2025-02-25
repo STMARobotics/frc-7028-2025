@@ -16,10 +16,10 @@ import static frc.robot.Constants.ArmConstants.ALGAE_BARGE_ANGLE;
 import static frc.robot.Constants.ArmConstants.ALGAE_BARGE_HEIGHT;
 import static frc.robot.Constants.ArmConstants.ALGAE_HOLD_ANGLE;
 import static frc.robot.Constants.ArmConstants.ALGAE_HOLD_HEIGHT;
-import static frc.robot.Constants.ArmConstants.ALGAE_LEVEL_1_ANGLE;
-import static frc.robot.Constants.ArmConstants.ALGAE_LEVEL_1_HEIGHT;
-import static frc.robot.Constants.ArmConstants.ALGAE_LEVEL_2_ANGLE;
-import static frc.robot.Constants.ArmConstants.ALGAE_LEVEL_2_HEIGHT;
+import static frc.robot.Constants.ArmConstants.ALGAE_LOWER_ANGLE;
+import static frc.robot.Constants.ArmConstants.ALGAE_LOWER_HEIGHT;
+import static frc.robot.Constants.ArmConstants.ALGAE_UPPER_ANGLE;
+import static frc.robot.Constants.ArmConstants.ALGAE_UPPER_HEIGHT;
 import static frc.robot.Constants.ArmConstants.ARM_DANGER_MAX;
 import static frc.robot.Constants.ArmConstants.ARM_DANGER_MIN;
 import static frc.robot.Constants.ArmConstants.ARM_DANGER_TOLERANCE;
@@ -419,14 +419,14 @@ public class ArmSubsystem extends SubsystemBase {
    * Moves arm to the position to extract algae from the lower reef location
    */
   public void moveToAlgaeLevel1() {
-    moveToPosition(ALGAE_LEVEL_1_HEIGHT, ALGAE_LEVEL_1_ANGLE);
+    moveToPosition(ALGAE_LOWER_HEIGHT, ALGAE_LOWER_ANGLE);
   }
 
   /**
    * Moves arm to the position to extract algae from the higher reef location
    */
   public void moveToAlgaeLevel2() {
-    moveToPosition(ALGAE_LEVEL_2_HEIGHT, ALGAE_LEVEL_2_ANGLE);
+    moveToPosition(ALGAE_UPPER_HEIGHT, ALGAE_UPPER_ANGLE);
   }
 
   /**

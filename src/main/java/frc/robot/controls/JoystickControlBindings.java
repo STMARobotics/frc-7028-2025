@@ -68,11 +68,6 @@ public class JoystickControlBindings extends ControlBindings {
   }
 
   @Override
-  public Optional<Trigger> seedFieldCentric() {
-    return Optional.of(leftJoystick.button(7));
-  }
-
-  @Override
   public Optional<Trigger> intakeCoral() {
     return Optional.of(leftJoystick.trigger());
   }
@@ -88,22 +83,17 @@ public class JoystickControlBindings extends ControlBindings {
   }
 
   @Override
-  public Optional<Trigger> parkArm() {
-    return Optional.of(leftJoystick.povLeft());
-  }
-
-  @Override
   public Optional<Trigger> tuneArm() {
     return Optional.of(leftJoystick.button(8));
   }
 
   @Override
-  public Optional<Trigger> moveArmToReefAlgaeLevel1() {
+  public Optional<Trigger> moveArmToReefLowerAlgae() {
     return Optional.of(leftJoystick.povDown());
   }
 
   @Override
-  public Optional<Trigger> moveArmToReefAlgaeLevel2() {
+  public Optional<Trigger> moveArmToReefUpperAlgae() {
     return Optional.of(leftJoystick.povUp());
   }
 
@@ -129,11 +119,6 @@ public class JoystickControlBindings extends ControlBindings {
 
   @Override
   public Optional<Trigger> shootAlgae() {
-    return Optional.of(leftJoystick.button(2));
-  }
-
-  @Override
-  public Optional<Trigger> moveArmToProcessor() {
     return Optional.of(leftJoystick.button(9));
   }
 }
