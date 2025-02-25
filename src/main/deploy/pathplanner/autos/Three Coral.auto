@@ -46,6 +46,43 @@
           "data": {
             "name": "scoreCoralLevel4"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "parkArm"
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Three Coral"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intakeCoral"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "scoreCoralLevel4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "parkArm"
+          }
         }
       ]
     }
