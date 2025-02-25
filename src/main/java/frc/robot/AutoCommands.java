@@ -151,13 +151,14 @@ public class AutoCommands {
     return ledSubsystem
         .setLEDSegmentsAsCommand(kGreen, armSubsystem::isAtPosition, driveToReef::isFinished, alignToReef::isFinished)
         .withDeadline(
-            armSubsystem.run(armMethod)
-                .until(armSubsystem::isAtPosition)
-                .alongWith(alignToReef)
-                .andThen(
-                    armSubsystem.run(armMethod)
-                        .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectCoral))
-                        .withTimeout(0.5)));
+            driveToReef.andThen(
+                armSubsystem.run(armMethod)
+                    .until(armSubsystem::isAtPosition)
+                    .alongWith(alignToReef)
+                    .andThen(
+                        armSubsystem.run(armMethod)
+                            .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectCoral))
+                            .withTimeout(0.25))));
   }
 
   public Command autoScoreCoralLevel4Auto() {
@@ -177,7 +178,7 @@ public class AutoCommands {
                 .andThen(
                     armSubsystem.run(armMethod)
                         .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectCoral))
-                        .withTimeout(0.5)));
+                        .withTimeout(0.25)));
   }
 
 }
