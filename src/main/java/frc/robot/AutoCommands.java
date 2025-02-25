@@ -146,8 +146,8 @@ public class AutoCommands {
   }
 
   private Command autoScoreCoral(Runnable armMethod, List<Pose2d> redPoses, List<Pose2d> bluePoses) {
-    var alignToReef = new AlignToReefCommand(drivetrain, alignmentSubsystem, Meters.of(0.34));
     var driveToReef = new DriveToNearestPose(drivetrain, () -> drivetrain.getState().Pose, redPoses, bluePoses);
+    var alignToReef = new AlignToReefCommand(drivetrain, alignmentSubsystem, Meters.of(0.34), highCamera);
 
     return ledSubsystem
         .setLEDSegmentsAsCommand(kGreen, armSubsystem::isAtPosition, driveToReef::isFinished, alignToReef::isFinished)
