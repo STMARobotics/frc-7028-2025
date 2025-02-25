@@ -157,7 +157,7 @@ public class AutoCommands {
                 .andThen(
                     armSubsystem.run(armMethod)
                         .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectCoral))
-                        .withTimeout(1.0)));
+                        .withTimeout(0.5)));
   }
 
   public Command autoScoreCoralLevel4Auto() {
@@ -177,7 +177,7 @@ public class AutoCommands {
                 .andThen(
                     armSubsystem.run(armMethod)
                         .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectCoral))
-                        .withTimeout(1.0)));
+                        .withTimeout(0.5)));
   }
 
 }
