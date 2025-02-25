@@ -100,7 +100,7 @@ public class RobotContainer {
     }
 
     // Configure PathPlanner
-    NamedCommands.registerCommand("scoreCoralLevel4", autoCommands.autoScoreCoralLevel4());
+    NamedCommands.registerCommand("scoreCoralLevel4", autoCommands.autoScoreCoralLevel4Auto());
     NamedCommands.registerCommand("scoreCoralLevel3", autoCommands.autoScoreCoralLevel3());
     NamedCommands.registerCommand(
         "intakeCoral",

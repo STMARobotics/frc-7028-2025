@@ -9,7 +9,6 @@ import static frc.robot.Constants.AlignmentConstants.REEF_L3_SCORE_POSE_BLUE;
 import static frc.robot.Constants.AlignmentConstants.REEF_L4_SCORE_POSES_RED;
 import static frc.robot.Constants.AlignmentConstants.REEF_L4_SCORE_POSE_BLUE;
 
-import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -152,15 +151,33 @@ public class AutoCommands {
     return ledSubsystem
         .setLEDSegmentsAsCommand(kGreen, armSubsystem::isAtPosition, driveToReef::isFinished, alignToReef::isFinished)
         .withDeadline(
-            driveToReef.andThen(drivetrain.runOnce(() -> drivetrain.setControl(new SwerveRequest.SwerveDriveBrake())))
+            armSubsystem.run(armMethod)
+                .until(armSubsystem::isAtPosition)
+                .alongWith(alignToReef)
                 .andThen(
                     armSubsystem.run(armMethod)
-                        .until(armSubsystem::isAtPosition)
-                        .alongWith(alignToReef)
-                        .andThen(
-                            armSubsystem.run(armMethod)
-                                .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectCoral))
-                                .withTimeout(1.0))));
+                        .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectCoral))
+                        .withTimeout(1.0)));
+  }
+
+  public Command autoScoreCoralLevel4Auto() {
+    return autoScoreCoralAuto(armSubsystem::moveToLevel4, REEF_L4_SCORE_POSES_RED, REEF_L4_SCORE_POSE_BLUE);
+  }
+
+  private Command autoScoreCoralAuto(Runnable armMethod, List<Pose2d> redPoses, List<Pose2d> bluePoses) {
+    var driveToReef = new DriveToNearestPose(drivetrain, () -> drivetrain.getState().Pose, redPoses, bluePoses);
+    var alignToReef = new AlignToReefCommand(drivetrain, alignmentSubsystem, Meters.of(0.34), highCamera);
+
+    return ledSubsystem
+        .setLEDSegmentsAsCommand(kGreen, armSubsystem::isAtPosition, driveToReef::isFinished, alignToReef::isFinished)
+        .withDeadline(
+            armSubsystem.run(armMethod)
+                .until(armSubsystem::isAtPosition)
+                .alongWith(alignToReef)
+                .andThen(
+                    armSubsystem.run(armMethod)
+                        .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectCoral))
+                        .withTimeout(1.0)));
   }
 
 }
