@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.0,
-        "y": 0.0
+        "x": 1.4746067880794704,
+        "y": 7.21392798013245
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.0,
-        "y": 1.2246467991473532e-16
+        "x": 2.7676117549716492,
+        "y": 5.9136589404007
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "ThreeCoralLeftPickup2"
     },
     {
       "anchor": {
-        "x": 0.0,
-        "y": 0.0
+        "x": 2.93,
+        "y": 4.47
       },
       "prevControl": {
-        "x": 1.0,
-        "y": -1.2246467991473532e-16
+        "x": 1.888658940397351,
+        "y": 5.586775662251655
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,22 +33,22 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.0,
-    "maxAcceleration": 1.0,
-    "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 720.0,
+    "maxVelocity": 4.25,
+    "maxAcceleration": 6.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 540.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 0.0
+    "velocity": 0.0,
+    "rotation": -90.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Three Coral Left",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 126.6897228324759
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

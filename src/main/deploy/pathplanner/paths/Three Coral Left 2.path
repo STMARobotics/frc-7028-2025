@@ -12,7 +12,7 @@
         "y": 6.971370033112582
       },
       "isLocked": false,
-      "linkedName": "CoralScoreID20point"
+      "linkedName": "ThreeCoralLeftScore1"
     },
     {
       "anchor": {
@@ -25,7 +25,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "CoralTwoEndA"
+      "linkedName": "ThreeCoralLeftPickup1"
     }
   ],
   "rotationTargets": [],
@@ -59,7 +59,7 @@
     "rotation": 126.6897228324759
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Three Coral Left",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 149.56576424655643

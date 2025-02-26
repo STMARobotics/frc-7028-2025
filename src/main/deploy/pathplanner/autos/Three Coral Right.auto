@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "One Coral"
+                  "pathName": "Three Coral Right 1"
                 }
               },
               {
@@ -42,7 +42,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Two Coral A"
+                  "pathName": "Three Coral Right 2"
                 }
               },
               {
@@ -61,7 +61,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Two Coral B"
+                  "pathName": "Three Coral Right 3"
                 }
               },
               {
@@ -92,7 +92,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Three Coral A"
+                  "pathName": "Three Coral Right 4"
                 }
               },
               {
@@ -111,7 +111,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Three Coral B"
+                  "pathName": "Three Coral Right 5"
                 }
               },
               {
