@@ -9,16 +9,13 @@ import static frc.robot.Constants.AlignmentConstants.REEF_L3_SCORE_POSE_BLUE;
 import static frc.robot.Constants.AlignmentConstants.REEF_L4_SCORE_POSES_RED;
 import static frc.robot.Constants.AlignmentConstants.REEF_L4_SCORE_POSE_BLUE;
 
+import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.AlignToReefCommand;
-<<<<<<< HEAD
-import frc.robot.commands.DriveToReefAlgaeCommand;
-import frc.robot.commands.DriveToReefCommand;
-=======
 import frc.robot.commands.DriveToNearestPose;
->>>>>>> main
+import frc.robot.commands.DriveToReefAlgaeCommand;
 import frc.robot.subsystems.AlignmentSubsystem;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -166,13 +163,6 @@ public class AutoCommands {
     return autoIntakeAlgae(armSubsystem::moveToAlgaeLevel2);
   }
 
-  private Command autoScoreCoral(Runnable armMethod) {
-    var alignToReef = new AlignToReefCommand(drivetrain, alignmentSubsystem, Meters.of(0.34));
-    var driveToReef = new DriveToReefCommand(drivetrain, () -> drivetrain.getState().Pose);
-   * Creates a command that will drive to the nearest L2 reef scoring location
-   * 
-   * @return new command
-   */
   public Command driveToCoralLevel2() {
     return new DriveToNearestPose(
         drivetrain,
@@ -220,7 +210,7 @@ public class AutoCommands {
 
   private Command autoIntakeAlgae(Runnable armMethod) {
     var driveToReef = new DriveToReefAlgaeCommand(drivetrain, () -> drivetrain.getState().Pose);
-    var alignToReef = new AlignToReefCommand(drivetrain, alignmentSubsystem, Meters.of(0.34));
+    var alignToReef = new AlignToReefCommand(drivetrain, alignmentSubsystem, Meters.of(0.34), highCamera);
     return driveToReef.andThen(alignToReef)
         .andThen(drivetrain.applyRequest(SwerveRequest.SwerveDriveBrake::new))
         .andThen(armSubsystem.run(armMethod))

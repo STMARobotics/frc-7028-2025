@@ -317,16 +317,12 @@ public class Constants {
     public static final AngularAcceleration MAX_ALIGN_ANGULAR_ACCELERATION = RadiansPerSecondPerSecond
         .of(6.0 * Math.PI);
 
-<<<<<<< HEAD
-    /** Pose of the robot relative to a reef branch for scoring coral */
-    public static final Transform2d RELATIVE_CORAL_SCORING_POSE = new Transform2d(
+    /** Pose of the robot relative to a reef branch for scoring */
+    public static final Transform2d RELATIVE_ALGAE_INTAKE_POSE = new Transform2d(
         inchesToMeters(-40),
         inchesToMeters(12),
         Rotation2d.fromDegrees(-90));
 
-    /** Pose of the robot relative to a reef branch for scoring */
-    public static final Transform2d RELATIVE_ALGAE_INTAKE_POSE = new Transform2d(
-=======
     /** Pose of the robot relative to a reef branch for scoring coral on L4 */
     public static final Transform2d RELATIVE_SCORING_POSE_CORAL_L4 = new Transform2d(
         inchesToMeters(-40),
@@ -334,7 +330,6 @@ public class Constants {
         Rotation2d.fromDegrees(-90));
     /** Pose of the robot relative to a reef branch for scoring coral on L3 */
     public static final Transform2d RELATIVE_SCORING_POSE_CORAL_L3 = new Transform2d(
->>>>>>> main
         inchesToMeters(-40),
         inchesToMeters(12),
         Rotation2d.fromDegrees(-90));
@@ -388,10 +383,6 @@ public class Constants {
               new Pose2d(4.994328, 3.841097, Rotation2d.fromDegrees(180)), // 9
               new Pose2d(4.873353, 3.632614, Rotation2d.fromDegrees(120)), // 10
               new Pose2d(4.589334, 3.466500, Rotation2d.fromDegrees(120)))// 11
-<<<<<<< HEAD
-        .map(reefPose -> reefPose.plus(RELATIVE_CORAL_SCORING_POSE))
-=======
->>>>>>> main
         .collect(toUnmodifiableList());
 
     /**
@@ -412,7 +403,6 @@ public class Constants {
               new Pose2d(12.553672, 4.210903, Rotation2d.fromDegrees(0)), // 9
               new Pose2d(12.598000, 4.292000, Rotation2d.fromDegrees(-60)), // 10
               new Pose2d(12.958666, 4.585500, Rotation2d.fromDegrees(-60)))// 11
-        .map(reefPose -> reefPose.plus(RELATIVE_CORAL_SCORING_POSE))
         .collect(toUnmodifiableList());
 
     /**
