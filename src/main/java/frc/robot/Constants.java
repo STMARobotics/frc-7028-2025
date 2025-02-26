@@ -317,6 +317,12 @@ public class Constants {
     public static final AngularAcceleration MAX_ALIGN_ANGULAR_ACCELERATION = RadiansPerSecondPerSecond
         .of(6.0 * Math.PI);
 
+    /** Pose of the robot relative to a reef branch for scoring */
+    public static final Transform2d RELATIVE_ALGAE_INTAKE_POSE = new Transform2d(
+        inchesToMeters(-40),
+        inchesToMeters(12),
+        Rotation2d.fromDegrees(-90));
+
     /** Pose of the robot relative to a reef branch for scoring coral on L4 */
     public static final Transform2d RELATIVE_SCORING_POSE_CORAL_L4 = new Transform2d(
         inchesToMeters(-40),
@@ -343,6 +349,18 @@ public class Constants {
      * +X U   2 |       | 9   |   8 |       | 3  E
      *    E    1 \     / 10   |    7 \     / 4   D
      *    |      0 \ / 11     |      6 \ / 5     |
+     *    |___________________|__________________|
+     * (0, 0)               +Y
+     *
+     *
+     * The reef algae are in the arrays like this:
+     *    ----------------------------------------
+     *    |     2  / \ 3      |      5 / \ 0     |
+     *    B      /     \      |      /     \     |
+     *    L     |       | 4   |     |       | 1  R
+     * +X U   1 |       |     |   4 |       |    E
+     *    E      \     /      |      \     /     D
+     *    |      0 \ / 5      |      3 \ / 2     |
      *    |___________________|__________________|
      * (0, 0)               +Y
      */
@@ -385,6 +403,36 @@ public class Constants {
               new Pose2d(12.553672, 4.210903, Rotation2d.fromDegrees(0)), // 9
               new Pose2d(12.598000, 4.292000, Rotation2d.fromDegrees(-60)), // 10
               new Pose2d(12.958666, 4.585500, Rotation2d.fromDegrees(-60)))// 11
+        .collect(toUnmodifiableList());
+
+    /**
+     * Poses of the algae on the red reef. Translation is the center of the algae, rotation is pointing toward reef
+     * center.
+     */
+    public static final List<Pose2d> REEF_ALGAE_POSES_RED = Stream
+        .of(
+            new Pose2d(13.412, 4.618, Rotation2d.fromDegrees(60)), // 0
+              new Pose2d(13.761, 4.020, Rotation2d.fromDegrees(0)), // 1
+              new Pose2d(13.412, 3.452, Rotation2d.fromDegrees(-60)), // 2
+              new Pose2d(12.734, 3.452, Rotation2d.fromDegrees(-120)), // 3
+              new Pose2d(12.375, 4.020, Rotation2d.fromDegrees(-180)), // 4
+              new Pose2d(12.734, 4.618, Rotation2d.fromDegrees(120))) // 5
+        .map(reefPose -> reefPose.plus(RELATIVE_ALGAE_INTAKE_POSE))
+        .collect(toUnmodifiableList());
+
+    /**
+     * Poses of the algae on the blue reef. Translation is the center of the algae, rotation is pointing toward reef
+     * center.
+     */
+    public static final List<Pose2d> REEF_ALGAE_POSES_BLUE = Stream
+        .of(
+            new Pose2d(4.138, 3.452, Rotation2d.fromDegrees(-120)), // 0
+              new Pose2d(3.799, 4.020, Rotation2d.fromDegrees(-180)), // 1
+              new Pose2d(4.138, 4.618, Rotation2d.fromDegrees(120)), // 2
+              new Pose2d(4.836, 4.618, Rotation2d.fromDegrees(60)), // 3
+              new Pose2d(5.165, 4.020, Rotation2d.fromDegrees(0)), // 4
+              new Pose2d(4.836, 3.452, Rotation2d.fromDegrees(-60))) // 5
+        .map(reefPose -> reefPose.plus(RELATIVE_ALGAE_INTAKE_POSE))
         .collect(toUnmodifiableList());
 
     /** Poses of the robot for scoring on L4 on the red alliance */

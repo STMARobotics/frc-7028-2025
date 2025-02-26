@@ -2,6 +2,8 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.wpilibj.util.Color.kGreen;
+import static frc.robot.Constants.AlignmentConstants.REEF_ALGAE_POSES_BLUE;
+import static frc.robot.Constants.AlignmentConstants.REEF_ALGAE_POSES_RED;
 import static frc.robot.Constants.AlignmentConstants.REEF_L2_SCORE_POSES_RED;
 import static frc.robot.Constants.AlignmentConstants.REEF_L2_SCORE_POSE_BLUE;
 import static frc.robot.Constants.AlignmentConstants.REEF_L3_SCORE_POSES_RED;
@@ -9,11 +11,13 @@ import static frc.robot.Constants.AlignmentConstants.REEF_L3_SCORE_POSE_BLUE;
 import static frc.robot.Constants.AlignmentConstants.REEF_L4_SCORE_POSES_RED;
 import static frc.robot.Constants.AlignmentConstants.REEF_L4_SCORE_POSE_BLUE;
 
+import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.AlignToReefCommand;
 import frc.robot.commands.DriveToNearestPose;
+import frc.robot.commands.DriveToReefAlgaeCommand;
 import frc.robot.subsystems.AlignmentSubsystem;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -99,6 +103,18 @@ public class AutoCommands {
         .getStructArrayTopic("branches", Pose2d.struct)
         .publish()
         .set(REEF_L2_SCORE_POSES_RED.toArray(new Pose2d[REEF_L2_SCORE_POSES_RED.size()]));
+
+    NetworkTableInstance.getDefault()
+        .getTable("reef_red_algae")
+        .getStructArrayTopic("algae", Pose2d.struct)
+        .publish()
+        .set(REEF_ALGAE_POSES_RED.toArray(new Pose2d[REEF_ALGAE_POSES_RED.size()]));
+
+    NetworkTableInstance.getDefault()
+        .getTable("reef_blue_algae")
+        .getStructArrayTopic("algae", Pose2d.struct)
+        .publish()
+        .set(REEF_ALGAE_POSES_BLUE.toArray(new Pose2d[REEF_ALGAE_POSES_BLUE.size()]));
   }
 
   /**
@@ -132,9 +148,37 @@ public class AutoCommands {
   }
 
   /**
-   * Creates a command that will drive to the nearest L2 reef scoring location
+   * Creates a command that will:
+   * <ol>
+   * <li>Drive to the nearest algae location</li>
+   * <li>Align to the reef using the CANranges</li>
+   * <li>Get the arm and elevator into position to grab the algae on level 1</li>
+   * <li>Intake the algae</li>
+   * </ol>
    * 
    * @return new command
+   */
+  public Command autoIntakeAlgaeLevel1() {
+    return autoIntakeAlgae(armSubsystem::moveToAlgaeLevel1);
+  }
+
+  /**
+   * Creates a command that will:
+   * <ol>
+   * <li>Drive to the nearest algae location</li>
+   * <li>Align to the reef using the CANranges</li>
+   * <li>Get the arm and elevator into position to grab the algae on level 2</li>
+   * <li>Intake the algae</li>
+   * </ol>
+   * 
+   * @return new command
+   */
+  public Command autoIntakeAlgaeLevel2() {
+    return autoIntakeAlgae(armSubsystem::moveToAlgaeLevel2);
+  }
+
+  /**
+   * Creates a command that will drive to the nearest L2 reef scoring location
    */
   public Command driveToCoralLevel2() {
     return new DriveToNearestPose(
@@ -181,4 +225,12 @@ public class AutoCommands {
                         .withTimeout(0.25)));
   }
 
+  private Command autoIntakeAlgae(Runnable armMethod) {
+    var driveToReef = new DriveToReefAlgaeCommand(drivetrain, () -> drivetrain.getState().Pose);
+    var alignToReef = new AlignToReefCommand(drivetrain, alignmentSubsystem, Meters.of(0.34), highCamera);
+    return driveToReef.andThen(alignToReef)
+        .andThen(drivetrain.applyRequest(SwerveRequest.SwerveDriveBrake::new))
+        .andThen(armSubsystem.run(armMethod))
+        .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::intakeAlgae));
+  }
 }
