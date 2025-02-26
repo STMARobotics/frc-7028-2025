@@ -8,27 +8,32 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.3051531456953636,
-        "y": 1.2937086092715224
+        "x": 3.174399834437086,
+        "y": 1.6423841059602635
       },
       "isLocked": false,
       "linkedName": "ThreeCoralRightScore1"
     },
     {
       "anchor": {
-        "x": 1.4600786423841061,
-        "y": 0.8360720198675483
+        "x": 1.4746067880794704,
+        "y": 0.7997516556291384
       },
       "prevControl": {
-        "x": 2.622330298013245,
-        "y": 1.126634933774834
+        "x": 2.651386589403974,
+        "y": 1.3518211920529803
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "ThreeCoralRightPickup1"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.9084181313598653,
+      "rotationDegrees": -125.73386147909376
+    }
+  ],
   "constraintZones": [
     {
       "name": "Constraints Zone",

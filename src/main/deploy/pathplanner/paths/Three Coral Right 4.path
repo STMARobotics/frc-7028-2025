@@ -16,23 +16,28 @@
     },
     {
       "anchor": {
-        "x": 1.5472475165562916,
-        "y": 0.734375
+        "x": 1.467342715231788,
+        "y": 0.603621688741722
       },
       "prevControl": {
-        "x": 2.1283733443708606,
-        "y": 1.3372930463576158
+        "x": 2.048468543046357,
+        "y": 1.2065397350993374
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "ThreeCoralRightPickup2"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.9056429232192469,
+      "rotationDegrees": -127.73848597026526
+    }
+  ],
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.9412987012986995,
+      "minWaypointRelativePos": 0.9090909090909117,
       "maxWaypointRelativePos": 1.0,
       "constraints": {
         "maxVelocity": 0.5,

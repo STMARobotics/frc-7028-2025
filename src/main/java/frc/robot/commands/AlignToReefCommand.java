@@ -47,9 +47,9 @@ public class AlignToReefCommand extends Command {
   private static final double RIGHT_LATERAL_TARGET = 0.08;
 
   private static final Distance DISTANCE_TOLERANCE = Inches.of(0.5);
-  private static final Distance LATERAL_TOLERANCE = Inch.of(0.6);
+  private static final Distance LATERAL_TOLERANCE = Inch.of(1.0);
   // Theta is the difference between the two CANrange distances, in meters
-  private static final double THETA_TOLERANCE = 0.017;
+  private static final double THETA_TOLERANCE = 0.03;
 
   private final CommandSwerveDrivetrain drivetrain;
   private final AlignmentSubsystem alignmentSubsystem;
