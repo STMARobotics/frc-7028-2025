@@ -30,6 +30,10 @@ public class DrivetrainTelemetry {
       .getStructArrayTopic("Module Targets", SwerveModuleState.struct)
       .publish();
   private final DoublePublisher periodPublisher = driveStats.getDoubleTopic("Period").publish();
+
+  private final DoublePublisher xSpeedPublisher = driveStats.getDoubleTopic("xSpeed").publish();
+  private final DoublePublisher ySpeedPublisher = driveStats.getDoubleTopic("ySpeed").publish();
+
   private final Field2d field2d = new Field2d();
 
   private final Timer frequencyTimer = new Timer();
@@ -53,6 +57,8 @@ public class DrivetrainTelemetry {
       moduleTargetsPublisher.set(state.ModuleTargets);
       periodPublisher.accept(state.OdometryPeriod);
       field2d.setRobotPose(state.Pose);
+      xSpeedPublisher.set(state.Speeds.vxMetersPerSecond);
+      ySpeedPublisher.set(state.Speeds.vyMetersPerSecond);
     }
   }
 

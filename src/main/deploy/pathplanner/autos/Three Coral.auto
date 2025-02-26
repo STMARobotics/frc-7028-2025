@@ -42,7 +42,26 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Two Coral"
+                  "pathName": "Two Coral A"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intakeCoral"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Two Coral B"
                 }
               },
               {
@@ -73,7 +92,26 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Three Coral"
+                  "pathName": "Three Coral A"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intakeCoral"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Three Coral B"
                 }
               },
               {

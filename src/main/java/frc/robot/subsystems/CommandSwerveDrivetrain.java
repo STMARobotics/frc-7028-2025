@@ -21,11 +21,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 import frc.robot.subsystems.sysid.SysIdSwerveTranslationTorque;
@@ -136,9 +133,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       startSimThread();
     }
     configureAutoBuilder();
-    configNeutralMode(NeutralModeValue.Coast);
-    new Trigger(RobotState::isEnabled).onTrue(Commands.runOnce(() -> configNeutralMode(NeutralModeValue.Brake)))
-        .onFalse(Commands.runOnce(() -> configNeutralMode(NeutralModeValue.Coast)).ignoringDisable(true));
+    configNeutralMode(NeutralModeValue.Brake);
   }
 
   /**
@@ -213,7 +208,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 // PID constants for translation
                 new PIDConstants(8, 0, 0),
                 // PID constants for rotation
-                new PIDConstants(4, 0, 0)),
+                new PIDConstants(2.75, 0, 0)),
             config,
             // Assume the path needs to be flipped for Red vs Blue, this is normally the case
             () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,

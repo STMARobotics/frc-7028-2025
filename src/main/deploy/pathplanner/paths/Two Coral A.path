@@ -1,0 +1,68 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 5.4698468543046355,
+        "y": 5.383381622516556
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 4.352065397350993,
+        "y": 6.971370033112582
+      },
+      "isLocked": false,
+      "linkedName": "CoralScoreID20point"
+    },
+    {
+      "anchor": {
+        "x": 1.5545115894039734,
+        "y": 7.3301531456953635
+      },
+      "prevControl": {
+        "x": 2.9128932119205295,
+        "y": 5.986299668874171
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "CoralTwoEndA"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.9485714285714312,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 0.5,
+        "maxAcceleration": 6.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.25,
+    "maxAcceleration": 6.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 540.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": 126.6897228324759
+  },
+  "reversed": false,
+  "folder": null,
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 149.56576424655643
+  },
+  "useDefaultConstraints": true
+}
