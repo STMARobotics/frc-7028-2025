@@ -20,6 +20,7 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.commands.AlgaeBargeCommand;
@@ -235,7 +236,10 @@ public class RobotContainer {
    */
   public void populateTestModeDashboard() {
     // Test mode command
-    SmartDashboard.putData("Run Tests", testMode.testCommand());
+    SmartDashboard.putData(
+        "Run Tests",
+          testMode.testCommand()
+              .deadlineFor(ledSubsystem.setLEDSegmentsAsCommand(Color.kBlue, testMode.getTestResults())));
     SmartDashboard.putData("Arm in coast", armSubsystem.runOnce(armSubsystem::coast).ignoringDisable(true));
     SmartDashboard.putData("Arm in brake", armSubsystem.runOnce(armSubsystem::brake).ignoringDisable(true));
 
