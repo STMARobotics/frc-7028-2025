@@ -1,0 +1,144 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Three Coral Left 1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ledDefault"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "scoreCoralLevel4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "parkArm"
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Three Coral Left 2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intakeCoral"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Three Coral Left 3"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intakeCoral"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "scoreCoralLevel4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "parkArm"
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Three Coral Left 4"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intakeCoral"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Three Coral Left 5"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intakeCoral"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "scoreCoralLevel4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "parkArm"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

@@ -1,7 +1,11 @@
 package frc.robot.commands.led;
 
+import static edu.wpi.first.units.Units.Percent;
+import static edu.wpi.first.units.Units.Second;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.LEDPattern.GradientType;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
@@ -71,7 +75,9 @@ public class DefaultLEDCommand extends Command {
             .setCandyCane(candyCaneState ? Color.kOrange : Color.kBlack, candyCaneState ? Color.kBlack : Color.kOrange);
         break;
       default:
-        ledSubsystem.runPattern(LEDPattern.kOff);
+        ledSubsystem.runPattern(
+            LEDPattern.gradient(GradientType.kContinuous, Color.kBlue, Color.kOrange)
+                .scrollAtRelativeSpeed(Percent.per(Second).of(25)));
         break;
     }
   }

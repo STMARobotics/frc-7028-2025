@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.4746067880794704,
+        "y": 0.7997516556291384
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.033443994111285,
+        "y": 1.3172135707079806
+      },
+      "isLocked": false,
+      "linkedName": "ThreeCoralRightPickup1"
+    },
+    {
+      "anchor": {
+        "x": 3.5521316225165562,
+        "y": 2.710202814569535
+      },
+      "prevControl": {
+        "x": 2.9327383790052464,
+        "y": 1.926100058626133
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "ThreeCoralRightScore2"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.25,
+    "maxAcceleration": 6.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 540.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -28.474203610074287
+  },
+  "reversed": false,
+  "folder": "Three Coral Right",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -126.50144112050634
+  },
+  "useDefaultConstraints": true
+}
