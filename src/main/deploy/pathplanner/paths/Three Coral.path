@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.36,
-        "y": 5.27
+        "x": 3.915335264900662,
+        "y": 5.506870860927152
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.2422185430463575,
-        "y": 6.857988410596026
+        "x": 3.0808692052980136,
+        "y": 6.339205298013245
       },
       "isLocked": false,
-      "linkedName": "CoralScoreID20point"
+      "linkedName": "CoralTwoEnd"
     },
     {
       "anchor": {
@@ -32,16 +32,16 @@
     },
     {
       "anchor": {
-        "x": 3.915335264900662,
-        "y": 5.506870860927152
+        "x": 3.82,
+        "y": 5.43
       },
       "prevControl": {
-        "x": 1.9800289735099343,
-        "y": 6.437127483443708
+        "x": 2.931204470198675,
+        "y": 6.263476821192053
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "CoralTwoEnd"
+      "linkedName": null
     }
   ],
   "rotationTargets": [
@@ -77,13 +77,13 @@
   },
   "goalEndState": {
     "velocity": 0.0,
-    "rotation": -150.78075330951535
+    "rotation": -149.8788174325336
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 149.56576424655643
+    "rotation": -150.78075330951535
   },
   "useDefaultConstraints": false
 }

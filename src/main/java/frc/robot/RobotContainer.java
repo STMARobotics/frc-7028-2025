@@ -8,10 +8,6 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kForward;
 import static edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kReverse;
-import static frc.robot.Constants.AlignmentConstants.REEF_ALGAE_POSES_BLUE;
-import static frc.robot.Constants.AlignmentConstants.REEF_ALGAE_POSES_RED;
-import static frc.robot.Constants.AlignmentConstants.REEF_BRANCH_POSES_BLUE;
-import static frc.robot.Constants.AlignmentConstants.REEF_BRANCH_POSES_RED;
 import static frc.robot.Constants.TeleopDriveConstants.MAX_TELEOP_ANGULAR_VELOCITY;
 import static frc.robot.Constants.TeleopDriveConstants.MAX_TELEOP_VELOCITY;
 
@@ -21,8 +17,6 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -106,7 +100,7 @@ public class RobotContainer {
     }
 
     // Configure PathPlanner
-    NamedCommands.registerCommand("scoreCoralLevel4", autoCommands.autoScoreCoralLevel4());
+    NamedCommands.registerCommand("scoreCoralLevel4", autoCommands.autoScoreCoralLevel4Auto());
     NamedCommands.registerCommand("scoreCoralLevel3", autoCommands.autoScoreCoralLevel3());
     NamedCommands.registerCommand(
         "intakeCoral",
@@ -133,31 +127,6 @@ public class RobotContainer {
             .finallyDo(gamePieceManipulatorSubsystem::stop));
     ledSubsystem.setDefaultCommand(new DefaultLEDCommand(ledSubsystem));
     new LEDBootAnimationCommand(ledSubsystem).schedule();
-
-    // Send the reef poses to the dashboard for debugging
-    NetworkTableInstance.getDefault()
-        .getTable("reef_blue")
-        .getStructArrayTopic("branches", Pose2d.struct)
-        .publish()
-        .set(REEF_BRANCH_POSES_BLUE.toArray(new Pose2d[REEF_BRANCH_POSES_BLUE.size()]));
-
-    NetworkTableInstance.getDefault()
-        .getTable("reef_red")
-        .getStructArrayTopic("branches", Pose2d.struct)
-        .publish()
-        .set(REEF_BRANCH_POSES_RED.toArray(new Pose2d[REEF_BRANCH_POSES_RED.size()]));
-
-    NetworkTableInstance.getDefault()
-        .getTable("reef_blue")
-        .getStructArrayTopic("algae", Pose2d.struct)
-        .publish()
-        .set(REEF_ALGAE_POSES_BLUE.toArray(new Pose2d[REEF_ALGAE_POSES_BLUE.size()]));
-
-    NetworkTableInstance.getDefault()
-        .getTable("reef_red")
-        .getStructArrayTopic("algae", Pose2d.struct)
-        .publish()
-        .set(REEF_ALGAE_POSES_RED.toArray(new Pose2d[REEF_ALGAE_POSES_RED.size()]));
   }
 
   private void configureBindings() {
