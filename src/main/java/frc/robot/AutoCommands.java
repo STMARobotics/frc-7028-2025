@@ -163,6 +163,9 @@ public class AutoCommands {
     return autoIntakeAlgae(armSubsystem::moveToAlgaeLevel2);
   }
 
+  /**
+   * Creates a command that will drive to the nearest L2 reef scoring location
+   */
   public Command driveToCoralLevel2() {
     return new DriveToNearestPose(
         drivetrain,
