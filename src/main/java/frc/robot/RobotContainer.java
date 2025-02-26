@@ -5,10 +5,7 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Percent;
 import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.Second;
-import static edu.wpi.first.wpilibj.util.Color.kBlack;
 import static edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kForward;
 import static edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kReverse;
 import static frc.robot.Constants.TeleopDriveConstants.MAX_TELEOP_ANGULAR_VELOCITY;
@@ -21,12 +18,8 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.LEDPattern;
-import edu.wpi.first.wpilibj.LEDPattern.GradientType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.commands.AlgaeBargeCommand;
@@ -151,19 +144,7 @@ public class RobotContainer {
     controlBindings.climb()
         .ifPresent(
             trigger -> trigger
-                .whileTrue(
-                    climbSubsystem.run(() -> climbSubsystem.climb())
-                        .alongWith(
-                            ledSubsystem.runPatternAsCommand(
-                                LEDPattern
-                                    .gradient(
-                                        GradientType.kContinuous,
-                                          kBlack,
-                                          DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red ? Color.kRed
-                                              : Color.kBlue)
-                                    .reversed()
-                                    .scrollAtRelativeSpeed(Percent.per(Second).of(100))))
-                        .finallyDo(climbSubsystem::stop)));
+                .whileTrue(climbSubsystem.run(() -> climbSubsystem.climb()).finallyDo(climbSubsystem::stop)));
 
     drivetrain.registerTelemetry(drivetrainTelemetry::telemeterize);
 
