@@ -2,6 +2,8 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.wpilibj.util.Color.kGreen;
+import static frc.robot.Constants.AlignmentConstants.REEF_ALGAE_POSES_BLUE;
+import static frc.robot.Constants.AlignmentConstants.REEF_ALGAE_POSES_RED;
 import static frc.robot.Constants.AlignmentConstants.REEF_L2_SCORE_POSES_RED;
 import static frc.robot.Constants.AlignmentConstants.REEF_L2_SCORE_POSE_BLUE;
 import static frc.robot.Constants.AlignmentConstants.REEF_L3_SCORE_POSES_RED;
@@ -101,6 +103,18 @@ public class AutoCommands {
         .getStructArrayTopic("branches", Pose2d.struct)
         .publish()
         .set(REEF_L2_SCORE_POSES_RED.toArray(new Pose2d[REEF_L2_SCORE_POSES_RED.size()]));
+
+    NetworkTableInstance.getDefault()
+        .getTable("reef_red_algae")
+        .getStructArrayTopic("algae", Pose2d.struct)
+        .publish()
+        .set(REEF_ALGAE_POSES_RED.toArray(new Pose2d[REEF_ALGAE_POSES_RED.size()]));
+
+    NetworkTableInstance.getDefault()
+        .getTable("reef_blue_algae")
+        .getStructArrayTopic("algae", Pose2d.struct)
+        .publish()
+        .set(REEF_ALGAE_POSES_BLUE.toArray(new Pose2d[REEF_ALGAE_POSES_BLUE.size()]));
   }
 
   /**
