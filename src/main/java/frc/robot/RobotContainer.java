@@ -151,13 +151,13 @@ public class RobotContainer {
         .getTable("reef_blue")
         .getStructArrayTopic("algae", Pose2d.struct)
         .publish()
-        .set(REEF_BRANCH_POSES_BLUE.toArray(new Pose2d[REEF_ALGAE_POSES_BLUE.size()]));
+        .set(REEF_ALGAE_POSES_BLUE.toArray(new Pose2d[REEF_ALGAE_POSES_BLUE.size()]));
 
     NetworkTableInstance.getDefault()
         .getTable("reef_red")
         .getStructArrayTopic("algae", Pose2d.struct)
         .publish()
-        .set(REEF_BRANCH_POSES_RED.toArray(new Pose2d[REEF_ALGAE_POSES_RED.size()]));
+        .set(REEF_ALGAE_POSES_RED.toArray(new Pose2d[REEF_ALGAE_POSES_RED.size()]));
   }
 
   private void configureBindings() {

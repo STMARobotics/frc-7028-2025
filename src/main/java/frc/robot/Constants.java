@@ -402,6 +402,10 @@ public class Constants {
         .map(reefPose -> reefPose.plus(RELATIVE_CORAL_SCORING_POSE))
         .collect(toUnmodifiableList());
 
+    /**
+     * Poses of the algae on the red reef. Translation is the center of the algae, rotation is pointing toward reef
+     * center.
+     */
     public static final List<Pose2d> REEF_ALGAE_POSES_RED = Stream
         .of(
             new Pose2d(13.412, 4.618, Rotation2d.fromDegrees(60)), // 0
@@ -413,13 +417,17 @@ public class Constants {
         .map(reefPose -> reefPose.plus(RELATIVE_ALGAE_INTAKE_POSE))
         .collect(toUnmodifiableList());
 
+    /**
+     * Poses of the algae on the blue reef. Translation is the center of the algae, rotation is pointing toward reef
+     * center.
+     */
     public static final List<Pose2d> REEF_ALGAE_POSES_BLUE = Stream
         .of(
             new Pose2d(4.138, 3.452, Rotation2d.fromDegrees(-120)), // 0
               new Pose2d(3.799, 4.020, Rotation2d.fromDegrees(-180)), // 1
               new Pose2d(4.138, 4.618, Rotation2d.fromDegrees(120)), // 2
               new Pose2d(4.836, 4.618, Rotation2d.fromDegrees(60)), // 3
-              new Pose2d(3.799, 4.020, Rotation2d.fromDegrees(0)), // 4
+              new Pose2d(5.165, 4.020, Rotation2d.fromDegrees(0)), // 4
               new Pose2d(4.836, 3.452, Rotation2d.fromDegrees(-60))) // 5
         .map(reefPose -> reefPose.plus(RELATIVE_ALGAE_INTAKE_POSE))
         .collect(toUnmodifiableList());
