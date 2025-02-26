@@ -209,9 +209,10 @@ public class AutoCommands {
   public Command intakeCoral() {
     return new IntakeCoralCommand(indexerSubsystem, gamePieceManipulatorSubsystem, armSubsystem).deadlineFor(
         ledSubsystem.runPatternAsCommand(
-            LEDPattern.gradient(GradientType.kContinuous, Color.kGray, Color.kWhite)
-                .scrollAtRelativeSpeed(Percent.per(Second).of(100))
-                .breathe(Seconds.of(0.75))));
+            LEDPattern.gradient(GradientType.kContinuous, Color.kBlack, Color.kWhite)
+                .scrollAtRelativeSpeed(Percent.per(Second).of(200))
+                .reversed()
+                .breathe(Seconds.of(0.5))));
   }
 
 }
