@@ -194,7 +194,7 @@ public class AlignToReefCommand extends Command {
   }
 
   public boolean atLateralGoal() {
-    return lateralController.atGoal();
+    return !sawTag || (sawTag && lateralController.atGoal());
   }
 
   @Override
