@@ -219,7 +219,7 @@ public class Constants {
     public static final Angle ARM_MAGNETIC_OFFSET = Rotations.of(-0.297363);
 
     public static final SlotConfigs ARM_SLOT_CONFIGS = new SlotConfigs().withGravityType(Arm_Cosine)
-        .withKP(23.0)
+        .withKP(30.0)
         .withKD(0.0)
         .withKS(0.15341)
         .withKG(0.4) // Volts
@@ -227,8 +227,8 @@ public class Constants {
         .withKA(0.03); // V*s^2/rotation
 
     public static final MotionMagicConfigs ARM_MOTION_MAGIC_CONFIGS = new MotionMagicConfigs()
-        .withMotionMagicAcceleration(6.0)
-        .withMotionMagicCruiseVelocity(8.0);
+        .withMotionMagicAcceleration(2.0)
+        .withMotionMagicCruiseVelocity(6.0);
 
     public static final Distance ELEVATOR_INTAKE_POSITION = Meters.of(0);
     public static final Distance LEVEL_2_HEIGHT = Meters.of(0.2);
