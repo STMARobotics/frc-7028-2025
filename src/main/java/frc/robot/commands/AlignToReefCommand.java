@@ -81,6 +81,8 @@ public class AlignToReefCommand extends Command {
       .withDriveRequestType(DriveRequestType.Velocity)
       .withSteerRequestType(SteerRequestType.MotionMagicExpo);
 
+  private final boolean allowScoreWithoutTag;
+
   private double tagLateralTarget;
   private boolean sawTag = false;
 
@@ -96,11 +98,13 @@ public class AlignToReefCommand extends Command {
       CommandSwerveDrivetrain drivetrain,
       AlignmentSubsystem alignmentSubsystem,
       Distance targetDistance,
-      PhotonCamera photonCamera) {
+      PhotonCamera photonCamera,
+      boolean allowScoreWithoutTag) {
     this.drivetrain = drivetrain;
     this.alignmentSubsystem = alignmentSubsystem;
     this.photonCamera = photonCamera;
     this.targetDistance = targetDistance;
+    this.allowScoreWithoutTag = allowScoreWithoutTag;
 
     distanceController.setTolerance(DISTANCE_TOLERANCE.in(Meters));
     lateralController.setTolerance(LATERAL_TOLERANCE.in(Meters));
@@ -194,7 +198,10 @@ public class AlignToReefCommand extends Command {
   }
 
   public boolean atLateralGoal() {
-    return !sawTag || (sawTag && lateralController.atGoal());
+    if (allowScoreWithoutTag) {
+      return !sawTag || (sawTag && lateralController.atGoal());
+    }
+    return lateralController.atGoal();
   }
 
   @Override

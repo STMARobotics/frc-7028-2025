@@ -157,7 +157,7 @@ public class AutoCommands {
 
   private Command scoreCoralTeleop(Runnable armMethod, List<Pose2d> redPoses, List<Pose2d> bluePoses) {
     var driveToReef = new DriveToNearestPose(drivetrain, () -> drivetrain.getState().Pose, redPoses, bluePoses);
-    var alignToReef = new AlignToReefCommand(drivetrain, alignmentSubsystem, Meters.of(0.34), highCamera);
+    var alignToReef = new AlignToReefCommand(drivetrain, alignmentSubsystem, Meters.of(0.34), highCamera, false);
 
     return ledSubsystem
         .setLEDSegmentsAsCommand(
@@ -187,7 +187,7 @@ public class AutoCommands {
   }
 
   private Command autoScoreCoralAuto(Runnable armMethod, List<Pose2d> redPoses, List<Pose2d> bluePoses) {
-    var alignToReef = new AlignToReefCommand(drivetrain, alignmentSubsystem, Meters.of(0.34), highCamera);
+    var alignToReef = new AlignToReefCommand(drivetrain, alignmentSubsystem, Meters.of(0.34), highCamera, true);
 
     return ledSubsystem
         .setLEDSegmentsAsCommand(
