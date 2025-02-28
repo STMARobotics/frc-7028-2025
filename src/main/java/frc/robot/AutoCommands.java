@@ -166,15 +166,7 @@ public class AutoCommands {
               armSubsystem::isAtPosition,
               alignToReef::atDistanceGoal,
               alignToReef::atLateralGoal)
-        .withDeadline(
-            driveToReef.andThen(
-                armSubsystem.run(armMethod)
-                    .until(armSubsystem::isAtPosition)
-                    .alongWith(alignToReef)
-                    .andThen(
-                        armSubsystem.run(armMethod)
-                            .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectCoral))
-                            .withTimeout(0.25))));
+        .withDeadline(driveToReef.andThen(armSubsystem.run(armMethod).alongWith(alignToReef)));
   }
 
   /**

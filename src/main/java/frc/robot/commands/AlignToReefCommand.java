@@ -81,7 +81,7 @@ public class AlignToReefCommand extends Command {
       .withDriveRequestType(DriveRequestType.Velocity)
       .withSteerRequestType(SteerRequestType.MotionMagicExpo);
 
-  private final boolean allowScoreWithoutTag;
+  private final boolean endOnAlign;
 
   private double tagLateralTarget;
   private boolean sawTag = false;
@@ -93,18 +93,19 @@ public class AlignToReefCommand extends Command {
    * @param alignmentSubsystem alignment subsystem
    * @param targetDistance distance the robot should be from the reef
    * @param photonCamera photon camera to use for AprilTag
+   * @param endOnAlign true to end the command on alignment, or false to never automatically end the command
    */
   public AlignToReefCommand(
       CommandSwerveDrivetrain drivetrain,
       AlignmentSubsystem alignmentSubsystem,
       Distance targetDistance,
       PhotonCamera photonCamera,
-      boolean allowScoreWithoutTag) {
+      boolean endOnAlign) {
     this.drivetrain = drivetrain;
     this.alignmentSubsystem = alignmentSubsystem;
     this.photonCamera = photonCamera;
     this.targetDistance = targetDistance;
-    this.allowScoreWithoutTag = allowScoreWithoutTag;
+    this.endOnAlign = endOnAlign;
 
     distanceController.setTolerance(DISTANCE_TOLERANCE.in(Meters));
     lateralController.setTolerance(LATERAL_TOLERANCE.in(Meters));
@@ -189,7 +190,10 @@ public class AlignToReefCommand extends Command {
 
   @Override
   public boolean isFinished() {
-    return atDistanceGoal() && atLateralGoal();
+    if (endOnAlign) {
+      return atDistanceGoal() && atLateralGoal();
+    }
+    return false;
   }
 
   public boolean atDistanceGoal() {
@@ -198,10 +202,7 @@ public class AlignToReefCommand extends Command {
   }
 
   public boolean atLateralGoal() {
-    if (allowScoreWithoutTag) {
-      return !sawTag || (sawTag && lateralController.atGoal());
-    }
-    return lateralController.atGoal();
+    return !sawTag || (sawTag && lateralController.atGoal());
   }
 
   @Override
