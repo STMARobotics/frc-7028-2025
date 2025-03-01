@@ -125,6 +125,7 @@ public class AlignToReefCommand extends Command {
 
     thetaController.reset(theta);
     distanceController.reset(averageDistance);
+    lateralController.reset(100);
     sawTag = false;
 
     // If a tag is visible, set side-to-side goal
