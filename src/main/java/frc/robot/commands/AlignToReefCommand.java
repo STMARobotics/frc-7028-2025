@@ -152,8 +152,14 @@ public class AlignToReefCommand extends Command {
       var theta = rightDistance - leftDistance;
       var averageDistance = (leftDistance + rightDistance) / 2;
 
-      var thetaCorrection = thetaController.calculate(theta);
+      double thetaCorrection = thetaController.calculate(theta);
+      if (thetaController.atGoal()) {
+        thetaCorrection = 0;
+      }
       var distanceCorrection = -distanceController.calculate(averageDistance);
+      if (distanceController.atGoal()) {
+        distanceCorrection = 0;
+      }
       getTagY().ifPresentOrElse(tagY -> {
         if (!sawTag) {
           // This is the first time a tag has been seen, set goal
@@ -161,6 +167,9 @@ public class AlignToReefCommand extends Command {
         }
         // Tag is visible, do alignment
         var lateralCorrection = lateralController.calculate(tagY);
+        if (lateralController.atGoal()) {
+          lateralCorrection = 0;
+        }
         robotCentricRequest.withVelocityX(lateralCorrection);
       }, () -> robotCentricRequest.withVelocityX(0));
 
