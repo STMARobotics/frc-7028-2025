@@ -142,7 +142,7 @@ public class IndexerSubsystem extends SubsystemBase {
    */
   public void eject() {
     // TODO voltage for week zero
-    beltMotor.setControl(beltVoltageOut.withOutput(-8.0));
+    beltMotor.setControl(beltVoltageOut.withOutput(-4.0));
     // beltMotor.setControl(beltControl.withVelocity(EJECT_VELOCITY));
   }
 

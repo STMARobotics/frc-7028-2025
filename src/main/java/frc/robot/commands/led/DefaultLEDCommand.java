@@ -1,7 +1,11 @@
 package frc.robot.commands.led;
 
+import static edu.wpi.first.units.Units.Percent;
+import static edu.wpi.first.units.Units.Second;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.LEDPattern.GradientType;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
@@ -16,6 +20,7 @@ public class DefaultLEDCommand extends Command {
   private enum LEDMode {
     DISCONNECTED,
     DISABLED,
+    TEST,
     DEFAULT
   }
 
@@ -25,6 +30,7 @@ public class DefaultLEDCommand extends Command {
   private boolean candyCaneState = false;
   private static final double RED_AND_WHITE_CANDY_CANE_SPEED = 0.5;
   private static final double BLUE_AND_YELLOW_CANDY_CANE_SPEED = 1.0;
+  private static final double ORANGE_AND_BLACK_CANDY_CANE_SPEED = 0.5;
 
   /**
    * Creates a new DefaultLEDCommand
@@ -61,8 +67,17 @@ public class DefaultLEDCommand extends Command {
         ledSubsystem
             .setCandyCane(candyCaneState ? Color.kBlue : Color.kOrange, candyCaneState ? Color.kOrange : Color.kBlue);
         break;
+      case TEST:
+        if (timer.advanceIfElapsed(ORANGE_AND_BLACK_CANDY_CANE_SPEED)) {
+          candyCaneState = !candyCaneState;
+        }
+        ledSubsystem
+            .setCandyCane(candyCaneState ? Color.kOrange : Color.kBlack, candyCaneState ? Color.kBlack : Color.kOrange);
+        break;
       default:
-        ledSubsystem.runPattern(LEDPattern.kOff);
+        ledSubsystem.runPattern(
+            LEDPattern.gradient(GradientType.kContinuous, Color.kBlue, Color.kOrange)
+                .scrollAtRelativeSpeed(Percent.per(Second).of(25)));
         break;
     }
   }
@@ -89,6 +104,9 @@ public class DefaultLEDCommand extends Command {
     }
     if (RobotState.isDisabled()) {
       return LEDMode.DISABLED;
+    }
+    if (RobotState.isTest()) {
+      return LEDMode.TEST;
     }
     return LEDMode.DEFAULT;
   }

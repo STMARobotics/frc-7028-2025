@@ -140,7 +140,7 @@ public abstract class ControlBindings {
    * 
    * @return optional trigger
    */
-  public Optional<Trigger> moveArmToReefAlgaeLevel1() {
+  public Optional<Trigger> moveArmToReefLowerAlgae() {
     return Optional.empty();
   }
 
@@ -149,16 +149,16 @@ public abstract class ControlBindings {
    * 
    * @return optional trigger
    */
-  public Optional<Trigger> moveArmToReefAlgaeLevel2() {
+  public Optional<Trigger> moveArmToReefUpperAlgae() {
     return Optional.empty();
   }
 
   /**
-   * Moves the arm to the position to score algae on the barge.
+   * Moves the arm to the position to hold algae and runs the wheels to grip it.
    * 
    * @return optional command
    */
-  public Optional<Trigger> moveArmToBarge() {
+  public Optional<Trigger> holdAlgae() {
     return Optional.empty();
   }
 

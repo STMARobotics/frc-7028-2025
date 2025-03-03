@@ -5,9 +5,22 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "deadline",
           "data": {
-            "pathName": "One Coral"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Three Coral Right 1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ledDefault"
+                }
+              }
+            ]
           }
         },
         {
@@ -29,7 +42,26 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Two Coral"
+                  "pathName": "Three Coral Right 2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intakeCoral"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Three Coral Right 3"
                 }
               },
               {
@@ -60,7 +92,26 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Three Coral"
+                  "pathName": "Three Coral Right 4"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intakeCoral"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Three Coral Right 5"
                 }
               },
               {

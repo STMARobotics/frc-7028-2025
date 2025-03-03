@@ -155,7 +155,7 @@ public class Constants {
     public static final Current CLIMB_SUPPLY_CURRENT_LIMIT = Amps.of(40);
     public static final double CLIMB_ROTOR_TO_SENSOR_RATIO = 144;
 
-    public static final Angle CLIMB_FORWARD_SOFT_LIMIT = Rotations.of(0.831299);
+    public static final Angle CLIMB_FORWARD_SOFT_LIMIT = Rotations.of(0.826);
 
     public static final Voltage CLIMB_VOLTAGE = Volts.of(6);
   }
@@ -231,22 +231,24 @@ public class Constants {
         .withMotionMagicCruiseVelocity(6.0);
 
     public static final Distance ELEVATOR_INTAKE_POSITION = Meters.of(0);
-    public static final Distance LEVEL_2_HEIGHT = Meters.of(0.1946611669921875);
+    public static final Distance LEVEL_2_HEIGHT = Meters.of(0.2);
     public static final Distance LEVEL_3_HEIGHT = Meters.of(0);
     public static final Distance LEVEL_4_HEIGHT = Meters.of(0.675);
-    public static final Distance ALGAE_LEVEL_1_HEIGHT = Meters.of(0.0);
-    public static final Distance ALGAE_LEVEL_2_HEIGHT = Meters.of(0.317);
+    public static final Distance ALGAE_LOWER_HEIGHT = Meters.of(0.0);
+    public static final Distance ALGAE_UPPER_HEIGHT = Meters.of(0.317);
     public static final Distance ALGAE_BARGE_HEIGHT = Meters.of(0.72);
     public static final Distance ALGAE_PROCESSOR_HEIGHT = Meters.of(0.0);
+    public static final Distance ALGAE_HOLD_HEIGHT = Meters.zero();
 
     public static final Angle ARM_INTAKE_ANGLE = Rotations.of(0.765);
-    public static final Angle LEVEL_2_ANGLE = Rotations.of(0.68212890625);
+    public static final Angle LEVEL_2_ANGLE = Rotations.of(0.705);
     public static final Angle LEVEL_3_ANGLE = Rotations.of(0.172);
     public static final Angle LEVEL_4_ANGLE = Rotations.of(0.16);
-    public static final Angle ALGAE_LEVEL_1_ANGLE = Rotations.of(0.06);
-    public static final Angle ALGAE_LEVEL_2_ANGLE = Rotations.of(0.105);
+    public static final Angle ALGAE_LOWER_ANGLE = Rotations.of(0.06);
+    public static final Angle ALGAE_UPPER_ANGLE = Rotations.of(0.105);
     public static final Angle ALGAE_BARGE_ANGLE = Rotation.of(0.405);
     public static final Angle ALGAE_PROCESSOR_ANGLE = Rotation.of(0.963);
+    public static final Angle ALGAE_HOLD_ANGLE = Rotations.of(0.35);
 
     // Values for Mechanism2d visualization
     public static final Distance ARM_PIVOT_LENGTH = Meters.of(0.577);

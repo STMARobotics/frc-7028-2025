@@ -37,6 +37,9 @@ public class AlignmentSubsystem extends SubsystemBase {
 
   /**
    * Gets the distance detected by the left sensor
+   * <p>
+   * This is the FRONT CanRange (need to correct IDs after event)
+   * </p>
    * 
    * @return distance detected by the sensor
    */
@@ -46,6 +49,9 @@ public class AlignmentSubsystem extends SubsystemBase {
 
   /**
    * Gets the distance detected by the right sensor
+   * <p>
+   * This is the BACK CanRange (need to correct IDs after event)
+   * </p>
    * 
    * @return distance detected by the sensor
    */

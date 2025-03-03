@@ -9,6 +9,7 @@ import static frc.robot.Constants.TestingConstants.MANIPULATOR_BACKWARDS_TESTING
 import static frc.robot.Constants.TestingConstants.MANIPULATOR_TESTING_SPEED;
 
 import edu.wpi.first.networktables.BooleanPublisher;
+import edu.wpi.first.networktables.BooleanSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -16,6 +17,7 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.GamePieceManipulatorSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
+import java.util.function.BooleanSupplier;
 
 /**
  * Command factory for TestMode
@@ -38,6 +40,7 @@ public class TestMode {
   private final ClimbSubsystem climbSubsystem;
   private final ArmSubsystem armSubsystem;
   private final IndexerSubsystem indexerSubsystem;
+  private BooleanSubscriber[] testResults;
 
   /**
    * Constructs a test mode
@@ -55,7 +58,16 @@ public class TestMode {
     this.climbSubsystem = climbSubsystem;
     this.armSubsystem = armSubsystem;
     this.indexerSubsystem = indexerSubsystem;
-  }
+
+    testResults = new BooleanSubscriber[] {
+        indexerForwardPublisher.getTopic().subscribe(false),
+        indexerBackwardPublisher.getTopic().subscribe(false),
+        manipulatorForwardPublisher.getTopic().subscribe(false),
+        manipulatorBackwardPublisher.getTopic().subscribe(false),
+        climbPublisher.getTopic().subscribe(false),
+        elevatorPubliser.getTopic().subscribe(false),
+        armPublisher.getTopic().subscribe(false) };
+  };
 
   /**
    * Command to run all the tests in the TestMode routine
@@ -141,5 +153,18 @@ public class TestMode {
         .withTimeout(Seconds.of(5))
         .andThen(() -> armPublisher.set(armSubsystem.isArmAtAngle()))
         .finallyDo(armSubsystem::park);
+  }
+
+  /**
+   * Returns the results of the tests ran during the TestMode routine
+   * 
+   * @return test results
+   */
+  public BooleanSupplier[] getTestResults() {
+    BooleanSupplier[] results = new BooleanSupplier[testResults.length];
+    for (int i = 0; i < testResults.length; i++) {
+      results[i] = testResults[i]::get;
+    }
+    return results;
   }
 }

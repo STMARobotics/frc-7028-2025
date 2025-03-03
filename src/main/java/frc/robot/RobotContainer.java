@@ -20,10 +20,11 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.commands.AlgaeBargeCommand;
 import frc.robot.commands.EjectCoralCommand;
-import frc.robot.commands.IntakeCoralCommand;
 import frc.robot.commands.PhotonVisionCommand;
 import frc.robot.commands.TuneArmCommand;
 import frc.robot.commands.led.DefaultLEDCommand;
@@ -75,6 +76,7 @@ public class RobotContainer {
   private final AutoCommands autoCommands = new AutoCommands(
       drivetrain,
       armSubsystem,
+      indexerSubsystem,
       alignmentSubsystem,
       gamePieceManipulatorSubsystem,
       indexerSubsystem,
@@ -100,11 +102,10 @@ public class RobotContainer {
     }
 
     // Configure PathPlanner
-    NamedCommands.registerCommand("scoreCoralLevel4", autoCommands.autoScoreCoralLevel4Auto());
-    NamedCommands.registerCommand("scoreCoralLevel3", autoCommands.autoScoreCoralLevel3());
-    NamedCommands.registerCommand(
-        "intakeCoral",
-          new IntakeCoralCommand(indexerSubsystem, gamePieceManipulatorSubsystem, armSubsystem));
+    NamedCommands.registerCommand("scoreCoralLevel4", autoCommands.scoreCoralLevel4Auto());
+    NamedCommands.registerCommand("ledDefault", new DefaultLEDCommand(ledSubsystem));
+    NamedCommands
+        .registerCommand("intakeCoral", autoCommands.intakeCoral().andThen(new DefaultLEDCommand(ledSubsystem)));
     NamedCommands.registerCommand("parkArm", armSubsystem.runOnce(armSubsystem::park).finallyDo(armSubsystem::stop));
     autoChooser = AutoBuilder.buildAutoChooser("Tests");
     SmartDashboard.putData("Auto Mode", autoChooser);
@@ -149,10 +150,7 @@ public class RobotContainer {
     drivetrain.registerTelemetry(drivetrainTelemetry::telemeterize);
 
     // Coral bindings
-    controlBindings.intakeCoral()
-        .ifPresent(
-            trigger -> trigger
-                .onTrue(new IntakeCoralCommand(indexerSubsystem, gamePieceManipulatorSubsystem, armSubsystem)));
+    controlBindings.intakeCoral().ifPresent(trigger -> trigger.onTrue(autoCommands.intakeCoral()));
     controlBindings.ejectCoral()
         .ifPresent(
             trigger -> trigger
@@ -178,7 +176,7 @@ public class RobotContainer {
 
     controlBindings.tuneArm().ifPresent(trigger -> trigger.onTrue(new TuneArmCommand(armSubsystem)));
 
-    controlBindings.moveArmToReefAlgaeLevel1()
+    controlBindings.moveArmToReefLowerAlgae()
         .ifPresent(
             trigger -> trigger.onTrue(
                 armSubsystem.run(armSubsystem::moveToAlgaeLevel1)
@@ -187,7 +185,7 @@ public class RobotContainer {
                       armSubsystem.stop();
                       gamePieceManipulatorSubsystem.stop();
                     })));
-    controlBindings.moveArmToReefAlgaeLevel2()
+    controlBindings.moveArmToReefUpperAlgae()
         .ifPresent(
             trigger -> trigger.onTrue(
                 armSubsystem.run(armSubsystem::moveToAlgaeLevel2)
@@ -197,15 +195,15 @@ public class RobotContainer {
                       gamePieceManipulatorSubsystem.stop();
                     })));
 
-    controlBindings.moveArmToBarge().ifPresent(trigger -> trigger.onTrue(Commands.run(() -> {
-      armSubsystem.moveToBarge();
+    controlBindings.holdAlgae().ifPresent(trigger -> trigger.onTrue(Commands.run(() -> {
+      armSubsystem.moveToHoldAlgae();
       gamePieceManipulatorSubsystem.activeHoldAlgae();
     }, armSubsystem, gamePieceManipulatorSubsystem).finallyDo(armSubsystem::stop)));
 
-    controlBindings.shootAlgae().ifPresent(trigger -> trigger.whileTrue(Commands.run(() -> {
-      armSubsystem.moveToBarge();
-      gamePieceManipulatorSubsystem.shootAlgae();
-    }, armSubsystem, gamePieceManipulatorSubsystem).finallyDo(gamePieceManipulatorSubsystem::stop)));
+    controlBindings.shootAlgae()
+        .ifPresent(
+            trigger -> trigger
+                .whileTrue(new AlgaeBargeCommand(armSubsystem, gamePieceManipulatorSubsystem, ledSubsystem)));
 
     controlBindings.moveArmToProcessor().ifPresent(trigger -> trigger.onTrue(Commands.run(() -> {
       armSubsystem.moveToProcessor();
@@ -224,8 +222,8 @@ public class RobotContainer {
 
     controlBindings.slowMode().ifPresent(trigger -> trigger.whileTrue(slowModeCommand));
 
-    controlBindings.scoreCoralLevel3().ifPresent(trigger -> trigger.whileTrue(autoCommands.autoScoreCoralLevel3()));
-    controlBindings.scoreCoralLevel4().ifPresent(trigger -> trigger.whileTrue(autoCommands.autoScoreCoralLevel4()));
+    controlBindings.scoreCoralLevel3().ifPresent(trigger -> trigger.whileTrue(autoCommands.scoreCoralLevel3()));
+    controlBindings.scoreCoralLevel4().ifPresent(trigger -> trigger.whileTrue(autoCommands.scoreCoralLevel4()));
   }
 
   public Command getAutonomousCommand() {
@@ -238,7 +236,10 @@ public class RobotContainer {
    */
   public void populateTestModeDashboard() {
     // Test mode command
-    SmartDashboard.putData("Run Tests", testMode.testCommand());
+    SmartDashboard.putData(
+        "Run Tests",
+          testMode.testCommand()
+              .deadlineFor(ledSubsystem.setLEDSegmentsAsCommand(Color.kBlue, testMode.getTestResults())));
     SmartDashboard.putData("Arm in coast", armSubsystem.runOnce(armSubsystem::coast).ignoringDisable(true));
     SmartDashboard.putData("Arm in brake", armSubsystem.runOnce(armSubsystem::brake).ignoringDisable(true));
 
