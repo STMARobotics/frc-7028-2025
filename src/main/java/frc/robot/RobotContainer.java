@@ -10,6 +10,8 @@ import static edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kForwa
 import static edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kReverse;
 import static frc.robot.Constants.TeleopDriveConstants.MAX_TELEOP_ANGULAR_VELOCITY;
 import static frc.robot.Constants.TeleopDriveConstants.MAX_TELEOP_VELOCITY;
+import static frc.robot.Constants.VisionConstants.CAMERA_NAMES;
+import static frc.robot.Constants.VisionConstants.ROBOT_TO_CAMERA_TRANSFORMS;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
@@ -25,7 +27,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.commands.AlgaeBargeCommand;
 import frc.robot.commands.EjectCoralCommand;
-import frc.robot.commands.PhotonVisionCommand;
 import frc.robot.commands.TuneArmCommand;
 import frc.robot.commands.led.DefaultLEDCommand;
 import frc.robot.commands.led.LEDBootAnimationCommand;
@@ -71,7 +72,6 @@ public class RobotContainer {
 
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
   private final DrivetrainTelemetry drivetrainTelemetry = new DrivetrainTelemetry();
-  private final PhotonVisionCommand visionCommand = new PhotonVisionCommand(drivetrain::addVisionMeasurement);
   private final Command slowModeCommand;
   private final AutoCommands autoCommands = new AutoCommands(
       drivetrain,
@@ -92,6 +92,13 @@ public class RobotContainer {
   /* Path follower */
   private final SendableChooser<Command> autoChooser;
   private final ControlBindings controlBindings;
+
+  private final Thread photonThread = new Thread(
+      new PhotonRunnable(
+          CAMERA_NAMES,
+          ROBOT_TO_CAMERA_TRANSFORMS,
+          drivetrain::addVisionMeasurement,
+          () -> drivetrain.getState().Pose));
 
   public RobotContainer() {
     // Configure control binding scheme
@@ -120,8 +127,12 @@ public class RobotContainer {
 
     configureBindings();
 
+    // Start PhotonVision thread
+    photonThread.setName("PhotonVision");
+    photonThread.setDaemon(true);
+    photonThread.start();
+
     // Set up default and background commands
-    visionCommand.schedule();
     armSubsystem.setDefaultCommand(armSubsystem.run(armSubsystem::park).finallyDo(armSubsystem::stop));
     gamePieceManipulatorSubsystem.setDefaultCommand(
         gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::activeHoldCoral)
