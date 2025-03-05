@@ -307,6 +307,9 @@ public class Constants {
     public static final int DEVICE_ID_RIGHT_CANRANGE = 38;
     public static final int DEVICE_ID_LEFT_CANRANGE = 39;
 
+    public static final Distance LEFT_CANRANGE_DISTANCE_FROM_CENTER = Inches.of(12.5);
+    public static final Distance RIGHT_CANRANGE_DISTANCE_FROM_CENTER = Inches.of(-0.25);
+
     public static final Distance ALIGNMENT_TOLERANCE = Inches.of(0.5);
 
     // These are the dimensions for the WELDED field
