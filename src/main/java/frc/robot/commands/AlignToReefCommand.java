@@ -5,9 +5,11 @@ import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
+import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
-import static frc.robot.Constants.AlignmentConstants.ALIGNMENT_TOLERANCE;
+import static frc.robot.Constants.AlignmentConstants.ALIGNMENT_ANGLE_TOLERANCE;
+import static frc.robot.Constants.AlignmentConstants.ALIGNMENT_DISTANCE_TOLERANCE;
 import static frc.robot.Constants.AlignmentConstants.MAX_ALIGN_ANGULAR_ACCELERATION;
 import static frc.robot.Constants.AlignmentConstants.MAX_ALIGN_ANGULAR_VELOCITY;
 import static frc.robot.Constants.AlignmentConstants.MAX_ALIGN_TRANSLATION_ACCELERATION;
@@ -118,13 +120,11 @@ public class AlignToReefCommand extends Command {
     distanceController.setGoal(targetDistance.in(Meters));
     thetaController.setGoal(0);
 
-    var leftDistance = alignmentSubsystem.getLeftDistance().in(Meters);
-    var rightDistance = alignmentSubsystem.getRightDistance().in(Meters);
-    var theta = rightDistance - leftDistance;
-    var averageDistance = (leftDistance + rightDistance) / 2;
+    var theta = alignmentSubsystem.getRelativeAngle();
+    var distance = alignmentSubsystem.getDistance();
 
-    thetaController.reset(theta);
-    distanceController.reset(averageDistance);
+    thetaController.reset(theta.in(Radians));
+    distanceController.reset(distance.in(Meters));
     lateralController.reset(100);
     sawTag = false;
 
@@ -144,32 +144,30 @@ public class AlignToReefCommand extends Command {
 
   @Override
   public void execute() {
-    var leftDistance = alignmentSubsystem.getLeftDistance().in(Meters);
-    var rightDistance = alignmentSubsystem.getRightDistance().in(Meters);
-
-    if (leftDistance < 1.2 && rightDistance < 1.2) {
-      // We see something to align to
-      var theta = rightDistance - leftDistance;
-      var averageDistance = (leftDistance + rightDistance) / 2;
-
-      var thetaCorrection = thetaController.calculate(theta);
-      var distanceCorrection = -distanceController.calculate(averageDistance);
-      getTagY().ifPresentOrElse(tagY -> {
-        if (!sawTag) {
-          // This is the first time a tag has been seen, set goal
-          initLateralTag(tagY);
-        }
-        // Tag is visible, do alignment
-        var lateralCorrection = lateralController.calculate(tagY);
-        robotCentricRequest.withVelocityX(lateralCorrection);
-      }, () -> robotCentricRequest.withVelocityX(0));
-
-      // The robot is rotated 90 degrees, so Y is distance and X is lateral
-      drivetrain.setControl(robotCentricRequest.withRotationalRate(thetaCorrection).withVelocityY(distanceCorrection));
-    } else {
-      // We don't see anything or it's too far away to safely align
+    // If either of the CANRanges aren't seeing the reef close, do nothing
+    if (alignmentSubsystem.getLeftDistance().gte(Meters.of(1.2))
+        && alignmentSubsystem.getRightDistance().gte(Meters.of(1.2))) {
       drivetrain.setControl(new SwerveRequest.Idle());
+      return;
     }
+
+    var theta = alignmentSubsystem.getRelativeAngle();
+    var distance = alignmentSubsystem.getDistance();
+
+    var thetaCorrection = thetaController.calculate(theta.in(Radians));
+    var distanceCorrection = distanceController.calculate(distance.in(Meters));
+    getTagY().ifPresentOrElse(tagY -> {
+      if (!sawTag) {
+        // This is the first time a tag has been seen, set goal
+        initLateralTag(tagY);
+      }
+      // Tag is visible, do alignment
+      var lateralCorrection = lateralController.calculate(tagY);
+      robotCentricRequest.withVelocityX(lateralCorrection);
+    }, () -> robotCentricRequest.withVelocityX(0));
+
+    // The robot is rotated 90 degrees, so Y is distance and X is lateral
+    drivetrain.setControl(robotCentricRequest.withRotationalRate(thetaCorrection).withVelocityY(distanceCorrection));
   }
 
   private Optional<Double> getTagY() {
@@ -190,12 +188,15 @@ public class AlignToReefCommand extends Command {
 
   @Override
   public boolean isFinished() {
-    return atDistanceGoal() && atLateralGoal();
+    return atDistanceGoal() && atLateralGoal() && atThetaGoal();
   }
 
   public boolean atDistanceGoal() {
-    return alignmentSubsystem.getLeftDistance().isNear(targetDistance, ALIGNMENT_TOLERANCE)
-        && alignmentSubsystem.getRightDistance().isNear(targetDistance, ALIGNMENT_TOLERANCE);
+    return alignmentSubsystem.getDistance().isNear(targetDistance, ALIGNMENT_DISTANCE_TOLERANCE);
+  }
+
+  public boolean atThetaGoal() {
+    return alignmentSubsystem.getRelativeAngle().isNear(Radians.of(0), ALIGNMENT_ANGLE_TOLERANCE);
   }
 
   public boolean atLateralGoal() {

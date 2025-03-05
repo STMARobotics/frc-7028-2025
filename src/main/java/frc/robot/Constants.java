@@ -310,7 +310,8 @@ public class Constants {
     public static final Distance LEFT_CANRANGE_DISTANCE_FROM_CENTER = Inches.of(12.5);
     public static final Distance RIGHT_CANRANGE_DISTANCE_FROM_CENTER = Inches.of(-0.25);
 
-    public static final Distance ALIGNMENT_TOLERANCE = Inches.of(0.5);
+    public static final Distance ALIGNMENT_DISTANCE_TOLERANCE = Inches.of(0.5);
+    public static final Angle ALIGNMENT_ANGLE_TOLERANCE = Degrees.of(1);
 
     // These are the dimensions for the WELDED field
     public static final double FIELD_LENGTH_METERS = 17.548;
