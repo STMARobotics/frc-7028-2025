@@ -98,12 +98,32 @@ public class JoystickControlBindings extends ControlBindings {
   }
 
   @Override
-  public Optional<Trigger> scoreCoralLevel3() {
+  public Optional<Trigger> driveToLevel2Left() {
+    return Optional.empty();
+  }
+
+  @Override
+  public Optional<Trigger> driveToLevel2Right() {
+    return Optional.empty();
+  }
+
+  @Override
+  public Optional<Trigger> scoreCoralLevel3Left() {
+    return Optional.empty();
+  }
+
+  @Override
+  public Optional<Trigger> scoreCoralLevel3Right() {
     return Optional.of(rightJoystick.button(3));
   }
 
   @Override
-  public Optional<Trigger> scoreCoralLevel4() {
+  public Optional<Trigger> scoreCoralLevel4Left() {
+    return Optional.empty();
+  }
+
+  @Override
+  public Optional<Trigger> scoreCoralLevel4Right() {
     return Optional.of(rightJoystick.button(2));
   }
 

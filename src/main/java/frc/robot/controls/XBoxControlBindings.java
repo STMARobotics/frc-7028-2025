@@ -70,12 +70,12 @@ public class XBoxControlBindings extends ControlBindings {
   }
 
   @Override
-  public Optional<Trigger> scoreCoralLevel4() {
+  public Optional<Trigger> scoreCoralLevel4Right() {
     return Optional.of(driverController.x());
   }
 
   @Override
-  public Optional<Trigger> scoreCoralLevel3() {
+  public Optional<Trigger> scoreCoralLevel3Right() {
     return Optional.of(driverController.a());
   }
 

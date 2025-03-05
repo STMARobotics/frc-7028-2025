@@ -42,9 +42,6 @@ public class AlignToReefCommand extends Command {
   // ID of the tags on the reef
   private static final Set<Integer> FIDUCIAL_IDS = Stream.of(17, 18, 19, 20, 21, 22, 6, 7, 8, 9, 10, 11)
       .collect(toUnmodifiableSet());
-  // Alignment, depending which reef branch we want to score on
-  private static final double LEFT_LATERAL_TARGET = -0.23;
-  private static final double RIGHT_LATERAL_TARGET = 0.08;
 
   private static final Distance DISTANCE_TOLERANCE = Inches.of(0.5);
   private static final Distance LATERAL_TOLERANCE = Inch.of(1.0);
@@ -82,8 +79,7 @@ public class AlignToReefCommand extends Command {
       .withSteerRequestType(SteerRequestType.MotionMagicExpo);
 
   private final boolean allowScoreWithoutTag;
-
-  private double tagLateralTarget;
+  private final double tagLateralTarget;
   private boolean sawTag = false;
 
   /**
@@ -98,10 +94,12 @@ public class AlignToReefCommand extends Command {
       CommandSwerveDrivetrain drivetrain,
       AlignmentSubsystem alignmentSubsystem,
       Distance targetDistance,
+      Distance tagLateralTarget,
       PhotonCamera photonCamera,
       boolean allowScoreWithoutTag) {
     this.drivetrain = drivetrain;
     this.alignmentSubsystem = alignmentSubsystem;
+    this.tagLateralTarget = tagLateralTarget.in(Meters);
     this.photonCamera = photonCamera;
     this.targetDistance = targetDistance;
     this.allowScoreWithoutTag = allowScoreWithoutTag;
@@ -117,6 +115,7 @@ public class AlignToReefCommand extends Command {
   public void initialize() {
     distanceController.setGoal(targetDistance.in(Meters));
     thetaController.setGoal(0);
+    lateralController.setGoal(tagLateralTarget);
 
     var leftDistance = alignmentSubsystem.getLeftDistance().in(Meters);
     var rightDistance = alignmentSubsystem.getRightDistance().in(Meters);
@@ -133,11 +132,6 @@ public class AlignToReefCommand extends Command {
   }
 
   private void initLateralTag(double tagY) {
-    // Choose the nearest alignment target
-    tagLateralTarget = Math.abs(tagY - RIGHT_LATERAL_TARGET) < Math.abs(tagY - LEFT_LATERAL_TARGET)
-        ? RIGHT_LATERAL_TARGET
-        : LEFT_LATERAL_TARGET;
-    lateralController.setGoal(tagLateralTarget);
     lateralController.reset(tagY);
     sawTag = true;
   }

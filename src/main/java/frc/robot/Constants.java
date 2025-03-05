@@ -361,74 +361,129 @@ public class Constants {
      */
     // spotless:on
     /**
-     * Poses of the branches on the blue reef. Translation is the branch pipe base, rotation is pointing toward reef
-     * center.
+     * Poses of the right branches on the blue reef. Translation is the branch pipe base, rotation is pointing toward
+     * reef center.
      */
-    public static final List<Pose2d> REEF_BRANCH_POSES_BLUE = Stream
+    public static final List<Pose2d> REEF_BRANCH_POSES_BLUE_RIGHT = Stream
         .of(
             new Pose2d(4.347746, 3.467, Rotation2d.fromDegrees(60)), // 0
-              new Pose2d(4.062584, 3.630770, Rotation2d.fromDegrees(60)), // 1
               new Pose2d(3.942648, 3.840490, Rotation2d.fromDegrees(0)), // 2
-              new Pose2d(3.942648, 4.169106, Rotation2d.fromDegrees(0)), // 3
               new Pose2d(4.062584, 4.398912, Rotation2d.fromDegrees(-60)), // 4
-              new Pose2d(4.347175, 4.515, Rotation2d.fromDegrees(-60)), // 5
               new Pose2d(4.588763, 4.542161, Rotation2d.fromDegrees(-120)), // 6
-              new Pose2d(4.873926, 4.378820, Rotation2d.fromDegrees(-120)), // 7
               new Pose2d(4.98, 4.215, Rotation2d.fromDegrees(180)), // 8
+              new Pose2d(4.873353, 3.632614, Rotation2d.fromDegrees(120))) // 10
+        .collect(toUnmodifiableList());
+
+    /**
+     * Poses of the left branches on the blue reef. Translation is the branch pipe base, rotation is pointing toward
+     * reef center.
+     */
+    public static final List<Pose2d> REEF_BRANCH_POSES_BLUE_LEFT = Stream
+        .of(
+            new Pose2d(4.062584, 3.630770, Rotation2d.fromDegrees(60)), // 1
+              new Pose2d(3.942648, 4.169106, Rotation2d.fromDegrees(0)), // 3
+              new Pose2d(4.347175, 4.515, Rotation2d.fromDegrees(-60)), // 5
+              new Pose2d(4.873926, 4.378820, Rotation2d.fromDegrees(-120)), // 7
               new Pose2d(4.994328, 3.841097, Rotation2d.fromDegrees(180)), // 9
-              new Pose2d(4.873353, 3.632614, Rotation2d.fromDegrees(120)), // 10
               new Pose2d(4.589334, 3.466500, Rotation2d.fromDegrees(120)))// 11
         .collect(toUnmodifiableList());
 
     /**
-     * Poses of the branches on the red reef. Translation is the branch pipe base, rotation is pointing toward reef
-     * center.
+     * Poses of the right branches on the red reef. Translation is the branch pipe base, rotation is pointing toward
+     * reef center.
      */
-    public static final List<Pose2d> REEF_BRANCH_POSES_RED = Stream
+    public static final List<Pose2d> REEF_BRANCH_POSES_RED_RIGHT = Stream
         .of(
             new Pose2d(13.200254, 4.585000, Rotation2d.fromDegrees(-120)), // 0
-              new Pose2d(13.485416, 4.421230, Rotation2d.fromDegrees(-120)), // 1
               new Pose2d(13.605352, 4.211510, Rotation2d.fromDegrees(-180)), // 2
-              new Pose2d(13.605352, 3.882894, Rotation2d.fromDegrees(-180)), // 3
               new Pose2d(13.485416, 3.653088, Rotation2d.fromDegrees(120)), // 4
-              new Pose2d(13.200825, 3.537000, Rotation2d.fromDegrees(120)), // 5
               new Pose2d(12.959237, 3.509839, Rotation2d.fromDegrees(60)), // 6
-              new Pose2d(12.674074, 3.673180, Rotation2d.fromDegrees(60)), // 7
               new Pose2d(12.568000, 3.837000, Rotation2d.fromDegrees(0)), // 8
+              new Pose2d(12.598000, 4.292000, Rotation2d.fromDegrees(-60))) // 10
+        .collect(toUnmodifiableList());
+
+    /**
+     * Poses of the left branches on the red reef. Translation is the branch pipe base, rotation is pointing toward reef
+     * center.
+     */
+    public static final List<Pose2d> REEF_BRANCH_POSES_RED_LEFT = Stream
+        .of(
+            new Pose2d(13.485416, 4.421230, Rotation2d.fromDegrees(-120)), // 1
+              new Pose2d(13.605352, 3.882894, Rotation2d.fromDegrees(-180)), // 3
+              new Pose2d(13.200825, 3.537000, Rotation2d.fromDegrees(120)), // 5
+              new Pose2d(12.674074, 3.673180, Rotation2d.fromDegrees(60)), // 7
               new Pose2d(12.553672, 4.210903, Rotation2d.fromDegrees(0)), // 9
-              new Pose2d(12.598000, 4.292000, Rotation2d.fromDegrees(-60)), // 10
               new Pose2d(12.958666, 4.585500, Rotation2d.fromDegrees(-60)))// 11
         .collect(toUnmodifiableList());
 
-    /** Poses of the robot for scoring on L4 on the red alliance */
-    public static final List<Pose2d> REEF_L4_SCORE_POSES_RED = REEF_BRANCH_POSES_RED.stream()
+    /** Poses of the robot for scoring on L4 left branches on the red alliance */
+    public static final List<Pose2d> REEF_L4_SCORE_POSES_RED_LEFT = REEF_BRANCH_POSES_RED_LEFT.stream()
         .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE_CORAL_L4))
         .collect(toUnmodifiableList());
 
-    /** Poses of the robot for scoring on L4 on the blue alliance */
-    public static final List<Pose2d> REEF_L4_SCORE_POSE_BLUE = REEF_BRANCH_POSES_BLUE.stream()
+    /** Poses of the robot for scoring on L4 right branches on the red alliance */
+    public static final List<Pose2d> REEF_L4_SCORE_POSES_RED_RIGHT = REEF_BRANCH_POSES_RED_RIGHT.stream()
         .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE_CORAL_L4))
         .collect(toUnmodifiableList());
 
-    /** Poses of the robot for scoring on L3 on the red alliance */
-    public static final List<Pose2d> REEF_L3_SCORE_POSES_RED = REEF_BRANCH_POSES_RED.stream()
+    /** Poses of the robot for scoring on L4 left branches on the blue alliance */
+    public static final List<Pose2d> REEF_L4_SCORE_POSES_BLUE_LEFT = REEF_BRANCH_POSES_BLUE_LEFT.stream()
+        .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE_CORAL_L4))
+        .collect(toUnmodifiableList());
+
+    /** Poses of the robot for scoring on L4 right branches on the blue alliance */
+    public static final List<Pose2d> REEF_L4_SCORE_POSES_BLUE_RIGHT = REEF_BRANCH_POSES_BLUE_RIGHT.stream()
+        .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE_CORAL_L4))
+        .collect(toUnmodifiableList());
+
+    /** Poses of the robot for scoring on L3 left branch on the red alliance */
+    public static final List<Pose2d> REEF_L3_SCORE_POSES_RED_LEFT = REEF_BRANCH_POSES_RED_LEFT.stream()
         .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE_CORAL_L3))
         .collect(toUnmodifiableList());
 
-    /** Poses of the robot for scoring on L3 on the blue alliance */
-    public static final List<Pose2d> REEF_L3_SCORE_POSE_BLUE = REEF_BRANCH_POSES_BLUE.stream()
+    /** Poses of the robot for scoring on L3 right branch on the red alliance */
+    public static final List<Pose2d> REEF_L3_SCORE_POSES_RED_RIGHT = REEF_BRANCH_POSES_RED_RIGHT.stream()
         .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE_CORAL_L3))
         .collect(toUnmodifiableList());
 
-    /** Poses of the robot for scoring on L2 on the red alliance */
-    public static final List<Pose2d> REEF_L2_SCORE_POSES_RED = REEF_BRANCH_POSES_RED.stream()
+    /** Poses of the robot for scoring on L3 left branch on the blue alliance */
+    public static final List<Pose2d> REEF_L3_SCORE_POSES_BLUE_LEFT = REEF_BRANCH_POSES_BLUE_LEFT.stream()
+        .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE_CORAL_L3))
+        .collect(toUnmodifiableList());
+
+    /** Poses of the robot for scoring on L3 right branch on the blue alliance */
+    public static final List<Pose2d> REEF_L3_SCORE_POSES_BLUE_RIGHT = REEF_BRANCH_POSES_BLUE_RIGHT.stream()
+        .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE_CORAL_L3))
+        .collect(toUnmodifiableList());
+
+    /** Poses of the robot for scoring on L2 left branch on the red alliance */
+    public static final List<Pose2d> REEF_L2_SCORE_POSES_RED_LEFT = REEF_BRANCH_POSES_RED_LEFT.stream()
         .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE_CORAL_L2))
         .collect(toUnmodifiableList());
 
-    /** Poses of the robot for scoring on L2 on the blue alliance */
-    public static final List<Pose2d> REEF_L2_SCORE_POSE_BLUE = REEF_BRANCH_POSES_BLUE.stream()
+    /** Poses of the robot for scoring on L2 right branch on the red alliance */
+    public static final List<Pose2d> REEF_L2_SCORE_POSES_RED_RIGHT = REEF_BRANCH_POSES_RED_RIGHT.stream()
         .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE_CORAL_L2))
         .collect(toUnmodifiableList());
+
+    /** Poses of the robot for scoring on L2 left branch on the blue alliance */
+    public static final List<Pose2d> REEF_L2_SCORE_POSES_BLUE_LEFT = REEF_BRANCH_POSES_BLUE_LEFT.stream()
+        .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE_CORAL_L2))
+        .collect(toUnmodifiableList());
+
+    /** Poses of the robot for scoring on L2 right on the blue alliance */
+    public static final List<Pose2d> REEF_L2_SCORE_POSES_BLUE_RIGHT = REEF_BRANCH_POSES_BLUE_RIGHT.stream()
+        .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE_CORAL_L2))
+        .collect(toUnmodifiableList());
+
+    public static final Distance DISTANCE_TARGET_L4 = Meters.of(0.34);
+    public static final Distance DISTANCE_TARGET_L3 = Meters.of(0.34);
+
+    public static final Distance LATERAL_TARGET_L3_LEFT = Meters.of(-0.23);
+    public static final Distance LATERAL_TARGET_L3_RIGHT = Meters.of(0.08);
+
+    public static final Distance LATERAL_TARGET_L4_LEFT = Meters.of(-0.23);
+    public static final Distance LATERAL_TARGET_L4_RIGHT = Meters.of(0.08);
   }
 
   /**

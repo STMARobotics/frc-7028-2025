@@ -1,19 +1,31 @@
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Percent;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.wpilibj.util.Color.kGreen;
-import static frc.robot.Constants.AlignmentConstants.REEF_L2_SCORE_POSES_RED;
-import static frc.robot.Constants.AlignmentConstants.REEF_L2_SCORE_POSE_BLUE;
-import static frc.robot.Constants.AlignmentConstants.REEF_L3_SCORE_POSES_RED;
-import static frc.robot.Constants.AlignmentConstants.REEF_L3_SCORE_POSE_BLUE;
-import static frc.robot.Constants.AlignmentConstants.REEF_L4_SCORE_POSES_RED;
-import static frc.robot.Constants.AlignmentConstants.REEF_L4_SCORE_POSE_BLUE;
+import static frc.robot.Constants.AlignmentConstants.DISTANCE_TARGET_L3;
+import static frc.robot.Constants.AlignmentConstants.DISTANCE_TARGET_L4;
+import static frc.robot.Constants.AlignmentConstants.LATERAL_TARGET_L3_LEFT;
+import static frc.robot.Constants.AlignmentConstants.LATERAL_TARGET_L3_RIGHT;
+import static frc.robot.Constants.AlignmentConstants.LATERAL_TARGET_L4_LEFT;
+import static frc.robot.Constants.AlignmentConstants.LATERAL_TARGET_L4_RIGHT;
+import static frc.robot.Constants.AlignmentConstants.REEF_L2_SCORE_POSES_BLUE_LEFT;
+import static frc.robot.Constants.AlignmentConstants.REEF_L2_SCORE_POSES_BLUE_RIGHT;
+import static frc.robot.Constants.AlignmentConstants.REEF_L2_SCORE_POSES_RED_LEFT;
+import static frc.robot.Constants.AlignmentConstants.REEF_L2_SCORE_POSES_RED_RIGHT;
+import static frc.robot.Constants.AlignmentConstants.REEF_L3_SCORE_POSES_BLUE_LEFT;
+import static frc.robot.Constants.AlignmentConstants.REEF_L3_SCORE_POSES_BLUE_RIGHT;
+import static frc.robot.Constants.AlignmentConstants.REEF_L3_SCORE_POSES_RED_LEFT;
+import static frc.robot.Constants.AlignmentConstants.REEF_L3_SCORE_POSES_RED_RIGHT;
+import static frc.robot.Constants.AlignmentConstants.REEF_L4_SCORE_POSES_BLUE_LEFT;
+import static frc.robot.Constants.AlignmentConstants.REEF_L4_SCORE_POSES_BLUE_RIGHT;
+import static frc.robot.Constants.AlignmentConstants.REEF_L4_SCORE_POSES_RED_LEFT;
+import static frc.robot.Constants.AlignmentConstants.REEF_L4_SCORE_POSES_RED_RIGHT;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.LEDPattern.GradientType;
 import edu.wpi.first.wpilibj.util.Color;
@@ -41,7 +53,8 @@ public class AutoCommands {
   private final AlignmentSubsystem alignmentSubsystem;
   private final GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem;
   private final LEDSubsystem ledSubsystem;
-  private final PhotonCamera highCamera;
+  private final PhotonCamera highCameraForLeft;
+  private final PhotonCamera highCameraForRight;
 
   /**
    * Constructs a new AutoCommands object
@@ -52,6 +65,9 @@ public class AutoCommands {
    * @param alignmentSubsystem alinment subsystem
    * @param gamePieceManipulatorSubsystem game piece manipulator subsystem
    * @param indexerSubsystem indexer subsystem
+   * @param ledSubsystem led subsystem
+   * @param highCameraForLeft high camera for scoring on the left branch
+   * @param highCameraForRight high camera for scoring on the right branch
    */
   public AutoCommands(
       CommandSwerveDrivetrain drivetrain,
@@ -61,103 +77,180 @@ public class AutoCommands {
       GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem,
       IndexerSubsystem indexerSubsystem,
       LEDSubsystem ledSubsystem,
-      PhotonCamera highCamera) {
+      PhotonCamera highCameraForLeft,
+      PhotonCamera highCameraForRight) {
     this.drivetrain = drivetrain;
     this.armSubsystem = armSubsystem;
     this.indexerSubsystem = indexerSubsystem;
     this.alignmentSubsystem = alignmentSubsystem;
     this.gamePieceManipulatorSubsystem = gamePieceManipulatorSubsystem;
     this.ledSubsystem = ledSubsystem;
-    this.highCamera = highCamera;
+    this.highCameraForLeft = highCameraForLeft;
+    this.highCameraForRight = highCameraForRight;
 
     publishScoringPoses();
   }
 
   /** Sends the reef poses to the dashboard for debugging */
   private void publishScoringPoses() {
-    NetworkTableInstance.getDefault()
-        .getTable("reef_blue_L4")
-        .getStructArrayTopic("branches", Pose2d.struct)
-        .publish()
-        .set(REEF_L4_SCORE_POSE_BLUE.toArray(new Pose2d[REEF_L4_SCORE_POSE_BLUE.size()]));
+    var table = NetworkTableInstance.getDefault().getTable("scoring_poses");
 
-    NetworkTableInstance.getDefault()
-        .getTable("reef_red_L4")
-        .getStructArrayTopic("branches", Pose2d.struct)
+    // L4 Blue
+    table.getStructArrayTopic("reef_l4_blue_left", Pose2d.struct)
         .publish()
-        .set(REEF_L4_SCORE_POSES_RED.toArray(new Pose2d[REEF_L4_SCORE_POSES_RED.size()]));
+        .set(REEF_L4_SCORE_POSES_BLUE_LEFT.toArray(Pose2d[]::new));
 
-    NetworkTableInstance.getDefault()
-        .getTable("reef_blue_L3")
-        .getStructArrayTopic("branches", Pose2d.struct)
+    table.getStructArrayTopic("reef_l4_blue_right", Pose2d.struct)
         .publish()
-        .set(REEF_L3_SCORE_POSE_BLUE.toArray(new Pose2d[REEF_L3_SCORE_POSE_BLUE.size()]));
+        .set(REEF_L4_SCORE_POSES_BLUE_RIGHT.toArray(Pose2d[]::new));
 
-    NetworkTableInstance.getDefault()
-        .getTable("reef_red_L3")
-        .getStructArrayTopic("branches", Pose2d.struct)
+    // L4 Red
+    table.getStructArrayTopic("reef_l4_red_left", Pose2d.struct)
         .publish()
-        .set(REEF_L3_SCORE_POSES_RED.toArray(new Pose2d[REEF_L3_SCORE_POSES_RED.size()]));
+        .set(REEF_L4_SCORE_POSES_RED_LEFT.toArray(Pose2d[]::new));
 
-    NetworkTableInstance.getDefault()
-        .getTable("reef_blue_L2")
-        .getStructArrayTopic("branches", Pose2d.struct)
+    table.getStructArrayTopic("reef_l4_red_right", Pose2d.struct)
         .publish()
-        .set(REEF_L2_SCORE_POSE_BLUE.toArray(new Pose2d[REEF_L2_SCORE_POSE_BLUE.size()]));
+        .set(REEF_L4_SCORE_POSES_RED_RIGHT.toArray(Pose2d[]::new));
 
-    NetworkTableInstance.getDefault()
-        .getTable("reef_red_L2")
-        .getStructArrayTopic("branches", Pose2d.struct)
+    // L3 Blue
+    table.getStructArrayTopic("reef_l3_blue_left", Pose2d.struct)
         .publish()
-        .set(REEF_L2_SCORE_POSES_RED.toArray(new Pose2d[REEF_L2_SCORE_POSES_RED.size()]));
+        .set(REEF_L3_SCORE_POSES_BLUE_LEFT.toArray(Pose2d[]::new));
+
+    table.getStructArrayTopic("reef_l3_blue_right", Pose2d.struct)
+        .publish()
+        .set(REEF_L3_SCORE_POSES_BLUE_RIGHT.toArray(Pose2d[]::new));
+
+    // L3 Red
+    table.getStructArrayTopic("reef_l3_red_left", Pose2d.struct)
+        .publish()
+        .set(REEF_L3_SCORE_POSES_RED_LEFT.toArray(Pose2d[]::new));
+
+    table.getStructArrayTopic("reef_l3_red_right", Pose2d.struct)
+        .publish()
+        .set(REEF_L3_SCORE_POSES_RED_RIGHT.toArray(Pose2d[]::new));
+
+    // L2 Blue
+    table.getStructArrayTopic("reef_l2_blue_left", Pose2d.struct)
+        .publish()
+        .set(REEF_L2_SCORE_POSES_BLUE_LEFT.toArray(Pose2d[]::new));
+
+    table.getStructArrayTopic("reef_l2_blue_right", Pose2d.struct)
+        .publish()
+        .set(REEF_L2_SCORE_POSES_BLUE_RIGHT.toArray(Pose2d[]::new));
+
+    // L2 Red
+    table.getStructArrayTopic("reef_l2_red_left", Pose2d.struct)
+        .publish()
+        .set(REEF_L2_SCORE_POSES_RED_LEFT.toArray(Pose2d[]::new));
+
+    table.getStructArrayTopic("reef_l2_red_right", Pose2d.struct)
+        .publish()
+        .set(REEF_L2_SCORE_POSES_RED_RIGHT.toArray(Pose2d[]::new));
   }
 
   /**
-   * Creates a command that will:
-   * <ol>
-   * <li>Drive to the nearest L4 reef scoring location</li>
-   * <li>Align to the reef using the CANranges</li>
-   * <li>Get the arm and elevator into position to score on level 4</li>
-   * <li>Eject the coral</li>
-   * </ol>
+   * Creates a command that will auto align and score on the left side of level 4
    * 
    * @return new command
    */
-  public Command scoreCoralLevel4() {
-    return scoreCoralTeleop(armSubsystem::moveToLevel4, REEF_L4_SCORE_POSES_RED, REEF_L4_SCORE_POSE_BLUE);
+  public Command scoreCoralLevel4Left() {
+    return scoreCoralTeleop(
+        armSubsystem::moveToLevel4,
+          REEF_L4_SCORE_POSES_RED_LEFT,
+          REEF_L4_SCORE_POSES_BLUE_LEFT,
+          DISTANCE_TARGET_L4,
+          LATERAL_TARGET_L4_LEFT,
+          highCameraForLeft);
   }
 
   /**
-   * Creates a command that will:
-   * <ol>
-   * <li>Drive to the nearest L3 reef scoring location</li>
-   * <li>Align to the reef using the CANranges</li>
-   * <li>Get the arm and elevator into position to score on level 3</li>
-   * <li>Eject the coral</li>
-   * </ol>
+   * Creates a command that will auto align and score on the right side of level 4
    * 
    * @return new command
    */
-  public Command scoreCoralLevel3() {
-    return scoreCoralTeleop(armSubsystem::moveToLevel3, REEF_L3_SCORE_POSES_RED, REEF_L3_SCORE_POSE_BLUE);
+  public Command scoreCoralLevel4Right() {
+    return scoreCoralTeleop(
+        armSubsystem::moveToLevel4,
+          REEF_L4_SCORE_POSES_RED_RIGHT,
+          REEF_L4_SCORE_POSES_BLUE_RIGHT,
+          DISTANCE_TARGET_L4,
+          LATERAL_TARGET_L4_RIGHT,
+          highCameraForRight);
   }
 
   /**
-   * Creates a command that will drive to the nearest L2 reef scoring location
+   * Creates a command that will auto align and score on the left side of level 3
    * 
    * @return new command
    */
-  public Command driveToCoralLevel2() {
+  public Command scoreCoralLevel3Left() {
+    return scoreCoralTeleop(
+        armSubsystem::moveToLevel3,
+          REEF_L3_SCORE_POSES_RED_LEFT,
+          REEF_L3_SCORE_POSES_BLUE_LEFT,
+          DISTANCE_TARGET_L3,
+          LATERAL_TARGET_L3_LEFT,
+          highCameraForLeft);
+  }
+
+  /**
+   * Creates a command that will auto align and score on the right side of level 3
+   * 
+   * @return new command
+   */
+  public Command scoreCoralLevel3Right() {
+    return scoreCoralTeleop(
+        armSubsystem::moveToLevel3,
+          REEF_L3_SCORE_POSES_RED_RIGHT,
+          REEF_L3_SCORE_POSES_BLUE_RIGHT,
+          DISTANCE_TARGET_L3,
+          LATERAL_TARGET_L3_RIGHT,
+          highCameraForRight);
+  }
+
+  /**
+   * Creates a command that will drive to the nearest L2 left reef scoring location
+   * 
+   * @return new command
+   */
+  public Command driveToCoralLevel2Left() {
     return new DriveToNearestPose(
         drivetrain,
         () -> drivetrain.getState().Pose,
-        REEF_L2_SCORE_POSES_RED,
-        REEF_L2_SCORE_POSE_BLUE);
+        REEF_L2_SCORE_POSES_RED_LEFT,
+        REEF_L2_SCORE_POSES_BLUE_LEFT);
   }
 
-  private Command scoreCoralTeleop(Runnable armMethod, List<Pose2d> redPoses, List<Pose2d> bluePoses) {
+  /**
+   * Creates a command that will drive to the nearest L2 right reef scoring location
+   * 
+   * @return new command
+   */
+  public Command driveToCoralLevel2Right() {
+    return new DriveToNearestPose(
+        drivetrain,
+        () -> drivetrain.getState().Pose,
+        REEF_L2_SCORE_POSES_RED_RIGHT,
+        REEF_L2_SCORE_POSES_BLUE_RIGHT);
+  }
+
+  private Command scoreCoralTeleop(
+      Runnable armMethod,
+      List<Pose2d> redPoses,
+      List<Pose2d> bluePoses,
+      Distance distanceTarget,
+      Distance lateralTarget,
+      PhotonCamera highCamera) {
     var driveToReef = new DriveToNearestPose(drivetrain, () -> drivetrain.getState().Pose, redPoses, bluePoses);
-    var alignToReef = new AlignToReefCommand(drivetrain, alignmentSubsystem, Meters.of(0.34), highCamera, false);
+    var alignToReef = new AlignToReefCommand(
+        drivetrain,
+        alignmentSubsystem,
+        distanceTarget,
+        lateralTarget,
+        highCamera,
+        false);
 
     return ledSubsystem
         .setLEDSegmentsAsCommand(
@@ -178,16 +271,32 @@ public class AutoCommands {
   }
 
   /**
-   * Creates a command to score coral on level 4 using the sequence for autonomous
+   * Creates a command to score coral on left level 4 using the sequence for autonomous
    * 
    * @return new command
    */
-  public Command scoreCoralLevel4Auto() {
-    return autoScoreCoralAuto(armSubsystem::moveToLevel4, REEF_L4_SCORE_POSES_RED, REEF_L4_SCORE_POSE_BLUE);
+  public Command scoreCoralLevel4AutoLeft() {
+    return autoScoreCoralAuto(
+        armSubsystem::moveToLevel4,
+          REEF_L4_SCORE_POSES_RED_LEFT,
+          REEF_L4_SCORE_POSES_BLUE_LEFT,
+          LATERAL_TARGET_L4_LEFT,
+          highCameraForLeft);
   }
 
-  private Command autoScoreCoralAuto(Runnable armMethod, List<Pose2d> redPoses, List<Pose2d> bluePoses) {
-    var alignToReef = new AlignToReefCommand(drivetrain, alignmentSubsystem, Meters.of(0.34), highCamera, true);
+  private Command autoScoreCoralAuto(
+      Runnable armMethod,
+      List<Pose2d> redPoses,
+      List<Pose2d> bluePoses,
+      Distance lateralTarget,
+      PhotonCamera highCamera) {
+    var alignToReef = new AlignToReefCommand(
+        drivetrain,
+        alignmentSubsystem,
+        DISTANCE_TARGET_L4,
+        lateralTarget,
+        highCamera,
+        true);
 
     return ledSubsystem
         .setLEDSegmentsAsCommand(

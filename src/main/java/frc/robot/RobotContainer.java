@@ -68,7 +68,10 @@ public class RobotContainer {
   @Logged
   private final AlignmentSubsystem alignmentSubsystem = new AlignmentSubsystem();
 
-  private final PhotonCamera highCamera = new PhotonCamera("High");
+  /** The high camera toward the back of the robot, used for scoring on right branches */
+  private final PhotonCamera highBackCamera = new PhotonCamera("High-Back");
+  /** The high camera toward the front of the robot, used for scoring on left branches */
+  private final PhotonCamera highFrontCamera = new PhotonCamera("High-Front");
 
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
   private final DrivetrainTelemetry drivetrainTelemetry = new DrivetrainTelemetry();
@@ -81,7 +84,8 @@ public class RobotContainer {
       gamePieceManipulatorSubsystem,
       indexerSubsystem,
       ledSubsystem,
-      highCamera);
+      highFrontCamera,
+      highBackCamera);
 
   private final TestMode testMode = new TestMode(
       gamePieceManipulatorSubsystem,
@@ -109,7 +113,7 @@ public class RobotContainer {
     }
 
     // Configure PathPlanner
-    NamedCommands.registerCommand("scoreCoralLevel4", autoCommands.scoreCoralLevel4Auto());
+    NamedCommands.registerCommand("scoreCoralLevel4", autoCommands.scoreCoralLevel4AutoLeft());
     NamedCommands.registerCommand("ledDefault", new DefaultLEDCommand(ledSubsystem));
     NamedCommands
         .registerCommand("intakeCoral", autoCommands.intakeCoral().andThen(new DefaultLEDCommand(ledSubsystem)));
@@ -233,8 +237,17 @@ public class RobotContainer {
 
     controlBindings.slowMode().ifPresent(trigger -> trigger.whileTrue(slowModeCommand));
 
-    controlBindings.scoreCoralLevel3().ifPresent(trigger -> trigger.whileTrue(autoCommands.scoreCoralLevel3()));
-    controlBindings.scoreCoralLevel4().ifPresent(trigger -> trigger.whileTrue(autoCommands.scoreCoralLevel4()));
+    controlBindings.driveToLevel2Left().ifPresent(trigger -> trigger.whileTrue(autoCommands.driveToCoralLevel2Left()));
+    controlBindings.driveToLevel2Right()
+        .ifPresent(trigger -> trigger.whileTrue(autoCommands.driveToCoralLevel2Right()));
+
+    controlBindings.scoreCoralLevel3Left().ifPresent(trigger -> trigger.whileTrue(autoCommands.scoreCoralLevel3Left()));
+    controlBindings.scoreCoralLevel3Right()
+        .ifPresent(trigger -> trigger.whileTrue(autoCommands.scoreCoralLevel3Right()));
+
+    controlBindings.scoreCoralLevel4Left().ifPresent(trigger -> trigger.whileTrue(autoCommands.scoreCoralLevel4Left()));
+    controlBindings.scoreCoralLevel4Right()
+        .ifPresent(trigger -> trigger.whileTrue(autoCommands.scoreCoralLevel4Right()));
   }
 
   public Command getAutonomousCommand() {
