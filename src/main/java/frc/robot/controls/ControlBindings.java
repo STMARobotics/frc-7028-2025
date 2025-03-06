@@ -190,56 +190,56 @@ public abstract class ControlBindings {
   }
 
   /**
-   * Drives to the nearest reef left branch and scores on level 4
+   * Selects level 1 for scoring coral.
    * 
    * @return optional trigger
    */
-  public Optional<Trigger> scoreCoralLevel4Left() {
+  public Optional<Trigger> selectCoralLevel1() {
     return Optional.empty();
   }
 
   /**
-   * Drives to the nearest reef right branch and scores on level 4
+   * Selects level 2 for scoring coral.
    * 
    * @return optional trigger
    */
-  public Optional<Trigger> scoreCoralLevel4Right() {
+  public Optional<Trigger> selectCoralLevel2() {
     return Optional.empty();
   }
 
   /**
-   * Drives to the nearest left reef branch and scores on level 3
+   * Selects level 3 for scoring coral.
    * 
    * @return optional trigger
    */
-  public Optional<Trigger> scoreCoralLevel3Left() {
+  public Optional<Trigger> selectCoralLevel3() {
     return Optional.empty();
   }
 
   /**
-   * Drives to the nearest right reef branch and scores on level 3
+   * Selects level 4 for scoring coral.
    * 
    * @return optional trigger
    */
-  public Optional<Trigger> scoreCoralLevel3Right() {
+  public Optional<Trigger> selectCoralLevel4() {
     return Optional.empty();
   }
 
   /**
-   * Drives to the nearest right level 2 reef branch
+   * Scores coral on the left branch, at the selected level
    * 
    * @return optional trigger
    */
-  public Optional<Trigger> driveToLevel2Right() {
+  public Optional<Trigger> scoreCoralLeft() {
     return Optional.empty();
   }
 
   /**
-   * Drives to the nearest left level 2 reef branch
+   * Scores coral on the right branch, at the selected level
    * 
    * @return optional trigger
    */
-  public Optional<Trigger> driveToLevel2Left() {
+  public Optional<Trigger> scoreCoralRight() {
     return Optional.empty();
   }
 

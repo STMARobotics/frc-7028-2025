@@ -6,12 +6,15 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
+import static edu.wpi.first.wpilibj2.command.Commands.select;
 import static edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kForward;
 import static edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kReverse;
 import static frc.robot.Constants.TeleopDriveConstants.MAX_TELEOP_ANGULAR_VELOCITY;
 import static frc.robot.Constants.TeleopDriveConstants.MAX_TELEOP_VELOCITY;
 import static frc.robot.Constants.VisionConstants.CAMERA_NAMES;
 import static frc.robot.Constants.VisionConstants.ROBOT_TO_CAMERA_TRANSFORMS;
+import static java.util.Map.entry;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
@@ -42,6 +45,7 @@ import frc.robot.subsystems.GamePieceManipulatorSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.MitoCANdriaSubsytem;
+import java.util.Map;
 import org.photonvision.PhotonCamera;
 
 @Logged(strategy = Logged.Strategy.OPT_IN)
@@ -86,6 +90,7 @@ public class RobotContainer {
       ledSubsystem,
       highFrontCamera,
       highBackCamera);
+  private final ScoreChooser scoreChooser = new ScoreChooser();
 
   private final TestMode testMode = new TestMode(
       gamePieceManipulatorSubsystem,
@@ -237,17 +242,27 @@ public class RobotContainer {
 
     controlBindings.slowMode().ifPresent(trigger -> trigger.whileTrue(slowModeCommand));
 
-    controlBindings.driveToLevel2Left().ifPresent(trigger -> trigger.whileTrue(autoCommands.driveToCoralLevel2Left()));
-    controlBindings.driveToLevel2Right()
-        .ifPresent(trigger -> trigger.whileTrue(autoCommands.driveToCoralLevel2Right()));
+    // Coral scoring level selection
+    controlBindings.selectCoralLevel1().ifPresent(trigger -> trigger.onTrue(runOnce(scoreChooser::selectLevel1)));
+    controlBindings.selectCoralLevel2().ifPresent(trigger -> trigger.onTrue(runOnce(scoreChooser::selectLevel2)));
+    controlBindings.selectCoralLevel3().ifPresent(trigger -> trigger.onTrue(runOnce(scoreChooser::selectLevel3)));
+    controlBindings.selectCoralLevel4().ifPresent(trigger -> trigger.onTrue(runOnce(scoreChooser::selectLevel4)));
 
-    controlBindings.scoreCoralLevel3Left().ifPresent(trigger -> trigger.whileTrue(autoCommands.scoreCoralLevel3Left()));
-    controlBindings.scoreCoralLevel3Right()
-        .ifPresent(trigger -> trigger.whileTrue(autoCommands.scoreCoralLevel3Right()));
+    // Left branch coral scoring
+    Map<Integer, Command> scoreMapLeft = Map.ofEntries(
+        entry(2, autoCommands.driveToCoralLevel2Left()),
+          entry(3, autoCommands.scoreCoralLevel3Left()),
+          entry(4, autoCommands.scoreCoralLevel4Left()));
+    controlBindings.scoreCoralLeft()
+        .ifPresent(trigger -> trigger.whileTrue(select(scoreMapLeft, scoreChooser::getSelectedLevel)));
 
-    controlBindings.scoreCoralLevel4Left().ifPresent(trigger -> trigger.whileTrue(autoCommands.scoreCoralLevel4Left()));
-    controlBindings.scoreCoralLevel4Right()
-        .ifPresent(trigger -> trigger.whileTrue(autoCommands.scoreCoralLevel4Right()));
+    // Left branch coral scoring
+    Map<Integer, Command> scoreMapRight = Map.ofEntries(
+        entry(2, autoCommands.driveToCoralLevel2Right()),
+          entry(3, autoCommands.scoreCoralLevel3Right()),
+          entry(4, autoCommands.scoreCoralLevel4Right()));
+    controlBindings.scoreCoralRight()
+        .ifPresent(trigger -> trigger.whileTrue(select(scoreMapRight, scoreChooser::getSelectedLevel)));
   }
 
   public Command getAutonomousCommand() {
