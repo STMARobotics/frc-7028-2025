@@ -1,9 +1,9 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Meters;
+import static frc.robot.Constants.FIELD_LENGTH;
+import static frc.robot.Constants.FIELD_WIDTH;
 import static frc.robot.Constants.VisionConstants.APRILTAG_AMBIGUITY_THRESHOLD;
-import static frc.robot.Constants.VisionConstants.FIELD_LENGTH;
-import static frc.robot.Constants.VisionConstants.FIELD_WIDTH;
 import static frc.robot.Constants.VisionConstants.SINGLE_TAG_DISTANCE_THRESHOLD;
 import static org.photonvision.PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR;
 

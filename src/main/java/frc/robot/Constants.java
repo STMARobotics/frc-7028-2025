@@ -60,6 +60,10 @@ public class Constants {
 
   public static final String CANIVORE_BUS_NAME = "canivore";
 
+  // Dimensions for the WELDED field
+  public static final Distance FIELD_LENGTH = Meters.of(17.548);
+  public static final Distance FIELD_WIDTH = Meters.of(8.052);
+
   /**
    * Constants for teleoperated driver control
    */
@@ -115,9 +119,6 @@ public class Constants {
     // The standard deviations of our vision estimated poses, which affect correction rate
     public static final Matrix<N3, N1> SINGLE_TAG_STD_DEVS = VecBuilder.fill(2, 2, 8);
     public static final Matrix<N3, N1> MULTI_TAG_STD_DEVS = VecBuilder.fill(0.5, 0.5, 1);
-
-    public static final Distance FIELD_LENGTH = Meters.of(16.54175);
-    public static final Distance FIELD_WIDTH = Meters.of(8.0137);
 
     /**
      * Minimum target ambiguity. Targets with higher ambiguity will be discarded. Not appliable when
@@ -319,10 +320,6 @@ public class Constants {
     public static final int DEVICE_ID_LEFT_CANRANGE = 39;
 
     public static final Distance ALIGNMENT_TOLERANCE = Inches.of(0.5);
-
-    // These are the dimensions for the WELDED field
-    public static final double FIELD_LENGTH_METERS = 17.548;
-    public static final double FIELD_WIDTH_METERS = 8.052;
 
     public static final LinearVelocity MAX_ALIGN_TRANSLATION_VELOCITY = MAX_TELEOP_VELOCITY.div(2.0);
     public static final LinearAcceleration MAX_ALIGN_TRANSLATION_ACCELERATION = MetersPerSecondPerSecond.of(6.0);
