@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
+import static edu.wpi.first.units.Units.Second;
 import static frc.robot.Constants.AlignmentConstants.ALIGNMENT_ANGLE_TOLERANCE;
 import static frc.robot.Constants.AlignmentConstants.ALIGNMENT_DISTANCE_TOLERANCE;
 import static frc.robot.Constants.AlignmentConstants.MAX_ALIGN_ANGULAR_ACCELERATION;
@@ -26,6 +27,9 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -79,7 +83,7 @@ public class AlignToReefCommand extends Command {
 
   private final ProfiledPIDController thetaController = new ProfiledPIDController(5.0, 0.0, 0.0, OMEGA_CONSTRAINTS);
 
-  private final SwerveRequest.RobotCentric robotCentricRequest = new SwerveRequest.RobotCentric()
+  private final SwerveRequest.ApplyRobotSpeeds robotCentricRequest = new SwerveRequest.ApplyRobotSpeeds()
       .withDriveRequestType(DriveRequestType.Velocity)
       .withSteerRequestType(SteerRequestType.MotionMagicExpo);
 
@@ -154,20 +158,34 @@ public class AlignToReefCommand extends Command {
     var theta = alignmentSubsystem.getRelativeAngle();
     var distance = alignmentSubsystem.getDistance();
 
-    var thetaCorrection = thetaController.calculate(theta.in(Radians));
+    var thetaCorrection = Radians.per(Second).of(thetaController.calculate(theta.in(Radians)));
     var distanceCorrection = distanceController.calculate(distance.in(Meters));
-    getTagY().ifPresentOrElse(tagY -> {
+    // getTagY().ifPresentOrElse(tagY -> {
+    // if (!sawTag) {
+    // // This is the first time a tag has been seen, set goal
+    // initLateralTag(tagY);
+    // }
+    // // Tag is visible, do alignment
+    // var lateralCorrection = lateralController.calculate(tagY);
+    // robotCentricRequest.withVelocityX(lateralCorrection);
+    // }, () -> robotCentricRequest.withVelocityX(0));
+    var lateralCorrection = getTagY().map(tagY -> {
       if (!sawTag) {
         // This is the first time a tag has been seen, set goal
         initLateralTag(tagY);
       }
       // Tag is visible, do alignment
-      var lateralCorrection = lateralController.calculate(tagY);
-      robotCentricRequest.withVelocityX(lateralCorrection);
-    }, () -> robotCentricRequest.withVelocityX(0));
+      return lateralController.calculate(tagY);
+    }).orElse(0.0);
 
     // The robot is rotated 90 degrees, so Y is distance and X is lateral
-    drivetrain.setControl(robotCentricRequest.withRotationalRate(thetaCorrection).withVelocityY(distanceCorrection));
+    var translationCorrection = new Translation2d(lateralCorrection, distanceCorrection)
+        .rotateAround(Translation2d.kZero, new Rotation2d(theta.times(-1)));
+    var chassisSpeeds = new ChassisSpeeds(
+        Meters.per(Second).of(translationCorrection.getX()),
+        Meters.per(Second).of(translationCorrection.getY()),
+        thetaCorrection);
+    drivetrain.setControl(robotCentricRequest.withSpeeds(chassisSpeeds));
   }
 
   private Optional<Double> getTagY() {
