@@ -29,7 +29,9 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.commands.AlgaeBargeCommand;
+import frc.robot.commands.DefaultSchedulerCommand;
 import frc.robot.commands.EjectCoralCommand;
+import frc.robot.commands.IntakeAndHoldCoralCommand;
 import frc.robot.commands.TuneArmCommand;
 import frc.robot.commands.led.DefaultLEDCommand;
 import frc.robot.commands.led.LEDBootAnimationCommand;
@@ -91,6 +93,11 @@ public class RobotContainer {
       highFrontCamera,
       highBackCamera);
   private final ScoreChooser scoreChooser = new ScoreChooser();
+  private final IntakeAndHoldCoralCommand intakeAndHoldCoralCommand = new IntakeAndHoldCoralCommand(
+      indexerSubsystem,
+      gamePieceManipulatorSubsystem,
+      armSubsystem,
+      ledSubsystem);
 
   private final TestMode testMode = new TestMode(
       gamePieceManipulatorSubsystem,
@@ -119,11 +126,9 @@ public class RobotContainer {
 
     // Configure PathPlanner
     NamedCommands.registerCommand("scoreCoralLevel4", autoCommands.scoreCoralLevel4AutoLeft());
-    NamedCommands.registerCommand("ledDefault", new DefaultLEDCommand(ledSubsystem));
-    NamedCommands
-        .registerCommand("intakeCoral", autoCommands.intakeCoral().andThen(new DefaultLEDCommand(ledSubsystem)));
-    NamedCommands.registerCommand("parkArm", armSubsystem.runOnce(armSubsystem::park).finallyDo(armSubsystem::stop));
-    autoChooser = AutoBuilder.buildAutoChooser("Tests");
+    NamedCommands.registerCommand("intakeCoral", intakeAndHoldCoralCommand);
+
+    autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Mode", autoChooser);
 
     // Configure controls
@@ -142,10 +147,11 @@ public class RobotContainer {
     photonThread.start();
 
     // Set up default and background commands
-    armSubsystem.setDefaultCommand(armSubsystem.run(armSubsystem::park).finallyDo(armSubsystem::stop));
-    gamePieceManipulatorSubsystem.setDefaultCommand(
-        gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::activeHoldCoral)
-            .finallyDo(gamePieceManipulatorSubsystem::stop));
+    new DefaultSchedulerCommand(
+        intakeAndHoldCoralCommand,
+        gamePieceManipulatorSubsystem,
+        armSubsystem,
+        indexerSubsystem).schedule();
     ledSubsystem.setDefaultCommand(new DefaultLEDCommand(ledSubsystem));
     new LEDBootAnimationCommand(ledSubsystem).schedule();
   }
@@ -170,7 +176,6 @@ public class RobotContainer {
     drivetrain.registerTelemetry(drivetrainTelemetry::telemeterize);
 
     // Coral bindings
-    controlBindings.intakeCoral().ifPresent(trigger -> trigger.onTrue(autoCommands.intakeCoral()));
     controlBindings.ejectCoral()
         .ifPresent(
             trigger -> trigger

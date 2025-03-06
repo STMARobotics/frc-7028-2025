@@ -68,11 +68,6 @@ public class JoystickControlBindings extends ControlBindings {
   }
 
   @Override
-  public Optional<Trigger> intakeCoral() {
-    return Optional.of(leftJoystick.trigger());
-  }
-
-  @Override
   public Optional<Trigger> ejectCoral() {
     return Optional.of(leftJoystick.povRight());
   }

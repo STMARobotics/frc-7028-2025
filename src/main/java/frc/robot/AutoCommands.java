@@ -1,8 +1,5 @@
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Percent;
-import static edu.wpi.first.units.Units.Second;
-import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.wpilibj.util.Color.kGreen;
 import static frc.robot.Constants.AlignmentConstants.DISTANCE_TARGET_L3;
 import static frc.robot.Constants.AlignmentConstants.DISTANCE_TARGET_L4;
@@ -27,12 +24,9 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.LEDPattern;
-import edu.wpi.first.wpilibj.LEDPattern.GradientType;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.AlignToReefCommand;
 import frc.robot.commands.DriveToNearestPose;
-import frc.robot.commands.IntakeCoralCommand;
 import frc.robot.subsystems.AlignmentSubsystem;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -314,14 +308,4 @@ public class AutoCommands {
                         .withTimeout(0.25)))
         .finallyDo(() -> ledSubsystem.runPattern(LEDPattern.kOff));
   }
-
-  public Command intakeCoral() {
-    return new IntakeCoralCommand(indexerSubsystem, gamePieceManipulatorSubsystem, armSubsystem).deadlineFor(
-        ledSubsystem.runPatternAsCommand(
-            LEDPattern.gradient(GradientType.kContinuous, Color.kBlack, Color.kWhite)
-                .scrollAtRelativeSpeed(Percent.per(Second).of(200))
-                .reversed()
-                .breathe(Seconds.of(0.5))));
-  }
-
 }

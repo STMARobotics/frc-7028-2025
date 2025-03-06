@@ -64,15 +64,6 @@ public abstract class ControlBindings {
   }
 
   /**
-   * Intakes coral from the Coral Station.
-   * 
-   * @return optional trigger
-   */
-  public Optional<Trigger> intakeCoral() {
-    return Optional.empty();
-  }
-
-  /**
    * Eject the Coral and put it on the
    * 
    * @return optional Trigger
