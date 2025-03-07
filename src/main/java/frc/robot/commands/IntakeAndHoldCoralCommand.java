@@ -23,9 +23,7 @@ public class IntakeAndHoldCoralCommand extends Command {
   private final GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem;
   private final ArmSubsystem armSubsystem;
   private final LEDSubsystem ledSubsystem;
-  private final Debouncer coralDebouncer = new Debouncer(0.15, DebounceType.kRising);
-
-  private boolean hasCoral = false;
+  private final Debouncer coralDebouncer = new Debouncer(0.1, DebounceType.kBoth);
 
   /**
    * Constructs an IntakeCoralAndHoldCommand
@@ -49,16 +47,9 @@ public class IntakeAndHoldCoralCommand extends Command {
   }
 
   @Override
-  public void initialize() {
-    hasCoral = armSubsystem.hasCoral();
-    coralDebouncer.calculate(hasCoral);
-  }
-
-  @Override
   public void execute() {
-    if (hasCoral || coralDebouncer.calculate(armSubsystem.hasCoral())) {
+    if (coralDebouncer.calculate(armSubsystem.hasCoral())) {
       // Coral detected, so park the arm/elevator and actively hold coral
-      hasCoral = true;
       armSubsystem.park();
       gamePieceManipulatorSubsystem.activeHoldCoral();
       indexerSubsystem.stop();
