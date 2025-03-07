@@ -68,11 +68,6 @@ public class JoystickControlBindings extends ControlBindings {
   }
 
   @Override
-  public Optional<Trigger> intakeCoral() {
-    return Optional.of(leftJoystick.trigger());
-  }
-
-  @Override
   public Optional<Trigger> ejectCoral() {
     return Optional.of(leftJoystick.povRight());
   }
@@ -98,13 +93,33 @@ public class JoystickControlBindings extends ControlBindings {
   }
 
   @Override
-  public Optional<Trigger> scoreCoralLevel3() {
+  public Optional<Trigger> selectCoralLevel1() {
+    return Optional.of(rightJoystick.povDown());
+  }
+
+  @Override
+  public Optional<Trigger> selectCoralLevel2() {
+    return Optional.of(rightJoystick.button(4));
+  }
+
+  @Override
+  public Optional<Trigger> selectCoralLevel3() {
     return Optional.of(rightJoystick.button(3));
   }
 
   @Override
-  public Optional<Trigger> scoreCoralLevel4() {
+  public Optional<Trigger> selectCoralLevel4() {
     return Optional.of(rightJoystick.button(2));
+  }
+
+  @Override
+  public Optional<Trigger> scoreCoralLeft() {
+    return Optional.of(leftJoystick.trigger());
+  }
+
+  @Override
+  public Optional<Trigger> scoreCoralRight() {
+    return Optional.of(rightJoystick.trigger());
   }
 
   @Override

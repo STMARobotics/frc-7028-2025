@@ -55,11 +55,6 @@ public class XBoxControlBindings extends ControlBindings {
   }
 
   @Override
-  public Optional<Trigger> intakeCoral() {
-    return Optional.of(driverController.rightBumper());
-  }
-
-  @Override
   public Optional<Trigger> ejectCoral() {
     return Optional.of(driverController.leftBumper());
   }
@@ -70,13 +65,23 @@ public class XBoxControlBindings extends ControlBindings {
   }
 
   @Override
-  public Optional<Trigger> scoreCoralLevel4() {
+  public Optional<Trigger> selectCoralLevel3() {
+    return Optional.of(driverController.a());
+  }
+
+  @Override
+  public Optional<Trigger> selectCoralLevel4() {
     return Optional.of(driverController.x());
   }
 
   @Override
-  public Optional<Trigger> scoreCoralLevel3() {
-    return Optional.of(driverController.a());
+  public Optional<Trigger> scoreCoralLeft() {
+    return Optional.of(driverController.y());
+  }
+
+  @Override
+  public Optional<Trigger> scoreCoralRight() {
+    return Optional.of(driverController.b());
   }
 
   @Override
