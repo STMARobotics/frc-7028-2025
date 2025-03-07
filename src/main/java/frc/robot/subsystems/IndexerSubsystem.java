@@ -117,9 +117,9 @@ public class IndexerSubsystem extends SubsystemBase {
   }
 
   /**
-   * Checks if the indexer is spinning at the proper speed within a tolerance
+   * Gets the velocity of the belt motor
    * 
-   * @return true if the indexer is spinning at the proper speed
+   * @return velocity of the belt motor
    */
   public AngularVelocity getBeltVelocity() {
     return beltVelocitySignal.refresh().getValue();

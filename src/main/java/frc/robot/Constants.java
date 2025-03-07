@@ -279,8 +279,6 @@ public class Constants {
     public static final AngularVelocity EJECT_VELOCITY = RadiansPerSecond.of(-5);
     public static final AngularVelocity SCORE_VELOCITY = RadiansPerSecond.of(-5);
 
-    public static final AngularVelocity WHEEL_VELOCITY_TOLERANCE = RotationsPerSecond.of(3);
-
     public static final Current WHEEL_HOLD_CORAL_CURRENT = Amps.of(5.0);
     public static final Current WHEEL_HOLD_ALGAE_CURRENT = Amps.of(-10.0);
 
@@ -290,16 +288,9 @@ public class Constants {
    * Constants for test mode
    */
   public static class TestingConstants {
-    public static final AngularVelocity INDEXER_TESTING_SPEED = RadiansPerSecond.of(2);
-    public static final AngularVelocity INDEXER_BACKWARDS_TESTING_SPEED = INDEXER_TESTING_SPEED.unaryMinus();
     public static final AngularVelocity INDEXER_TESTING_SPEED_TOLERANCE = RotationsPerSecond.of(3);
-
-    public static final AngularVelocity MANIPULATOR_TESTING_SPEED = RotationsPerSecond.of(10);
-    public static final AngularVelocity MANIPULATOR_BACKWARDS_TESTING_SPEED = MANIPULATOR_TESTING_SPEED.unaryMinus();
     public static final AngularVelocity MANIPULATOR_TESTING_SPEED_TOLERANCE = RotationsPerSecond.of(3);
-
-    public static final AngularVelocity ROLLER_TESTING_SPEED = RadiansPerSecond.of(5);
-    public static final AngularVelocity ROLLER_BACKWARDS_TESTING_SPEED = ROLLER_TESTING_SPEED.unaryMinus();
+    public static final AngularVelocity WHEEL_VELOCITY_TOLERANCE = RotationsPerSecond.of(3);
   }
 
   /**

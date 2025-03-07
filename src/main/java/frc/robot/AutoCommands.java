@@ -39,6 +39,7 @@ import org.photonvision.PhotonCamera;
 /**
  * Library of commands to perform complex actions
  */
+@SuppressWarnings("unused")
 public class AutoCommands {
 
   private final CommandSwerveDrivetrain drivetrain;

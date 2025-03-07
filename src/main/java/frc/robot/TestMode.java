@@ -1,11 +1,10 @@
 package frc.robot;
 
-import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.wpilibj2.command.Commands.run;
 import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
-import static frc.robot.Constants.TestingConstants.MANIPULATOR_BACKWARDS_TESTING_SPEED;
-import static frc.robot.Constants.TestingConstants.MANIPULATOR_TESTING_SPEED;
+import static frc.robot.Constants.TestingConstants.INDEXER_TESTING_SPEED_TOLERANCE;
+import static frc.robot.Constants.TestingConstants.MANIPULATOR_TESTING_SPEED_TOLERANCE;
 
 import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.BooleanSubscriber;
@@ -96,34 +95,36 @@ public class TestMode {
   }
 
   private Command testIndexerForwardsCommand() {
-    return run(() -> indexerSubsystem.intake(), indexerSubsystem).withTimeout(Seconds.of(5))
-        .andThen(() -> indexerForwardPublisher.set(indexerSubsystem.getBeltVelocity().gt(RotationsPerSecond.of(2))))
+    return indexerSubsystem.run(indexerSubsystem::intake)
+        .withTimeout(Seconds.of(5))
+        .andThen(
+            () -> indexerForwardPublisher.set(indexerSubsystem.getBeltVelocity().gte(INDEXER_TESTING_SPEED_TOLERANCE)))
         .finallyDo(indexerSubsystem::stop);
   }
 
   private Command testIndexerBackwardsCommand() {
-    return run(() -> indexerSubsystem.eject(), indexerSubsystem).withTimeout(Seconds.of(5))
-        .andThen(() -> indexerBackwardPublisher.set(indexerSubsystem.getBeltVelocity().lt(RotationsPerSecond.of(-2))))
+    return indexerSubsystem.run(indexerSubsystem::eject)
+        .withTimeout(Seconds.of(5))
+        .andThen(
+            () -> indexerBackwardPublisher.set(indexerSubsystem.getBeltVelocity().lte(INDEXER_TESTING_SPEED_TOLERANCE)))
         .finallyDo(indexerSubsystem::stop);
   }
 
   private Command testGamePieceManipulatorForwardsCommand() {
-    return run(
-        () -> gamePieceManipulatorSubsystem.runManipulatorWheels(MANIPULATOR_TESTING_SPEED),
-          gamePieceManipulatorSubsystem)
-        .until(gamePieceManipulatorSubsystem::isManipulatorAtSpeed)
+    return gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::intakeCoral)
         .withTimeout(Seconds.of(5))
-        .andThen(() -> manipulatorForwardPublisher.set(gamePieceManipulatorSubsystem.isManipulatorAtSpeed()))
+        .andThen(
+            () -> manipulatorForwardPublisher
+                .set(gamePieceManipulatorSubsystem.getWheelVelocity().gte(MANIPULATOR_TESTING_SPEED_TOLERANCE)))
         .finallyDo(gamePieceManipulatorSubsystem::stop);
   }
 
   private Command testGamePieceManipulatorBackwardsCommand() {
-    return run(
-        () -> gamePieceManipulatorSubsystem.runManipulatorWheels(MANIPULATOR_BACKWARDS_TESTING_SPEED),
-          gamePieceManipulatorSubsystem)
-        .until(gamePieceManipulatorSubsystem::isManipulatorAtSpeed)
+    return gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectCoral)
         .withTimeout(Seconds.of(5))
-        .andThen(() -> manipulatorBackwardPublisher.set(gamePieceManipulatorSubsystem.isManipulatorAtSpeed()))
+        .andThen(
+            () -> manipulatorForwardPublisher
+                .set(gamePieceManipulatorSubsystem.getWheelVelocity().lte(MANIPULATOR_TESTING_SPEED_TOLERANCE)))
         .finallyDo(gamePieceManipulatorSubsystem::stop);
   }
 
