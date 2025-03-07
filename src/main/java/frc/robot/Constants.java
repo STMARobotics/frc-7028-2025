@@ -136,11 +136,6 @@ public class Constants {
     public static final int DEVICE_ID_BELT = 35;
     public static final int DEVICE_ID_GAME_PIECE_CANRANGE = 36;
 
-    public static final AngularVelocity INTAKE_VELOCITY = RadiansPerSecond.of(1);
-
-    public static final AngularVelocity SCORE_VELOCITY_LEVEL_1 = RadiansPerSecond.of(-1);
-    public static final AngularVelocity EJECT_VELOCITY = RadiansPerSecond.of(-2);
-    public static final AngularVelocity INDEXER_SPEED_TOLERANCE = RotationsPerSecond.of(3);
     public static final Distance CORAL_DETECTION_THRESHOLD = Meters.of(0.06);
 
     public static final Current INDEXER_STATOR_CURRENT_LIMIT = Amps.of(40);
@@ -228,7 +223,7 @@ public class Constants {
     public static final Current ARM_STATOR_CURRENT_LIMIT = Amps.of(40);
     public static final Current ARM_SUPPLY_CURRENT_LIMIT = Amps.of(40);
     public static final double ARM_ROTOR_TO_SENSOR_RATIO = (68.0 / 14.0) * (68.0 / 26.0) * (34.0 / 16.0);
-    public static final Angle ARM_MAGNETIC_OFFSET = Rotations.of(-0.297363);
+    public static final Angle ARM_MAGNETIC_OFFSET = Rotations.of(-0.135498);
 
     public static final SlotConfigs ARM_SLOT_CONFIGS = new SlotConfigs().withGravityType(Arm_Cosine)
         .withKP(30.0)
@@ -476,11 +471,11 @@ public class Constants {
     public static final Distance DISTANCE_TARGET_L4 = Meters.of(0.34);
     public static final Distance DISTANCE_TARGET_L3 = Meters.of(0.34);
 
-    public static final Distance LATERAL_TARGET_L3_LEFT = Meters.of(-0.23);
-    public static final Distance LATERAL_TARGET_L3_RIGHT = Meters.of(0.08);
+    public static final Distance LATERAL_TARGET_L3_LEFT = Meters.of(0.05);
+    public static final Distance LATERAL_TARGET_L3_RIGHT = Meters.of(0.02);
 
-    public static final Distance LATERAL_TARGET_L4_LEFT = Meters.of(-0.23);
-    public static final Distance LATERAL_TARGET_L4_RIGHT = Meters.of(0.08);
+    public static final Distance LATERAL_TARGET_L4_LEFT = Meters.of(0.05);
+    public static final Distance LATERAL_TARGET_L4_RIGHT = Meters.of(0.02);
   }
 
   /**

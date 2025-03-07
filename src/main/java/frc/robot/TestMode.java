@@ -1,10 +1,9 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.wpilibj2.command.Commands.run;
 import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
-import static frc.robot.Constants.TestingConstants.INDEXER_BACKWARDS_TESTING_SPEED;
-import static frc.robot.Constants.TestingConstants.INDEXER_TESTING_SPEED;
 import static frc.robot.Constants.TestingConstants.MANIPULATOR_BACKWARDS_TESTING_SPEED;
 import static frc.robot.Constants.TestingConstants.MANIPULATOR_TESTING_SPEED;
 
@@ -97,18 +96,14 @@ public class TestMode {
   }
 
   private Command testIndexerForwardsCommand() {
-    return run(() -> indexerSubsystem.runBelt(INDEXER_TESTING_SPEED), indexerSubsystem)
-        .until(indexerSubsystem::isIndexerAtSpeed)
-        .withTimeout(Seconds.of(5))
-        .andThen(() -> indexerForwardPublisher.set(indexerSubsystem.isIndexerAtSpeed()))
+    return run(() -> indexerSubsystem.intake(), indexerSubsystem).withTimeout(Seconds.of(5))
+        .andThen(() -> indexerForwardPublisher.set(indexerSubsystem.getBeltVelocity().gt(RotationsPerSecond.of(2))))
         .finallyDo(indexerSubsystem::stop);
   }
 
   private Command testIndexerBackwardsCommand() {
-    return run(() -> indexerSubsystem.runBelt(INDEXER_BACKWARDS_TESTING_SPEED), indexerSubsystem)
-        .until(indexerSubsystem::isIndexerAtSpeed)
-        .withTimeout(Seconds.of(5))
-        .andThen(() -> indexerBackwardPublisher.set(indexerSubsystem.isIndexerAtSpeed()))
+    return run(() -> indexerSubsystem.eject(), indexerSubsystem).withTimeout(Seconds.of(5))
+        .andThen(() -> indexerBackwardPublisher.set(indexerSubsystem.getBeltVelocity().lt(RotationsPerSecond.of(-2))))
         .finallyDo(indexerSubsystem::stop);
   }
 

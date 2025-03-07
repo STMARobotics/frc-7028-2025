@@ -50,13 +50,13 @@ public class IntakeAndHoldCoralCommand extends Command {
 
   @Override
   public void initialize() {
-    coralDebouncer.calculate(false);
-    hasCoral = false;
+    hasCoral = armSubsystem.hasCoral();
+    coralDebouncer.calculate(hasCoral);
   }
 
   @Override
   public void execute() {
-    if (hasCoral || coralDebouncer.calculate(indexerSubsystem.isCoralInPickupPosition())) {
+    if (hasCoral || coralDebouncer.calculate(armSubsystem.hasCoral())) {
       // Coral detected, so park the arm/elevator and actively hold coral
       hasCoral = true;
       armSubsystem.park();

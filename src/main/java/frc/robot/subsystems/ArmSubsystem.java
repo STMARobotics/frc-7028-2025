@@ -5,6 +5,8 @@ import static com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
 import static com.ctre.phoenix6.signals.NeutralModeValue.Brake;
 import static com.ctre.phoenix6.signals.NeutralModeValue.Coast;
 import static com.ctre.phoenix6.signals.ReverseLimitSourceValue.RemoteCANdiS2;
+import static com.ctre.phoenix6.signals.S2CloseStateValue.CloseWhenHigh;
+import static com.ctre.phoenix6.signals.S2FloatStateValue.PullLow;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Rotation;
@@ -144,6 +146,7 @@ public class ArmSubsystem extends SubsystemBase {
   private final StatusSignal<Angle> armPositionSignal = armMotor.getPosition();
   private final StatusSignal<AngularVelocity> armVelocitySignal = armMotor.getVelocity();
   private final StatusSignal<AngularVelocity> elevatorVelocitySignal = elevatorMotorLeader.getVelocity();
+  private final StatusSignal<Boolean> hasCoralSignal = armCanDi.getS2Closed();
 
   private final Debouncer armDangerDebouncer = new Debouncer(0.1, DebounceType.kFalling);
 
@@ -203,6 +206,7 @@ public class ArmSubsystem extends SubsystemBase {
     armCanDiConfig.PWM1.withAbsoluteSensorOffset(ARM_MAGNETIC_OFFSET)
         .withAbsoluteSensorDiscontinuityPoint(0.5)
         .withSensorDirection(false);
+    armCanDiConfig.DigitalInputs.withS2CloseState(CloseWhenHigh).withS2FloatState(PullLow);
     armCanDi.getConfigurator().apply(armCanDiConfig);
 
     var armTalonConfig = new TalonFXConfiguration();
@@ -456,6 +460,15 @@ public class ArmSubsystem extends SubsystemBase {
   public void stop() {
     armMotor.stopMotor();
     elevatorMotorLeader.stopMotor();
+  }
+
+  /**
+   * Checks if the coral sensor is tripped
+   * 
+   * @return true if the coral sensor is tripped, otherwise false
+   */
+  public boolean hasCoral() {
+    return hasCoralSignal.refresh().getValue();
   }
 
   /**
