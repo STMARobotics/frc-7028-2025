@@ -23,13 +23,14 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.AlgaeBargeCommand;
-import frc.robot.commands.DefaultSchedulerCommand;
 import frc.robot.commands.EjectCoralCommand;
 import frc.robot.commands.IntakeAndHoldCoralCommand;
 import frc.robot.commands.TuneArmCommand;
@@ -146,13 +147,17 @@ public class RobotContainer {
     photonThread.setDaemon(true);
     photonThread.start();
 
-    // Set up default and background commands
-    new DefaultSchedulerCommand(
-        intakeAndHoldCoralCommand,
-        gamePieceManipulatorSubsystem,
-        armSubsystem,
-        indexerSubsystem).schedule();
+    // Run IntakeAndHoldCommand when enabled in teleop and no other command is running on arm, intake, and manipulator
+    new Trigger(
+        () -> RobotState.isEnabled() && RobotState.isTeleop()
+            && gamePieceManipulatorSubsystem.getCurrentCommand() == null && armSubsystem.getCurrentCommand() == null
+            && indexerSubsystem.getCurrentCommand() == null)
+        .onTrue(intakeAndHoldCoralCommand);
+
+    // Set up default commmands
     ledSubsystem.setDefaultCommand(new DefaultLEDCommand(ledSubsystem));
+
+    // Run the boot animation
     new LEDBootAnimationCommand(ledSubsystem).schedule();
   }
 
