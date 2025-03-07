@@ -117,10 +117,10 @@ public class AlignToReefCommand extends Command {
     thetaController.setGoal(0);
     lateralController.setGoal(tagLateralTarget);
 
-    var leftDistance = alignmentSubsystem.getLeftDistance().in(Meters);
-    var rightDistance = alignmentSubsystem.getRightDistance().in(Meters);
-    var theta = rightDistance - leftDistance;
-    var averageDistance = (leftDistance + rightDistance) / 2;
+    var frontDistance = alignmentSubsystem.getFrontDistance().in(Meters);
+    var backDistance = alignmentSubsystem.getBackDistance().in(Meters);
+    var theta = backDistance - frontDistance;
+    var averageDistance = (frontDistance + backDistance) / 2;
 
     thetaController.reset(theta);
     distanceController.reset(averageDistance);
@@ -138,13 +138,13 @@ public class AlignToReefCommand extends Command {
 
   @Override
   public void execute() {
-    var leftDistance = alignmentSubsystem.getLeftDistance().in(Meters);
-    var rightDistance = alignmentSubsystem.getRightDistance().in(Meters);
+    var frontDistance = alignmentSubsystem.getFrontDistance().in(Meters);
+    var backDistance = alignmentSubsystem.getBackDistance().in(Meters);
 
-    if (leftDistance < 1.2 && rightDistance < 1.2) {
+    if (frontDistance < 1.2 && backDistance < 1.2) {
       // We see something to align to
-      var theta = rightDistance - leftDistance;
-      var averageDistance = (leftDistance + rightDistance) / 2;
+      var theta = backDistance - frontDistance;
+      var averageDistance = (frontDistance + backDistance) / 2;
 
       double thetaCorrection = thetaController.calculate(theta);
       if (thetaController.atGoal()) {
@@ -197,8 +197,8 @@ public class AlignToReefCommand extends Command {
   }
 
   public boolean atDistanceGoal() {
-    return alignmentSubsystem.getLeftDistance().isNear(targetDistance, ALIGNMENT_TOLERANCE)
-        && alignmentSubsystem.getRightDistance().isNear(targetDistance, ALIGNMENT_TOLERANCE);
+    return alignmentSubsystem.getFrontDistance().isNear(targetDistance, ALIGNMENT_TOLERANCE)
+        && alignmentSubsystem.getBackDistance().isNear(targetDistance, ALIGNMENT_TOLERANCE);
   }
 
   public boolean atLateralGoal() {
