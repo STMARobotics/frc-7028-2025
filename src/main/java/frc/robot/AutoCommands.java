@@ -1,12 +1,12 @@
 package frc.robot;
 
 import static edu.wpi.first.wpilibj.util.Color.kGreen;
-import static frc.robot.Constants.AlignmentConstants.DISTANCE_TARGET_CORAL_HIGH;
-import static frc.robot.Constants.AlignmentConstants.DISTANCE_TARGET_CORAL_LOW;
+import static frc.robot.Constants.AlignmentConstants.DISTANCE_TARGET_ALGAE_HIGH;
+import static frc.robot.Constants.AlignmentConstants.DISTANCE_TARGET_ALGAE_LOW;
 import static frc.robot.Constants.AlignmentConstants.DISTANCE_TARGET_L3;
 import static frc.robot.Constants.AlignmentConstants.DISTANCE_TARGET_L4;
-import static frc.robot.Constants.AlignmentConstants.LATERAL_TARGET_CORAL_HIGH;
-import static frc.robot.Constants.AlignmentConstants.LATERAL_TARGET_CORAL_LOW;
+import static frc.robot.Constants.AlignmentConstants.LATERAL_TARGET_ALGAE_HIGH;
+import static frc.robot.Constants.AlignmentConstants.LATERAL_TARGET_ALGAE_LOW;
 import static frc.robot.Constants.AlignmentConstants.LATERAL_TARGET_L3_LEFT;
 import static frc.robot.Constants.AlignmentConstants.LATERAL_TARGET_L3_RIGHT;
 import static frc.robot.Constants.AlignmentConstants.LATERAL_TARGET_L4_LEFT;
@@ -166,11 +166,11 @@ public class AutoCommands {
     // Algae
     table.getStructArrayTopic("reef_algae_red", Pose2d.struct)
         .publish()
-        .set(REEF_ALGAE_POSES_RED.toArray(new Pose2d[REEF_ALGAE_POSES_RED.size()]));
+        .set(REEF_ALGAE_POSES_RED.toArray(Pose2d[]::new));
 
     table.getStructArrayTopic("reef_algae_blue", Pose2d.struct)
         .publish()
-        .set(REEF_ALGAE_POSES_BLUE.toArray(new Pose2d[REEF_ALGAE_POSES_BLUE.size()]));
+        .set(REEF_ALGAE_POSES_BLUE.toArray(Pose2d[]::new));
 
   }
 
@@ -216,7 +216,7 @@ public class AutoCommands {
    * @return new command
    */
   public Command autoIntakeAlgaeLow() {
-    return autoIntakeAlgae(armSubsystem::moveToAlgaeLevelLow, DISTANCE_TARGET_CORAL_LOW, LATERAL_TARGET_CORAL_LOW);
+    return autoIntakeAlgae(armSubsystem::moveToAlgaeLevelLow, DISTANCE_TARGET_ALGAE_LOW, LATERAL_TARGET_ALGAE_LOW);
   }
 
   /**
@@ -231,7 +231,7 @@ public class AutoCommands {
    * @return new command
    */
   public Command autoIntakeAlgaeHigh() {
-    return autoIntakeAlgae(armSubsystem::moveToAlgaeHigh, DISTANCE_TARGET_CORAL_HIGH, LATERAL_TARGET_CORAL_HIGH);
+    return autoIntakeAlgae(armSubsystem::moveToAlgaeHigh, DISTANCE_TARGET_ALGAE_HIGH, LATERAL_TARGET_ALGAE_HIGH);
   }
 
   /**
@@ -392,7 +392,7 @@ public class AutoCommands {
         distanceTarget,
         lateralTarget,
         highCameraForLeft,
-        true);
+        false);
     return driveToReef.andThen(alignToReef)
         .andThen(drivetrain.applyRequest(SwerveRequest.SwerveDriveBrake::new))
         .andThen(armSubsystem.run(armMethod))

@@ -412,7 +412,7 @@ public class Constants {
 
     // spotless:off
     /*
-     *      * The reef algae are in the arrays like this:
+     * The reef algae are in the arrays like this:
      *    ----------------------------------------
      *    |     2  / \ 3      |      5 / \ 0     |
      *    B      /     \      |      /     \     |
@@ -557,8 +557,8 @@ public class Constants {
 
     public static final Distance DISTANCE_TARGET_L3 = Meters.of(0.34);
     public static final Distance DISTANCE_TARGET_L4 = Meters.of(0.34);
-    public static final Distance DISTANCE_TARGET_CORAL_LOW = Meters.of(0.34);
-    public static final Distance DISTANCE_TARGET_CORAL_HIGH = Meters.of(0.34);
+    public static final Distance DISTANCE_TARGET_ALGAE_LOW = Meters.of(0.34);
+    public static final Distance DISTANCE_TARGET_ALGAE_HIGH = Meters.of(0.34);
 
     public static final Distance LATERAL_TARGET_L3_LEFT = Meters.of(0.05);
     public static final Distance LATERAL_TARGET_L3_RIGHT = Meters.of(0.02);
@@ -566,8 +566,8 @@ public class Constants {
     public static final Distance LATERAL_TARGET_L4_LEFT = Meters.of(0.05);
     public static final Distance LATERAL_TARGET_L4_RIGHT = Meters.of(0.02);
 
-    public static final Distance LATERAL_TARGET_CORAL_HIGH = Meters.of(0.02);
-    public static final Distance LATERAL_TARGET_CORAL_LOW = Meters.of(0.02);
+    public static final Distance LATERAL_TARGET_ALGAE_HIGH = Meters.of(0.02);
+    public static final Distance LATERAL_TARGET_ALGAE_LOW = Meters.of(0.02);
   }
 
   /**
