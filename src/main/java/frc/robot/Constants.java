@@ -352,9 +352,9 @@ public class Constants {
      *    |      0 \ / 11     |      6 \ / 5     |
      *    |___________________|__________________|
      * (0, 0)               +Y
-     *
+     */
     // spotless:on
-     * /**
+    /**
      * Poses of the right branches on the blue reef. Translation is the branch pipe base, rotation is pointing toward
      * reef center.
      */
