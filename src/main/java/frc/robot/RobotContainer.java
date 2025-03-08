@@ -260,7 +260,8 @@ public class RobotContainer {
 
     // Left branch coral scoring
     Map<Integer, Command> scoreMapLeft = Map.ofEntries(
-        entry(2, autoCommands.driveToCoralLevel2Left()),
+        entry(1, autoCommands.driveToCoralLevel1()),
+          entry(2, autoCommands.driveToCoralLevel2Left()),
           entry(3, autoCommands.scoreCoralLevel3Left()),
           entry(4, autoCommands.scoreCoralLevel4Left()));
     controlBindings.scoreCoralLeft()
@@ -268,7 +269,8 @@ public class RobotContainer {
 
     // Left branch coral scoring
     Map<Integer, Command> scoreMapRight = Map.ofEntries(
-        entry(2, autoCommands.driveToCoralLevel2Right()),
+        entry(1, autoCommands.driveToCoralLevel1()),
+          entry(2, autoCommands.driveToCoralLevel2Right()),
           entry(3, autoCommands.scoreCoralLevel3Right()),
           entry(4, autoCommands.scoreCoralLevel4Right()));
     controlBindings.scoreCoralRight()
