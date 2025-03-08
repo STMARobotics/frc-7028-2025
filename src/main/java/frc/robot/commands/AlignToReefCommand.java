@@ -78,7 +78,7 @@ public class AlignToReefCommand extends Command {
       .withDriveRequestType(DriveRequestType.Velocity)
       .withSteerRequestType(SteerRequestType.MotionMagicExpo);
 
-  private final boolean allowScoreWithoutTag;
+  private final boolean allowEndWithoutTag;
   private final double tagLateralTarget;
   private boolean sawTag = false;
 
@@ -89,6 +89,7 @@ public class AlignToReefCommand extends Command {
    * @param alignmentSubsystem alignment subsystem
    * @param targetDistance distance the robot should be from the reef
    * @param photonCamera photon camera to use for AprilTag
+   * @param allowEndWithoutTag true to allow the command to end even though an AprilTag was never seen, otherwise false
    */
   public AlignToReefCommand(
       CommandSwerveDrivetrain drivetrain,
@@ -96,13 +97,13 @@ public class AlignToReefCommand extends Command {
       Distance targetDistance,
       Distance tagLateralTarget,
       PhotonCamera photonCamera,
-      boolean allowScoreWithoutTag) {
+      boolean allowEndWithoutTag) {
     this.drivetrain = drivetrain;
     this.alignmentSubsystem = alignmentSubsystem;
     this.tagLateralTarget = tagLateralTarget.in(Meters);
     this.photonCamera = photonCamera;
     this.targetDistance = targetDistance;
-    this.allowScoreWithoutTag = allowScoreWithoutTag;
+    this.allowEndWithoutTag = allowEndWithoutTag;
 
     distanceController.setTolerance(DISTANCE_TOLERANCE.in(Meters));
     lateralController.setTolerance(LATERAL_TOLERANCE.in(Meters));
@@ -202,7 +203,7 @@ public class AlignToReefCommand extends Command {
   }
 
   public boolean atLateralGoal() {
-    if (allowScoreWithoutTag) {
+    if (allowEndWithoutTag) {
       return !sawTag || (sawTag && lateralController.atGoal());
     }
     return lateralController.atGoal();

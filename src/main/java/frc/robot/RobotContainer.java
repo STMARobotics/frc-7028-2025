@@ -206,10 +206,13 @@ public class RobotContainer {
 
     controlBindings.tuneArm().ifPresent(trigger -> trigger.onTrue(new TuneArmCommand(armSubsystem)));
 
+    controlBindings.intakeAlgaeLow().ifPresent(trigger -> trigger.whileTrue(autoCommands.autoIntakeAlgaeLow()));
+    controlBindings.intakeAlgaeHigh().ifPresent(trigger -> trigger.whileTrue(autoCommands.autoIntakeAlgaeLow()));
+
     controlBindings.moveArmToReefLowerAlgae()
         .ifPresent(
             trigger -> trigger.onTrue(
-                armSubsystem.run(armSubsystem::moveToAlgaeLevel1)
+                armSubsystem.run(armSubsystem::moveToAlgaeLevelLow)
                     .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::intakeAlgae))
                     .finallyDo(() -> {
                       armSubsystem.stop();
@@ -218,7 +221,7 @@ public class RobotContainer {
     controlBindings.moveArmToReefUpperAlgae()
         .ifPresent(
             trigger -> trigger.onTrue(
-                armSubsystem.run(armSubsystem::moveToAlgaeLevel2)
+                armSubsystem.run(armSubsystem::moveToAlgaeHigh)
                     .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::intakeAlgae))
                     .finallyDo(() -> {
                       armSubsystem.stop();

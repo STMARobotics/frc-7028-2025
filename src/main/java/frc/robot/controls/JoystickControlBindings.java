@@ -82,6 +82,14 @@ public class JoystickControlBindings extends ControlBindings {
     return Optional.of(leftJoystick.button(8));
   }
 
+  public Optional<Trigger> intakeAlgaeHigh() {
+    return Optional.empty();
+  }
+
+  public Optional<Trigger> intakeAlgaeLow() {
+    return Optional.empty();
+  }
+
   @Override
   public Optional<Trigger> moveArmToReefLowerAlgae() {
     return Optional.of(leftJoystick.povDown());
