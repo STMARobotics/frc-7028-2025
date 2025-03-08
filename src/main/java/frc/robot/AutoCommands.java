@@ -36,7 +36,6 @@ import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.AlignToReefCommand;
 import frc.robot.commands.DriveToNearestPose;
-import frc.robot.commands.DriveToReefAlgaeCommand;
 import frc.robot.subsystems.AlignmentSubsystem;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -382,7 +381,11 @@ public class AutoCommands {
   }
 
   private Command autoIntakeAlgae(Runnable armMethod, Distance distanceTarget, Distance lateralTarget) {
-    var driveToReef = new DriveToReefAlgaeCommand(drivetrain, () -> drivetrain.getState().Pose);
+    var driveToReef = new DriveToNearestPose(
+        drivetrain,
+        () -> drivetrain.getState().Pose,
+        REEF_ALGAE_POSES_RED,
+        REEF_ALGAE_POSES_BLUE);
     var alignToReef = new AlignToReefCommand(
         drivetrain,
         alignmentSubsystem,
