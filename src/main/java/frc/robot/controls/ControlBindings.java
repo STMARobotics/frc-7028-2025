@@ -127,6 +127,24 @@ public abstract class ControlBindings {
   }
 
   /**
+   * Drives to the nearest pose for high algae and inatakes it
+   * 
+   * @return optional trigger
+   */
+  public Optional<Trigger> intakeAlgaeHigh() {
+    return Optional.empty();
+  }
+
+  /**
+   * Drives to the nearest pose for low algae and inatakes it
+   * 
+   * @return optional trigger
+   */
+  public Optional<Trigger> intakeAlgaeLow() {
+    return Optional.empty();
+  }
+
+  /**
    * Moves the arm to the position to extract algae from the reef at the lower level
    * 
    * @return optional trigger

@@ -206,6 +206,9 @@ public class RobotContainer {
 
     controlBindings.tuneArm().ifPresent(trigger -> trigger.onTrue(new TuneArmCommand(armSubsystem)));
 
+    controlBindings.intakeAlgaeLow().ifPresent(trigger -> trigger.whileTrue(autoCommands.autoIntakeAlgaeLow()));
+    controlBindings.intakeAlgaeHigh().ifPresent(trigger -> trigger.whileTrue(autoCommands.autoIntakeAlgaeLow()));
+
     controlBindings.moveArmToReefLowerAlgae()
         .ifPresent(
             trigger -> trigger.onTrue(
