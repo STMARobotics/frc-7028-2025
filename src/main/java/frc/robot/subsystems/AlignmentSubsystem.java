@@ -1,7 +1,7 @@
 package frc.robot.subsystems;
 
-import static frc.robot.Constants.AlignmentConstants.DEVICE_ID_LEFT_CANRANGE;
-import static frc.robot.Constants.AlignmentConstants.DEVICE_ID_RIGHT_CANRANGE;
+import static frc.robot.Constants.AlignmentConstants.DEVICE_ID_BACK_CANRANGE;
+import static frc.robot.Constants.AlignmentConstants.DEVICE_ID_FRONT_CANRANGE;
 import static frc.robot.Constants.CANIVORE_BUS_NAME;
 
 import com.ctre.phoenix6.StatusSignal;
@@ -18,11 +18,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 @Logged
 public class AlignmentSubsystem extends SubsystemBase {
 
-  private final CANrange leftCanRange = new CANrange(DEVICE_ID_RIGHT_CANRANGE, CANIVORE_BUS_NAME);
-  private final CANrange rightCanRange = new CANrange(DEVICE_ID_LEFT_CANRANGE, CANIVORE_BUS_NAME);
+  private final CANrange frontCanRange = new CANrange(DEVICE_ID_FRONT_CANRANGE, CANIVORE_BUS_NAME);
+  private final CANrange backCanRange = new CANrange(DEVICE_ID_BACK_CANRANGE, CANIVORE_BUS_NAME);
 
-  private final StatusSignal<Distance> leftDistanceSignal = leftCanRange.getDistance();
-  private final StatusSignal<Distance> rightDistanceSignal = rightCanRange.getDistance();
+  private final StatusSignal<Distance> frontDistanceSignal = frontCanRange.getDistance();
+  private final StatusSignal<Distance> backDistanceSignal = backCanRange.getDistance();
 
   /**
    * Constructs a new AlignmentSubsystem
@@ -31,32 +31,26 @@ public class AlignmentSubsystem extends SubsystemBase {
     var canRangeConfig = new CANrangeConfiguration();
     canRangeConfig.ToFParams.withUpdateMode(UpdateModeValue.LongRangeUserFreq);
 
-    leftCanRange.getConfigurator().apply(canRangeConfig);
-    rightCanRange.getConfigurator().apply(canRangeConfig);
+    frontCanRange.getConfigurator().apply(canRangeConfig);
+    backCanRange.getConfigurator().apply(canRangeConfig);
   }
 
   /**
-   * Gets the distance detected by the left sensor
-   * <p>
-   * This is the FRONT CanRange (need to correct IDs after event)
-   * </p>
+   * Gets the distance detected by the front sensor
    * 
    * @return distance detected by the sensor
    */
-  public Distance getLeftDistance() {
-    return leftDistanceSignal.refresh().getValue();
+  public Distance getFrontDistance() {
+    return frontDistanceSignal.refresh().getValue();
   }
 
   /**
-   * Gets the distance detected by the right sensor
-   * <p>
-   * This is the BACK CanRange (need to correct IDs after event)
-   * </p>
+   * Gets the distance detected by the back sensor
    * 
    * @return distance detected by the sensor
    */
-  public Distance getRightDistance() {
-    return rightDistanceSignal.refresh().getValue();
+  public Distance getBackDistance() {
+    return backDistanceSignal.refresh().getValue();
   }
 
 }

@@ -17,7 +17,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "ledDefault"
+                  "name": "intakeCoral"
                 }
               }
             ]
@@ -30,38 +30,26 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "parkArm"
-          }
-        },
-        {
           "type": "deadline",
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "sequential",
                 "data": {
-                  "pathName": "Three Coral Left 2"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "intakeCoral"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "deadline",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Three Coral Left 3"
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Three Coral Left 2"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Three Coral Left 3"
+                      }
+                    }
+                  ]
                 }
               },
               {
@@ -80,38 +68,26 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "parkArm"
-          }
-        },
-        {
           "type": "deadline",
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "sequential",
                 "data": {
-                  "pathName": "Three Coral Left 4"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "intakeCoral"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "deadline",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Three Coral Left 5"
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Three Coral Left 4"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Three Coral Left 5"
+                      }
+                    }
+                  ]
                 }
               },
               {
@@ -132,7 +108,7 @@
         {
           "type": "named",
           "data": {
-            "name": "parkArm"
+            "name": "intakeCoral"
           }
         }
       ]

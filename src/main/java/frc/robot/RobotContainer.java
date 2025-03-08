@@ -6,10 +6,15 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
+import static edu.wpi.first.wpilibj2.command.Commands.select;
 import static edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kForward;
 import static edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kReverse;
 import static frc.robot.Constants.TeleopDriveConstants.MAX_TELEOP_ANGULAR_VELOCITY;
 import static frc.robot.Constants.TeleopDriveConstants.MAX_TELEOP_VELOCITY;
+import static frc.robot.Constants.VisionConstants.CAMERA_NAMES;
+import static frc.robot.Constants.VisionConstants.ROBOT_TO_CAMERA_TRANSFORMS;
+import static java.util.Map.entry;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
@@ -18,14 +23,16 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.AlgaeBargeCommand;
 import frc.robot.commands.EjectCoralCommand;
-import frc.robot.commands.PhotonVisionCommand;
+import frc.robot.commands.IntakeAndHoldCoralCommand;
 import frc.robot.commands.TuneArmCommand;
 import frc.robot.commands.led.DefaultLEDCommand;
 import frc.robot.commands.led.LEDBootAnimationCommand;
@@ -41,6 +48,7 @@ import frc.robot.subsystems.GamePieceManipulatorSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.MitoCANdriaSubsytem;
+import java.util.Map;
 import org.photonvision.PhotonCamera;
 
 @Logged(strategy = Logged.Strategy.OPT_IN)
@@ -67,11 +75,13 @@ public class RobotContainer {
   @Logged
   private final AlignmentSubsystem alignmentSubsystem = new AlignmentSubsystem();
 
-  private final PhotonCamera highCamera = new PhotonCamera("High");
+  /** The high camera toward the back of the robot, used for scoring on right branches */
+  private final PhotonCamera highBackCamera = new PhotonCamera("High-Back");
+  /** The high camera toward the front of the robot, used for scoring on left branches */
+  private final PhotonCamera highFrontCamera = new PhotonCamera("High-Front");
 
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
   private final DrivetrainTelemetry drivetrainTelemetry = new DrivetrainTelemetry();
-  private final PhotonVisionCommand visionCommand = new PhotonVisionCommand(drivetrain::addVisionMeasurement);
   private final Command slowModeCommand;
   private final AutoCommands autoCommands = new AutoCommands(
       drivetrain,
@@ -81,7 +91,14 @@ public class RobotContainer {
       gamePieceManipulatorSubsystem,
       indexerSubsystem,
       ledSubsystem,
-      highCamera);
+      highFrontCamera,
+      highBackCamera);
+  private final ScoreChooser scoreChooser = new ScoreChooser();
+  private final IntakeAndHoldCoralCommand intakeAndHoldCoralCommand = new IntakeAndHoldCoralCommand(
+      indexerSubsystem,
+      gamePieceManipulatorSubsystem,
+      armSubsystem,
+      ledSubsystem);
 
   private final TestMode testMode = new TestMode(
       gamePieceManipulatorSubsystem,
@@ -93,6 +110,13 @@ public class RobotContainer {
   private final SendableChooser<Command> autoChooser;
   private final ControlBindings controlBindings;
 
+  private final Thread photonThread = new Thread(
+      new PhotonRunnable(
+          CAMERA_NAMES,
+          ROBOT_TO_CAMERA_TRANSFORMS,
+          drivetrain::addVisionMeasurement,
+          () -> drivetrain.getState().Pose));
+
   public RobotContainer() {
     // Configure control binding scheme
     if (DriverStation.getJoystickIsXbox(0) || Robot.isSimulation()) {
@@ -102,12 +126,10 @@ public class RobotContainer {
     }
 
     // Configure PathPlanner
-    NamedCommands.registerCommand("scoreCoralLevel4", autoCommands.scoreCoralLevel4Auto());
-    NamedCommands.registerCommand("ledDefault", new DefaultLEDCommand(ledSubsystem));
-    NamedCommands
-        .registerCommand("intakeCoral", autoCommands.intakeCoral().andThen(new DefaultLEDCommand(ledSubsystem)));
-    NamedCommands.registerCommand("parkArm", armSubsystem.runOnce(armSubsystem::park).finallyDo(armSubsystem::stop));
-    autoChooser = AutoBuilder.buildAutoChooser("Tests");
+    NamedCommands.registerCommand("scoreCoralLevel4", autoCommands.scoreCoralLevel4AutoLeft());
+    NamedCommands.registerCommand("intakeCoral", intakeAndHoldCoralCommand);
+
+    autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Mode", autoChooser);
 
     // Configure controls
@@ -120,13 +142,22 @@ public class RobotContainer {
 
     configureBindings();
 
-    // Set up default and background commands
-    visionCommand.schedule();
-    armSubsystem.setDefaultCommand(armSubsystem.run(armSubsystem::park).finallyDo(armSubsystem::stop));
-    gamePieceManipulatorSubsystem.setDefaultCommand(
-        gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::activeHoldCoral)
-            .finallyDo(gamePieceManipulatorSubsystem::stop));
+    // Start PhotonVision thread
+    photonThread.setName("PhotonVision");
+    photonThread.setDaemon(true);
+    photonThread.start();
+
+    // Run IntakeAndHoldCommand when enabled in teleop and no other command is running on arm, intake, and manipulator
+    new Trigger(
+        () -> RobotState.isEnabled() && RobotState.isTeleop()
+            && gamePieceManipulatorSubsystem.getCurrentCommand() == null && armSubsystem.getCurrentCommand() == null
+            && indexerSubsystem.getCurrentCommand() == null)
+        .onTrue(intakeAndHoldCoralCommand);
+
+    // Set up default commmands
     ledSubsystem.setDefaultCommand(new DefaultLEDCommand(ledSubsystem));
+
+    // Run the boot animation
     new LEDBootAnimationCommand(ledSubsystem).schedule();
   }
 
@@ -150,7 +181,6 @@ public class RobotContainer {
     drivetrain.registerTelemetry(drivetrainTelemetry::telemeterize);
 
     // Coral bindings
-    controlBindings.intakeCoral().ifPresent(trigger -> trigger.onTrue(autoCommands.intakeCoral()));
     controlBindings.ejectCoral()
         .ifPresent(
             trigger -> trigger
@@ -222,8 +252,29 @@ public class RobotContainer {
 
     controlBindings.slowMode().ifPresent(trigger -> trigger.whileTrue(slowModeCommand));
 
-    controlBindings.scoreCoralLevel3().ifPresent(trigger -> trigger.whileTrue(autoCommands.scoreCoralLevel3()));
-    controlBindings.scoreCoralLevel4().ifPresent(trigger -> trigger.whileTrue(autoCommands.scoreCoralLevel4()));
+    // Coral scoring level selection
+    controlBindings.selectCoralLevel1().ifPresent(trigger -> trigger.onTrue(runOnce(scoreChooser::selectLevel1)));
+    controlBindings.selectCoralLevel2().ifPresent(trigger -> trigger.onTrue(runOnce(scoreChooser::selectLevel2)));
+    controlBindings.selectCoralLevel3().ifPresent(trigger -> trigger.onTrue(runOnce(scoreChooser::selectLevel3)));
+    controlBindings.selectCoralLevel4().ifPresent(trigger -> trigger.onTrue(runOnce(scoreChooser::selectLevel4)));
+
+    // Left branch coral scoring
+    Map<Integer, Command> scoreMapLeft = Map.ofEntries(
+        entry(1, autoCommands.driveToCoralLevel1()),
+          entry(2, autoCommands.driveToCoralLevel2Left()),
+          entry(3, autoCommands.scoreCoralLevel3Left()),
+          entry(4, autoCommands.scoreCoralLevel4Left()));
+    controlBindings.scoreCoralLeft()
+        .ifPresent(trigger -> trigger.whileTrue(select(scoreMapLeft, scoreChooser::getSelectedLevel)));
+
+    // Left branch coral scoring
+    Map<Integer, Command> scoreMapRight = Map.ofEntries(
+        entry(1, autoCommands.driveToCoralLevel1()),
+          entry(2, autoCommands.driveToCoralLevel2Right()),
+          entry(3, autoCommands.scoreCoralLevel3Right()),
+          entry(4, autoCommands.scoreCoralLevel4Right()));
+    controlBindings.scoreCoralRight()
+        .ifPresent(trigger -> trigger.whileTrue(select(scoreMapRight, scoreChooser::getSelectedLevel)));
   }
 
   public Command getAutonomousCommand() {

@@ -60,6 +60,10 @@ public class Constants {
 
   public static final String CANIVORE_BUS_NAME = "canivore";
 
+  // Dimensions for the WELDED field
+  public static final Distance FIELD_LENGTH = Meters.of(17.548);
+  public static final Distance FIELD_WIDTH = Meters.of(8.052);
+
   /**
    * Constants for teleoperated driver control
    */
@@ -115,6 +119,14 @@ public class Constants {
     // The standard deviations of our vision estimated poses, which affect correction rate
     public static final Matrix<N3, N1> SINGLE_TAG_STD_DEVS = VecBuilder.fill(2, 2, 8);
     public static final Matrix<N3, N1> MULTI_TAG_STD_DEVS = VecBuilder.fill(0.5, 0.5, 1);
+
+    /**
+     * Minimum target ambiguity. Targets with higher ambiguity will be discarded. Not appliable when
+     * multiple tags are in view in a single camera.
+     */
+    public static final double APRILTAG_AMBIGUITY_THRESHOLD = 0.2;
+    public static final Distance SINGLE_TAG_DISTANCE_THRESHOLD = Meters.of(4.5);
+
   }
 
   /**
@@ -124,11 +136,6 @@ public class Constants {
     public static final int DEVICE_ID_BELT = 35;
     public static final int DEVICE_ID_GAME_PIECE_CANRANGE = 36;
 
-    public static final AngularVelocity INTAKE_VELOCITY = RadiansPerSecond.of(1);
-
-    public static final AngularVelocity SCORE_VELOCITY_LEVEL_1 = RadiansPerSecond.of(-1);
-    public static final AngularVelocity EJECT_VELOCITY = RadiansPerSecond.of(-2);
-    public static final AngularVelocity INDEXER_SPEED_TOLERANCE = RotationsPerSecond.of(3);
     public static final Distance CORAL_DETECTION_THRESHOLD = Meters.of(0.06);
 
     public static final Current INDEXER_STATOR_CURRENT_LIMIT = Amps.of(40);
@@ -185,7 +192,6 @@ public class Constants {
     public static final Current ELEVATOR_SUPPLY_CURRENT_LIMIT = Amps.of(80);
     public static final Current ELEVATOR_STATOR_CURRENT_LIMIT = Amps.of(100);
 
-    public static final double ELEVATOR_ROTOR_GEAR_RATIO = 2.85714286;
     public static final Measure<PerUnit<DistanceUnit, AngleUnit>> ELEVATOR_DISTANCE_PER_ROTATION = Meters.per(Rotation)
         .ofNative(0.05489);
 
@@ -211,12 +217,12 @@ public class Constants {
 
     public static final Distance ELEVATOR_PARK_HEIGHT = Meters.of(0.0);
     public static final Distance ELEVATOR_PARK_TOLERANCE = Meters.of(0.01);
-    public static final Angle ARM_PARK_ANGLE = Rotations.of(0.726074);
+    public static final Angle ARM_PARK_ANGLE = Rotations.of(0.3);
 
     public static final Current ARM_STATOR_CURRENT_LIMIT = Amps.of(40);
     public static final Current ARM_SUPPLY_CURRENT_LIMIT = Amps.of(40);
     public static final double ARM_ROTOR_TO_SENSOR_RATIO = (68.0 / 14.0) * (68.0 / 26.0) * (34.0 / 16.0);
-    public static final Angle ARM_MAGNETIC_OFFSET = Rotations.of(-0.297363);
+    public static final Angle ARM_MAGNETIC_OFFSET = Rotations.of(-0.135498);
 
     public static final SlotConfigs ARM_SLOT_CONFIGS = new SlotConfigs().withGravityType(Arm_Cosine)
         .withKP(30.0)
@@ -231,7 +237,7 @@ public class Constants {
         .withMotionMagicCruiseVelocity(6.0);
 
     public static final Distance ELEVATOR_INTAKE_POSITION = Meters.of(0);
-    public static final Distance LEVEL_2_HEIGHT = Meters.of(0.2);
+    public static final Distance LEVEL_2_HEIGHT = Meters.of(0.32);
     public static final Distance LEVEL_3_HEIGHT = Meters.of(0);
     public static final Distance LEVEL_4_HEIGHT = Meters.of(0.675);
     public static final Distance ALGAE_LOWER_HEIGHT = Meters.of(0.0);
@@ -241,7 +247,7 @@ public class Constants {
     public static final Distance ALGAE_HOLD_HEIGHT = Meters.zero();
 
     public static final Angle ARM_INTAKE_ANGLE = Rotations.of(0.765);
-    public static final Angle LEVEL_2_ANGLE = Rotations.of(0.705);
+    public static final Angle LEVEL_2_ANGLE = Rotations.of(0.71);
     public static final Angle LEVEL_3_ANGLE = Rotations.of(0.172);
     public static final Angle LEVEL_4_ANGLE = Rotations.of(0.16);
     public static final Angle ALGAE_LOWER_ANGLE = Rotations.of(0.06);
@@ -272,8 +278,6 @@ public class Constants {
     public static final AngularVelocity EJECT_VELOCITY = RadiansPerSecond.of(-5);
     public static final AngularVelocity SCORE_VELOCITY = RadiansPerSecond.of(-5);
 
-    public static final AngularVelocity WHEEL_VELOCITY_TOLERANCE = RotationsPerSecond.of(3);
-
     public static final Current WHEEL_HOLD_CORAL_CURRENT = Amps.of(5.0);
     public static final Current WHEEL_HOLD_ALGAE_CURRENT = Amps.of(-10.0);
 
@@ -283,16 +287,9 @@ public class Constants {
    * Constants for test mode
    */
   public static class TestingConstants {
-    public static final AngularVelocity INDEXER_TESTING_SPEED = RadiansPerSecond.of(2);
-    public static final AngularVelocity INDEXER_BACKWARDS_TESTING_SPEED = INDEXER_TESTING_SPEED.unaryMinus();
     public static final AngularVelocity INDEXER_TESTING_SPEED_TOLERANCE = RotationsPerSecond.of(3);
-
-    public static final AngularVelocity MANIPULATOR_TESTING_SPEED = RotationsPerSecond.of(10);
-    public static final AngularVelocity MANIPULATOR_BACKWARDS_TESTING_SPEED = MANIPULATOR_TESTING_SPEED.unaryMinus();
     public static final AngularVelocity MANIPULATOR_TESTING_SPEED_TOLERANCE = RotationsPerSecond.of(3);
-
-    public static final AngularVelocity ROLLER_TESTING_SPEED = RadiansPerSecond.of(5);
-    public static final AngularVelocity ROLLER_BACKWARDS_TESTING_SPEED = ROLLER_TESTING_SPEED.unaryMinus();
+    public static final AngularVelocity WHEEL_VELOCITY_TOLERANCE = RotationsPerSecond.of(3);
   }
 
   /**
@@ -304,14 +301,10 @@ public class Constants {
 
   /** Constants for aligning to the reef */
   public static class AlignmentConstants {
-    public static final int DEVICE_ID_RIGHT_CANRANGE = 38;
-    public static final int DEVICE_ID_LEFT_CANRANGE = 39;
+    public static final int DEVICE_ID_FRONT_CANRANGE = 38;
+    public static final int DEVICE_ID_BACK_CANRANGE = 39;
 
     public static final Distance ALIGNMENT_TOLERANCE = Inches.of(0.5);
-
-    // These are the dimensions for the WELDED field
-    public static final double FIELD_LENGTH_METERS = 17.548;
-    public static final double FIELD_WIDTH_METERS = 8.052;
 
     public static final LinearVelocity MAX_ALIGN_TRANSLATION_VELOCITY = MAX_TELEOP_VELOCITY.div(2.0);
     public static final LinearAcceleration MAX_ALIGN_TRANSLATION_ACCELERATION = MetersPerSecondPerSecond.of(6.0);
@@ -342,6 +335,12 @@ public class Constants {
         inchesToMeters(12),
         Rotation2d.fromDegrees(90));
 
+    /** Pose of the robot relative to the reef trough for scoring coral on L1 */
+    public static final Transform2d RELATIVE_SCORING_POSE_CORAL_L1 = new Transform2d(
+        inchesToMeters(-20),
+        inchesToMeters(-8),
+        Rotation2d.fromDegrees(90));
+
     // spotless:off
     /* The reef branches are in the arrays like this:
      *    ----------------------------------------
@@ -368,42 +367,58 @@ public class Constants {
      */
     // spotless:on
     /**
-     * Poses of the branches on the blue reef. Translation is the branch pipe base, rotation is pointing toward reef
-     * center.
+     * Poses of the right branches on the blue reef. Translation is the branch pipe base, rotation is pointing toward
+     * reef center.
      */
-    public static final List<Pose2d> REEF_BRANCH_POSES_BLUE = Stream
+    public static final List<Pose2d> REEF_BRANCH_POSES_BLUE_RIGHT = Stream
         .of(
             new Pose2d(4.347746, 3.467, Rotation2d.fromDegrees(60)), // 0
-              new Pose2d(4.062584, 3.630770, Rotation2d.fromDegrees(60)), // 1
               new Pose2d(3.942648, 3.840490, Rotation2d.fromDegrees(0)), // 2
-              new Pose2d(3.942648, 4.169106, Rotation2d.fromDegrees(0)), // 3
               new Pose2d(4.062584, 4.398912, Rotation2d.fromDegrees(-60)), // 4
-              new Pose2d(4.347175, 4.515, Rotation2d.fromDegrees(-60)), // 5
               new Pose2d(4.588763, 4.542161, Rotation2d.fromDegrees(-120)), // 6
-              new Pose2d(4.873926, 4.378820, Rotation2d.fromDegrees(-120)), // 7
               new Pose2d(4.98, 4.215, Rotation2d.fromDegrees(180)), // 8
+              new Pose2d(4.873353, 3.632614, Rotation2d.fromDegrees(120))) // 10
+        .collect(toUnmodifiableList());
+
+    /**
+     * Poses of the left branches on the blue reef. Translation is the branch pipe base, rotation is pointing toward
+     * reef center.
+     */
+    public static final List<Pose2d> REEF_BRANCH_POSES_BLUE_LEFT = Stream
+        .of(
+            new Pose2d(4.062584, 3.630770, Rotation2d.fromDegrees(60)), // 1
+              new Pose2d(3.942648, 4.169106, Rotation2d.fromDegrees(0)), // 3
+              new Pose2d(4.347175, 4.515, Rotation2d.fromDegrees(-60)), // 5
+              new Pose2d(4.873926, 4.378820, Rotation2d.fromDegrees(-120)), // 7
               new Pose2d(4.994328, 3.841097, Rotation2d.fromDegrees(180)), // 9
-              new Pose2d(4.873353, 3.632614, Rotation2d.fromDegrees(120)), // 10
               new Pose2d(4.589334, 3.466500, Rotation2d.fromDegrees(120)))// 11
         .collect(toUnmodifiableList());
 
     /**
-     * Poses of the branches on the red reef. Translation is the branch pipe base, rotation is pointing toward reef
-     * center.
+     * Poses of the right branches on the red reef. Translation is the branch pipe base, rotation is pointing toward
+     * reef center.
      */
-    public static final List<Pose2d> REEF_BRANCH_POSES_RED = Stream
+    public static final List<Pose2d> REEF_BRANCH_POSES_RED_RIGHT = Stream
         .of(
             new Pose2d(13.200254, 4.585000, Rotation2d.fromDegrees(-120)), // 0
-              new Pose2d(13.485416, 4.421230, Rotation2d.fromDegrees(-120)), // 1
               new Pose2d(13.605352, 4.211510, Rotation2d.fromDegrees(-180)), // 2
-              new Pose2d(13.605352, 3.882894, Rotation2d.fromDegrees(-180)), // 3
               new Pose2d(13.485416, 3.653088, Rotation2d.fromDegrees(120)), // 4
-              new Pose2d(13.200825, 3.537000, Rotation2d.fromDegrees(120)), // 5
               new Pose2d(12.959237, 3.509839, Rotation2d.fromDegrees(60)), // 6
-              new Pose2d(12.674074, 3.673180, Rotation2d.fromDegrees(60)), // 7
               new Pose2d(12.568000, 3.837000, Rotation2d.fromDegrees(0)), // 8
+              new Pose2d(12.598000, 4.292000, Rotation2d.fromDegrees(-60))) // 10
+        .collect(toUnmodifiableList());
+
+    /**
+     * Poses of the left branches on the red reef. Translation is the branch pipe base, rotation is pointing toward reef
+     * center.
+     */
+    public static final List<Pose2d> REEF_BRANCH_POSES_RED_LEFT = Stream
+        .of(
+            new Pose2d(13.485416, 4.421230, Rotation2d.fromDegrees(-120)), // 1
+              new Pose2d(13.605352, 3.882894, Rotation2d.fromDegrees(-180)), // 3
+              new Pose2d(13.200825, 3.537000, Rotation2d.fromDegrees(120)), // 5
+              new Pose2d(12.674074, 3.673180, Rotation2d.fromDegrees(60)), // 7
               new Pose2d(12.553672, 4.210903, Rotation2d.fromDegrees(0)), // 9
-              new Pose2d(12.598000, 4.292000, Rotation2d.fromDegrees(-60)), // 10
               new Pose2d(12.958666, 4.585500, Rotation2d.fromDegrees(-60)))// 11
         .collect(toUnmodifiableList());
 
@@ -437,35 +452,120 @@ public class Constants {
         .map(reefPose -> reefPose.plus(RELATIVE_ALGAE_INTAKE_POSE))
         .collect(toUnmodifiableList());
 
-    /** Poses of the robot for scoring on L4 on the red alliance */
-    public static final List<Pose2d> REEF_L4_SCORE_POSES_RED = REEF_BRANCH_POSES_RED.stream()
+    /** Poses of the robot for scoring on L4 left branches on the red alliance */
+    public static final List<Pose2d> REEF_L4_SCORE_POSES_RED_LEFT = REEF_BRANCH_POSES_RED_LEFT.stream()
         .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE_CORAL_L4))
         .collect(toUnmodifiableList());
 
-    /** Poses of the robot for scoring on L4 on the blue alliance */
-    public static final List<Pose2d> REEF_L4_SCORE_POSE_BLUE = REEF_BRANCH_POSES_BLUE.stream()
+    /** Poses of the robot for scoring on L4 right branches on the red alliance */
+    public static final List<Pose2d> REEF_L4_SCORE_POSES_RED_RIGHT = REEF_BRANCH_POSES_RED_RIGHT.stream()
         .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE_CORAL_L4))
         .collect(toUnmodifiableList());
 
-    /** Poses of the robot for scoring on L3 on the red alliance */
-    public static final List<Pose2d> REEF_L3_SCORE_POSES_RED = REEF_BRANCH_POSES_RED.stream()
+    /** Poses of the robot for scoring on L4 left branches on the blue alliance */
+    public static final List<Pose2d> REEF_L4_SCORE_POSES_BLUE_LEFT = REEF_BRANCH_POSES_BLUE_LEFT.stream()
+        .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE_CORAL_L4))
+        .collect(toUnmodifiableList());
+
+    /** Poses of the robot for scoring on L4 right branches on the blue alliance */
+    public static final List<Pose2d> REEF_L4_SCORE_POSES_BLUE_RIGHT = REEF_BRANCH_POSES_BLUE_RIGHT.stream()
+        .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE_CORAL_L4))
+        .collect(toUnmodifiableList());
+
+    /** Poses of the robot for scoring on L3 left branch on the red alliance */
+    public static final List<Pose2d> REEF_L3_SCORE_POSES_RED_LEFT = REEF_BRANCH_POSES_RED_LEFT.stream()
         .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE_CORAL_L3))
         .collect(toUnmodifiableList());
 
-    /** Poses of the robot for scoring on L3 on the blue alliance */
-    public static final List<Pose2d> REEF_L3_SCORE_POSE_BLUE = REEF_BRANCH_POSES_BLUE.stream()
+    /** Poses of the robot for scoring on L3 right branch on the red alliance */
+    public static final List<Pose2d> REEF_L3_SCORE_POSES_RED_RIGHT = REEF_BRANCH_POSES_RED_RIGHT.stream()
         .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE_CORAL_L3))
         .collect(toUnmodifiableList());
 
-    /** Poses of the robot for scoring on L2 on the red alliance */
-    public static final List<Pose2d> REEF_L2_SCORE_POSES_RED = REEF_BRANCH_POSES_RED.stream()
+    /** Poses of the robot for scoring on L3 left branch on the blue alliance */
+    public static final List<Pose2d> REEF_L3_SCORE_POSES_BLUE_LEFT = REEF_BRANCH_POSES_BLUE_LEFT.stream()
+        .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE_CORAL_L3))
+        .collect(toUnmodifiableList());
+
+    /** Poses of the robot for scoring on L3 right branch on the blue alliance */
+    public static final List<Pose2d> REEF_L3_SCORE_POSES_BLUE_RIGHT = REEF_BRANCH_POSES_BLUE_RIGHT.stream()
+        .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE_CORAL_L3))
+        .collect(toUnmodifiableList());
+
+    /** Poses of the robot for scoring on L2 left branch on the red alliance */
+    public static final List<Pose2d> REEF_L2_SCORE_POSES_RED_LEFT = REEF_BRANCH_POSES_RED_LEFT.stream()
         .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE_CORAL_L2))
         .collect(toUnmodifiableList());
 
-    /** Poses of the robot for scoring on L2 on the blue alliance */
-    public static final List<Pose2d> REEF_L2_SCORE_POSE_BLUE = REEF_BRANCH_POSES_BLUE.stream()
+    /** Poses of the robot for scoring on L2 right branch on the red alliance */
+    public static final List<Pose2d> REEF_L2_SCORE_POSES_RED_RIGHT = REEF_BRANCH_POSES_RED_RIGHT.stream()
         .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE_CORAL_L2))
         .collect(toUnmodifiableList());
+
+    /** Poses of the robot for scoring on L2 left branch on the blue alliance */
+    public static final List<Pose2d> REEF_L2_SCORE_POSES_BLUE_LEFT = REEF_BRANCH_POSES_BLUE_LEFT.stream()
+        .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE_CORAL_L2))
+        .collect(toUnmodifiableList());
+
+    /** Poses of the robot for scoring on L2 right on the blue alliance */
+    public static final List<Pose2d> REEF_L2_SCORE_POSES_BLUE_RIGHT = REEF_BRANCH_POSES_BLUE_RIGHT.stream()
+        .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE_CORAL_L2))
+        .collect(toUnmodifiableList());
+
+    // spotless:off
+    /* The reef level 1 positions are in the arrays like this:
+     *    ----------------------------------------
+     *    |        / \ 3      |        / \ 0     |
+     *    B    2 /     \      |    5 /     \     |
+     *    L     |       | 4   |     |       | 1  R
+     * +X U   1 |       |     |   4 |       |    E
+     *    E      \     / 5    |      \     / 2   D
+     *    |      0 \ /        |      3 \ /       |
+     *    |___________________|__________________|
+     * (0, 0)               +Y
+     */
+    // spotless:on
+    public static final List<Pose2d> REEF_L1_POSES_BLUE = Stream
+        .of(
+            new Pose2d(3.66, 3.540630, Rotation2d.fromDegrees(-30)),
+              new Pose2d(3.66, 4.496321, Rotation2d.fromDegrees(-90)),
+              new Pose2d(4.480743, 4.981, Rotation2d.fromDegrees(-150)),
+              new Pose2d(5.312527, 4.511019, Rotation2d.fromDegrees(150)),
+              new Pose2d(5.321074, 3.555505, Rotation2d.fromDegrees(90)),
+              new Pose2d(4.497811, 3.070409, Rotation2d.fromDegrees(30)))
+        .collect(toUnmodifiableList());
+
+    public static final List<Pose2d> REEF_L1_POSES_RED = Stream
+        .of(
+            new Pose2d(13.89, 4.51, Rotation2d.fromDegrees(150)),
+              new Pose2d(13.89, 3.56, Rotation2d.fromDegrees(90)),
+              new Pose2d(13.07, 3.07, Rotation2d.fromDegrees(30)),
+              new Pose2d(12.24, 3.54, Rotation2d.fromDegrees(-30)),
+              new Pose2d(12.23, 4.50, Rotation2d.fromDegrees(-90)),
+              new Pose2d(13.05, 4.98, Rotation2d.fromDegrees(-150)))
+        .collect(toUnmodifiableList());
+
+    public static final List<Pose2d> REEF_L1_SCORE_POSES_BLUE = REEF_L1_POSES_BLUE.stream()
+        .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE_CORAL_L1))
+        .collect(toUnmodifiableList());
+
+    public static final List<Pose2d> REEF_L1_SCORE_POSES_RED = REEF_L1_POSES_RED.stream()
+        .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE_CORAL_L1))
+        .collect(toUnmodifiableList());
+
+    public static final Distance DISTANCE_TARGET_L3 = Meters.of(0.34);
+    public static final Distance DISTANCE_TARGET_L4 = Meters.of(0.34);
+    public static final Distance DISTANCE_TARGET_CORAL_LOW = Meters.of(0.34);
+    public static final Distance DISTANCE_TARGET_CORAL_HIGH = Meters.of(0.34);
+
+    public static final Distance LATERAL_TARGET_L3_LEFT = Meters.of(0.05);
+    public static final Distance LATERAL_TARGET_L3_RIGHT = Meters.of(0.02);
+
+    public static final Distance LATERAL_TARGET_L4_LEFT = Meters.of(0.05);
+    public static final Distance LATERAL_TARGET_L4_RIGHT = Meters.of(0.02);
+
+    public static final Distance LATERAL_TARGET_CORAL_HIGH = Meters.of(0.02);
+    public static final Distance LATERAL_TARGET_CORAL_LOW = Meters.of(0.02);
   }
 
   /**
