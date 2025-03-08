@@ -304,7 +304,11 @@ public class Constants {
     public static final int DEVICE_ID_FRONT_CANRANGE = 38;
     public static final int DEVICE_ID_BACK_CANRANGE = 39;
 
-    public static final Distance ALIGNMENT_TOLERANCE = Inches.of(0.5);
+    public static final Distance FRONT_CANRANGE_DISTANCE_FROM_CENTER = Inches.of(12.5);
+    public static final Distance BACK_CANRANGE_DISTANCE_FROM_CENTER = Inches.of(-0.25);
+
+    public static final Distance ALIGNMENT_DISTANCE_TOLERANCE = Inches.of(0.5);
+    public static final Angle ALIGNMENT_ANGLE_TOLERANCE = Degrees.of(1);
 
     public static final LinearVelocity MAX_ALIGN_TRANSLATION_VELOCITY = MAX_TELEOP_VELOCITY.div(2.0);
     public static final LinearAcceleration MAX_ALIGN_TRANSLATION_ACCELERATION = MetersPerSecondPerSecond.of(6.0);
