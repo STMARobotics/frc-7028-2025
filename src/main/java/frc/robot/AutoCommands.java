@@ -216,8 +216,8 @@ public class AutoCommands {
    * 
    * @return new command
    */
-  public Command autoIntakeAlgaeLevel1() {
-    return autoIntakeAlgae(armSubsystem::moveToAlgaeLevel1, DISTANCE_TARGET_CORAL_LOW, LATERAL_TARGET_CORAL_LOW);
+  public Command autoIntakeAlgaeLow() {
+    return autoIntakeAlgae(armSubsystem::moveToAlgaeLevelLow, DISTANCE_TARGET_CORAL_LOW, LATERAL_TARGET_CORAL_LOW);
   }
 
   /**
@@ -231,8 +231,8 @@ public class AutoCommands {
    * 
    * @return new command
    */
-  public Command autoIntakeAlgaeLevel2() {
-    return autoIntakeAlgae(armSubsystem::moveToAlgaeLevel2, DISTANCE_TARGET_CORAL_HIGH, LATERAL_TARGET_CORAL_HIGH);
+  public Command autoIntakeAlgaeHigh() {
+    return autoIntakeAlgae(armSubsystem::moveToAlgaeHigh, DISTANCE_TARGET_CORAL_HIGH, LATERAL_TARGET_CORAL_HIGH);
   }
 
   /**
