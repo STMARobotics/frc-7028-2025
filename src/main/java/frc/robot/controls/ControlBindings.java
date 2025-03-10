@@ -64,15 +64,6 @@ public abstract class ControlBindings {
   }
 
   /**
-   * Intakes coral from the Coral Station.
-   * 
-   * @return optional trigger
-   */
-  public Optional<Trigger> intakeCoral() {
-    return Optional.empty();
-  }
-
-  /**
    * Eject the Coral and put it on the
    * 
    * @return optional Trigger
@@ -190,20 +181,56 @@ public abstract class ControlBindings {
   }
 
   /**
-   * Drives to the nearest reef branch and scores on level 4
+   * Selects level 1 for scoring coral.
    * 
    * @return optional trigger
    */
-  public Optional<Trigger> scoreCoralLevel4() {
+  public Optional<Trigger> selectCoralLevel1() {
     return Optional.empty();
   }
 
   /**
-   * Drives to the nearest reef branch and scores on level 3
+   * Selects level 2 for scoring coral.
    * 
    * @return optional trigger
    */
-  public Optional<Trigger> scoreCoralLevel3() {
+  public Optional<Trigger> selectCoralLevel2() {
+    return Optional.empty();
+  }
+
+  /**
+   * Selects level 3 for scoring coral.
+   * 
+   * @return optional trigger
+   */
+  public Optional<Trigger> selectCoralLevel3() {
+    return Optional.empty();
+  }
+
+  /**
+   * Selects level 4 for scoring coral.
+   * 
+   * @return optional trigger
+   */
+  public Optional<Trigger> selectCoralLevel4() {
+    return Optional.empty();
+  }
+
+  /**
+   * Scores coral on the left branch, at the selected level
+   * 
+   * @return optional trigger
+   */
+  public Optional<Trigger> scoreCoralLeft() {
+    return Optional.empty();
+  }
+
+  /**
+   * Scores coral on the right branch, at the selected level
+   * 
+   * @return optional trigger
+   */
+  public Optional<Trigger> scoreCoralRight() {
     return Optional.empty();
   }
 
