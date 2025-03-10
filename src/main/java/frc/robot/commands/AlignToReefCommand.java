@@ -174,6 +174,12 @@ public class AlignToReefCommand extends Command {
         // This is the first time a tag has been seen, set goal
         initLateralTag(tagY);
       }
+
+      // If we have a rotation, we can't figure out how far we need to move to the side, so just don't do anything.
+      if (!atThetaGoal()) {
+        return 0.0;
+      }
+
       // Tag is visible, do alignment
       return lateralController.calculate(tagY);
     }).orElse(0.0);
