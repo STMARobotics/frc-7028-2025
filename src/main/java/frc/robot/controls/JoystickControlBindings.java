@@ -74,7 +74,7 @@ public class JoystickControlBindings extends ControlBindings {
 
   @Override
   public Optional<Trigger> releaseCoral() {
-    return Optional.of(rightJoystick.trigger());
+    return Optional.of(leftJoystick.button(4));
   }
 
   @Override
