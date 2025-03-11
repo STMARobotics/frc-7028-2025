@@ -8,16 +8,19 @@ import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
 import static frc.robot.Constants.AlignmentConstants.ALIGNMENT_TOLERANCE;
+import static frc.robot.Constants.AlignmentConstants.ALIGN_DISTANCE_kD;
+import static frc.robot.Constants.AlignmentConstants.ALIGN_DISTANCE_kI;
+import static frc.robot.Constants.AlignmentConstants.ALIGN_DISTANCE_kP;
+import static frc.robot.Constants.AlignmentConstants.ALIGN_LATERAL_kD;
+import static frc.robot.Constants.AlignmentConstants.ALIGN_LATERAL_kI;
+import static frc.robot.Constants.AlignmentConstants.ALIGN_LATERAL_kP;
+import static frc.robot.Constants.AlignmentConstants.ALIGN_THETA_kD;
+import static frc.robot.Constants.AlignmentConstants.ALIGN_THETA_kI;
+import static frc.robot.Constants.AlignmentConstants.ALIGN_THETA_kP;
 import static frc.robot.Constants.AlignmentConstants.MAX_ALIGN_ANGULAR_ACCELERATION;
 import static frc.robot.Constants.AlignmentConstants.MAX_ALIGN_ANGULAR_VELOCITY;
 import static frc.robot.Constants.AlignmentConstants.MAX_ALIGN_TRANSLATION_ACCELERATION;
 import static frc.robot.Constants.AlignmentConstants.MAX_ALIGN_TRANSLATION_VELOCITY;
-import static frc.robot.Constants.DriveToPoseConstants.X_kD;
-import static frc.robot.Constants.DriveToPoseConstants.X_kI;
-import static frc.robot.Constants.DriveToPoseConstants.X_kP;
-import static frc.robot.Constants.DriveToPoseConstants.Y_kD;
-import static frc.robot.Constants.DriveToPoseConstants.Y_kI;
-import static frc.robot.Constants.DriveToPoseConstants.Y_kP;
 import static java.util.stream.Collectors.toUnmodifiableSet;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -61,18 +64,22 @@ public class AlignToReefCommand extends Command {
       MAX_ALIGN_ANGULAR_ACCELERATION.in(RadiansPerSecondPerSecond));
 
   private final ProfiledPIDController distanceController = new ProfiledPIDController(
-      X_kP,
-      X_kI,
-      X_kD,
+      ALIGN_DISTANCE_kP,
+      ALIGN_DISTANCE_kI,
+      ALIGN_DISTANCE_kD,
       TRANSLATION_CONSTRAINTS);
 
   private final ProfiledPIDController lateralController = new ProfiledPIDController(
-      Y_kP,
-      Y_kI,
-      Y_kD,
+      ALIGN_LATERAL_kP,
+      ALIGN_LATERAL_kI,
+      ALIGN_LATERAL_kD,
       TRANSLATION_CONSTRAINTS);
 
-  private final ProfiledPIDController thetaController = new ProfiledPIDController(5.0, 0.0, 0.0, OMEGA_CONSTRAINTS);
+  private final ProfiledPIDController thetaController = new ProfiledPIDController(
+      ALIGN_THETA_kP,
+      ALIGN_THETA_kI,
+      ALIGN_THETA_kD,
+      OMEGA_CONSTRAINTS);
 
   private final SwerveRequest.RobotCentric robotCentricRequest = new SwerveRequest.RobotCentric()
       .withDriveRequestType(DriveRequestType.Velocity)
@@ -88,6 +95,7 @@ public class AlignToReefCommand extends Command {
    * @param drivetrain drivetrain subsystem
    * @param alignmentSubsystem alignment subsystem
    * @param targetDistance distance the robot should be from the reef
+   * @param tagLateralTarget lateral target location for the apriltag
    * @param photonCamera photon camera to use for AprilTag
    * @param allowEndWithoutTag true to allow the command to end even though an AprilTag was never seen, otherwise false
    */

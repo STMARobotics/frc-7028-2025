@@ -217,7 +217,7 @@ public class Constants {
 
     public static final Distance ELEVATOR_PARK_HEIGHT = Meters.of(0.0);
     public static final Distance ELEVATOR_PARK_TOLERANCE = Meters.of(0.01);
-    public static final Angle ARM_PARK_ANGLE = Rotations.of(0.3);
+    public static final Angle ARM_PARK_ANGLE = Rotations.of(0.35);
 
     public static final Current ARM_STATOR_CURRENT_LIMIT = Amps.of(40);
     public static final Current ARM_SUPPLY_CURRENT_LIMIT = Amps.of(40);
@@ -229,11 +229,11 @@ public class Constants {
         .withKD(0.0)
         .withKS(0.15341)
         .withKG(0.4) // Volts
-        .withKV(1.0) // V*s/rotation
+        .withKV(0.65) // V*s/rotation
         .withKA(0.03); // V*s^2/rotation
 
     public static final MotionMagicConfigs ARM_MOTION_MAGIC_CONFIGS = new MotionMagicConfigs()
-        .withMotionMagicAcceleration(2.0)
+        .withMotionMagicAcceleration(6.0)
         .withMotionMagicCruiseVelocity(6.0);
 
     public static final Distance ELEVATOR_INTAKE_POSITION = Meters.of(0);
@@ -278,7 +278,7 @@ public class Constants {
     public static final AngularVelocity EJECT_VELOCITY = RadiansPerSecond.of(-5);
     public static final AngularVelocity SCORE_VELOCITY = RadiansPerSecond.of(-5);
 
-    public static final Current WHEEL_HOLD_CORAL_CURRENT = Amps.of(5.0);
+    public static final Current WHEEL_HOLD_CORAL_CURRENT = Amps.of(6.0);
     public static final Current WHEEL_HOLD_ALGAE_CURRENT = Amps.of(-10.0);
 
   }
@@ -312,6 +312,18 @@ public class Constants {
     public static final AngularAcceleration MAX_ALIGN_ANGULAR_ACCELERATION = RadiansPerSecondPerSecond
         .of(6.0 * Math.PI);
 
+    public static final double ALIGN_DISTANCE_kP = 6.0;
+    public static final double ALIGN_DISTANCE_kI = 0.0;
+    public static final double ALIGN_DISTANCE_kD = 0.0;
+
+    public static final double ALIGN_LATERAL_kP = 7.0;
+    public static final double ALIGN_LATERAL_kI = 0.0;
+    public static final double ALIGN_LATERAL_kD = 0.0;
+
+    public static final double ALIGN_THETA_kP = 5.0;
+    public static final double ALIGN_THETA_kI = 0.0;
+    public static final double ALIGN_THETA_kD = 0.0;
+
     /** Pose of the robot relative to a reef branch for scoring */
     public static final Transform2d RELATIVE_ALGAE_INTAKE_POSE = new Transform2d(
         inchesToMeters(-40),
@@ -332,7 +344,7 @@ public class Constants {
     /** Pose of the robot relative to a reef branch for scoring coral on L2 */
     public static final Transform2d RELATIVE_SCORING_POSE_CORAL_L2 = new Transform2d(
         inchesToMeters(-40),
-        inchesToMeters(12),
+        inchesToMeters(-12),
         Rotation2d.fromDegrees(90));
 
     /** Pose of the robot relative to the reef trough for scoring coral on L1 */

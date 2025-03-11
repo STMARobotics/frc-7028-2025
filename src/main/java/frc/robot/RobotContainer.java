@@ -126,7 +126,8 @@ public class RobotContainer {
     }
 
     // Configure PathPlanner
-    NamedCommands.registerCommand("scoreCoralLevel4", autoCommands.scoreCoralLevel4AutoLeft());
+    NamedCommands.registerCommand("scoreCoralLevel4Right", autoCommands.scoreCoralLevel4Right());
+    NamedCommands.registerCommand("scoreCoralLevel4Left", autoCommands.scoreCoralLevel4Left());
     NamedCommands.registerCommand("intakeCoral", intakeAndHoldCoralCommand);
 
     autoChooser = AutoBuilder.buildAutoChooser();
@@ -147,12 +148,16 @@ public class RobotContainer {
     photonThread.setDaemon(true);
     photonThread.start();
 
-    // Run IntakeAndHoldCommand when enabled in teleop and no other command is running on arm, intake, and manipulator
+    // Run IntakeAndHoldCommand when enabled in teleop and no other command is running on arm and intake
     new Trigger(
-        () -> RobotState.isEnabled() && RobotState.isTeleop()
-            && gamePieceManipulatorSubsystem.getCurrentCommand() == null && armSubsystem.getCurrentCommand() == null
+        () -> RobotState.isEnabled() && RobotState.isTeleop() && armSubsystem.getCurrentCommand() == null
             && indexerSubsystem.getCurrentCommand() == null)
         .onTrue(intakeAndHoldCoralCommand);
+
+    // Default to holding coral when nothing else is running. The trigger above WILL interupt this if the arm and intake
+    // are not running any command
+    gamePieceManipulatorSubsystem
+        .setDefaultCommand(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::activeHoldCoral));
 
     // Set up default commmands
     ledSubsystem.setDefaultCommand(new DefaultLEDCommand(ledSubsystem));
@@ -188,13 +193,16 @@ public class RobotContainer {
 
     controlBindings.moveArmToReefLevel2()
         .ifPresent(
-            trigger -> trigger.onTrue(armSubsystem.run(armSubsystem::moveToLevel2).finallyDo(armSubsystem::stop)));
+            trigger -> trigger
+                .toggleOnTrue(armSubsystem.run(armSubsystem::moveToLevel2).finallyDo(armSubsystem::stop)));
     controlBindings.moveArmToReefLevel3()
         .ifPresent(
-            trigger -> trigger.onTrue(armSubsystem.run(armSubsystem::moveToLevel3).finallyDo(armSubsystem::stop)));
+            trigger -> trigger
+                .toggleOnTrue(armSubsystem.run(armSubsystem::moveToLevel3).finallyDo(armSubsystem::stop)));
     controlBindings.moveArmToReefLevel4()
         .ifPresent(
-            trigger -> trigger.onTrue(armSubsystem.run(armSubsystem::moveToLevel4).finallyDo(armSubsystem::stop)));
+            trigger -> trigger
+                .toggleOnTrue(armSubsystem.run(armSubsystem::moveToLevel4).finallyDo(armSubsystem::stop)));
     controlBindings.releaseCoral()
         .ifPresent(
             trigger -> trigger.whileTrue(
