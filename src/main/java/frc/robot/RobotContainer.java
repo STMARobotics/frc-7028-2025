@@ -149,10 +149,12 @@ public class RobotContainer {
 
     // Run IntakeAndHoldCommand when enabled in teleop and no other command is running on arm, intake, and manipulator
     new Trigger(
-        () -> RobotState.isEnabled() && RobotState.isTeleop()
-            && gamePieceManipulatorSubsystem.getCurrentCommand() == null && armSubsystem.getCurrentCommand() == null
+        () -> RobotState.isEnabled() && RobotState.isTeleop() && armSubsystem.getCurrentCommand() == null
             && indexerSubsystem.getCurrentCommand() == null)
         .onTrue(intakeAndHoldCoralCommand);
+
+    gamePieceManipulatorSubsystem
+        .setDefaultCommand(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::activeHoldCoral));
 
     // Set up default commmands
     ledSubsystem.setDefaultCommand(new DefaultLEDCommand(ledSubsystem));
@@ -188,13 +190,16 @@ public class RobotContainer {
 
     controlBindings.moveArmToReefLevel2()
         .ifPresent(
-            trigger -> trigger.onTrue(armSubsystem.run(armSubsystem::moveToLevel2).finallyDo(armSubsystem::stop)));
+            trigger -> trigger
+                .toggleOnTrue(armSubsystem.run(armSubsystem::moveToLevel2).finallyDo(armSubsystem::stop)));
     controlBindings.moveArmToReefLevel3()
         .ifPresent(
-            trigger -> trigger.onTrue(armSubsystem.run(armSubsystem::moveToLevel3).finallyDo(armSubsystem::stop)));
+            trigger -> trigger
+                .toggleOnTrue(armSubsystem.run(armSubsystem::moveToLevel3).finallyDo(armSubsystem::stop)));
     controlBindings.moveArmToReefLevel4()
         .ifPresent(
-            trigger -> trigger.onTrue(armSubsystem.run(armSubsystem::moveToLevel4).finallyDo(armSubsystem::stop)));
+            trigger -> trigger
+                .toggleOnTrue(armSubsystem.run(armSubsystem::moveToLevel4).finallyDo(armSubsystem::stop)));
     controlBindings.releaseCoral()
         .ifPresent(
             trigger -> trigger.whileTrue(
