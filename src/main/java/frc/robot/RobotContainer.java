@@ -126,7 +126,8 @@ public class RobotContainer {
     }
 
     // Configure PathPlanner
-    NamedCommands.registerCommand("scoreCoralLevel4", autoCommands.scoreCoralLevel4AutoLeft());
+    NamedCommands.registerCommand("scoreCoralLevel4Right", autoCommands.scoreCoralLevel4Right());
+    NamedCommands.registerCommand("scoreCoralLevel4Left", autoCommands.scoreCoralLevel4Left());
     NamedCommands.registerCommand("intakeCoral", intakeAndHoldCoralCommand);
 
     autoChooser = AutoBuilder.buildAutoChooser();
@@ -147,12 +148,14 @@ public class RobotContainer {
     photonThread.setDaemon(true);
     photonThread.start();
 
-    // Run IntakeAndHoldCommand when enabled in teleop and no other command is running on arm, intake, and manipulator
+    // Run IntakeAndHoldCommand when enabled in teleop and no other command is running on arm and intake
     new Trigger(
         () -> RobotState.isEnabled() && RobotState.isTeleop() && armSubsystem.getCurrentCommand() == null
             && indexerSubsystem.getCurrentCommand() == null)
         .onTrue(intakeAndHoldCoralCommand);
 
+    // Default to holding coral when nothing else is running. The trigger above WILL interupt this if the arm and intake
+    // are not running any command
     gamePieceManipulatorSubsystem
         .setDefaultCommand(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::activeHoldCoral));
 

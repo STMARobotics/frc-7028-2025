@@ -35,7 +35,6 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.GamePieceManipulatorSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
-import java.util.List;
 import org.photonvision.PhotonCamera;
 
 /**
@@ -163,13 +162,7 @@ public class AutoCommands {
    * @return new command
    */
   public Command scoreCoralLevel4Left() {
-    return scoreCoralTeleop(
-        armSubsystem::moveToLevel4,
-          REEF_L4_SCORE_POSES_RED_LEFT,
-          REEF_L4_SCORE_POSES_BLUE_LEFT,
-          DISTANCE_TARGET_L4,
-          LATERAL_TARGET_L4_LEFT,
-          highCameraForLeft);
+    return autoScoreCoral(armSubsystem::moveToLevel4, DISTANCE_TARGET_L4, LATERAL_TARGET_L4_LEFT, highCameraForLeft);
   }
 
   /**
@@ -178,13 +171,7 @@ public class AutoCommands {
    * @return new command
    */
   public Command scoreCoralLevel4Right() {
-    return scoreCoralTeleop(
-        armSubsystem::moveToLevel4,
-          REEF_L4_SCORE_POSES_RED_RIGHT,
-          REEF_L4_SCORE_POSES_BLUE_RIGHT,
-          DISTANCE_TARGET_L4,
-          LATERAL_TARGET_L4_RIGHT,
-          highCameraForRight);
+    return autoScoreCoral(armSubsystem::moveToLevel4, DISTANCE_TARGET_L4, LATERAL_TARGET_L4_RIGHT, highCameraForRight);
   }
 
   /**
@@ -193,13 +180,7 @@ public class AutoCommands {
    * @return new command
    */
   public Command scoreCoralLevel3Left() {
-    return scoreCoralTeleop(
-        armSubsystem::moveToLevel3,
-          REEF_L3_SCORE_POSES_RED_LEFT,
-          REEF_L3_SCORE_POSES_BLUE_LEFT,
-          DISTANCE_TARGET_L3,
-          LATERAL_TARGET_L3_LEFT,
-          highCameraForLeft);
+    return autoScoreCoral(armSubsystem::moveToLevel3, DISTANCE_TARGET_L3, LATERAL_TARGET_L3_LEFT, highCameraForLeft);
   }
 
   /**
@@ -208,13 +189,7 @@ public class AutoCommands {
    * @return new command
    */
   public Command scoreCoralLevel3Right() {
-    return scoreCoralTeleop(
-        armSubsystem::moveToLevel3,
-          REEF_L3_SCORE_POSES_RED_RIGHT,
-          REEF_L3_SCORE_POSES_BLUE_RIGHT,
-          DISTANCE_TARGET_L3,
-          LATERAL_TARGET_L3_RIGHT,
-          highCameraForRight);
+    return autoScoreCoral(armSubsystem::moveToLevel3, DISTANCE_TARGET_L3, LATERAL_TARGET_L3_RIGHT, highCameraForRight);
   }
 
   /**
@@ -256,64 +231,15 @@ public class AutoCommands {
         REEF_L1_SCORE_POSES_BLUE);
   }
 
-  private Command scoreCoralTeleop(
+  private Command autoScoreCoral(
       Runnable armMethod,
-      List<Pose2d> redPoses,
-      List<Pose2d> bluePoses,
-      Distance distanceTarget,
-      Distance lateralTarget,
-      PhotonCamera highCamera) {
-    var driveToReef = new DriveToNearestPose(drivetrain, () -> drivetrain.getState().Pose, redPoses, bluePoses);
-    var alignToReef = new AlignToReefCommand(
-        drivetrain,
-        alignmentSubsystem,
-        distanceTarget,
-        lateralTarget,
-        highCamera,
-        false);
-
-    return ledSubsystem
-        .setLEDSegmentsAsCommand(
-            kGreen,
-              driveToReef::isFinished,
-              armSubsystem::isAtPosition,
-              alignToReef::atDistanceGoal,
-              alignToReef::atLateralGoal)
-        .withDeadline(
-            driveToReef.andThen(
-                armSubsystem.run(armMethod)
-                    .until(armSubsystem::isAtPosition)
-                    .alongWith(alignToReef)
-                    .andThen(
-                        armSubsystem.run(armMethod)
-                            .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectCoral))
-                            .withTimeout(0.25))));
-  }
-
-  /**
-   * Creates a command to score coral on left level 4 using the sequence for autonomous
-   * 
-   * @return new command
-   */
-  public Command scoreCoralLevel4AutoLeft() {
-    return autoScoreCoralAuto(
-        armSubsystem::moveToLevel4,
-          REEF_L4_SCORE_POSES_RED_LEFT,
-          REEF_L4_SCORE_POSES_BLUE_LEFT,
-          LATERAL_TARGET_L4_LEFT,
-          highCameraForLeft);
-  }
-
-  private Command autoScoreCoralAuto(
-      Runnable armMethod,
-      List<Pose2d> redPoses,
-      List<Pose2d> bluePoses,
+      Distance targetDistance,
       Distance lateralTarget,
       PhotonCamera highCamera) {
     var alignToReef = new AlignToReefCommand(
         drivetrain,
         alignmentSubsystem,
-        DISTANCE_TARGET_L4,
+        targetDistance,
         lateralTarget,
         highCamera,
         true);

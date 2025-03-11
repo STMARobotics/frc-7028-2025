@@ -217,7 +217,7 @@ public class Constants {
 
     public static final Distance ELEVATOR_PARK_HEIGHT = Meters.of(0.0);
     public static final Distance ELEVATOR_PARK_TOLERANCE = Meters.of(0.01);
-    public static final Angle ARM_PARK_ANGLE = Rotations.of(0.3);
+    public static final Angle ARM_PARK_ANGLE = Rotations.of(0.35);
 
     public static final Current ARM_STATOR_CURRENT_LIMIT = Amps.of(40);
     public static final Current ARM_SUPPLY_CURRENT_LIMIT = Amps.of(40);
@@ -315,6 +315,18 @@ public class Constants {
     public static final AngularVelocity MAX_ALIGN_ANGULAR_VELOCITY = MAX_TELEOP_ANGULAR_VELOCITY.times(0.75);
     public static final AngularAcceleration MAX_ALIGN_ANGULAR_ACCELERATION = RadiansPerSecondPerSecond
         .of(6.0 * Math.PI);
+
+    public static final double ALIGN_DISTANCE_kP = 6.0;
+    public static final double ALIGN_DISTANCE_kI = 0.0;
+    public static final double ALIGN_DISTANCE_kD = 0.0;
+
+    public static final double ALIGN_LATERAL_kP = 7.0;
+    public static final double ALIGN_LATERAL_kI = 0.0;
+    public static final double ALIGN_LATERAL_kD = 0.0;
+
+    public static final double ALIGN_THETA_kP = 5.0;
+    public static final double ALIGN_THETA_kI = 0.0;
+    public static final double ALIGN_THETA_kD = 0.0;
 
     /** Pose of the robot relative to a reef branch for scoring coral on L4 */
     public static final Transform2d RELATIVE_SCORING_POSE_CORAL_L4 = new Transform2d(
