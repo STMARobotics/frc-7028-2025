@@ -136,4 +136,9 @@ public class JoystickControlBindings extends ControlBindings {
   public Optional<Trigger> shootAlgae() {
     return Optional.of(leftJoystick.button(9));
   }
+
+  @Override
+  public Optional<Trigger> seedFieldCentric() {
+    return Optional.of(leftJoystick.button(11));
+  }
 }
