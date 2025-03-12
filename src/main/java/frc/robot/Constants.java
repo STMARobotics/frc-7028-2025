@@ -240,8 +240,8 @@ public class Constants {
     public static final Distance LEVEL_2_HEIGHT = Meters.of(0.32);
     public static final Distance LEVEL_3_HEIGHT = Meters.of(0);
     public static final Distance LEVEL_4_HEIGHT = Meters.of(0.675);
-    public static final Distance ALGAE_LOWER_HEIGHT = Meters.of(0.0);
-    public static final Distance ALGAE_UPPER_HEIGHT = Meters.of(0.317);
+    public static final Distance ALGAE_LOW_HEIGHT = Meters.of(0.0);
+    public static final Distance ALGAE_HIGH_HEIGHT = Meters.of(0.317);
     public static final Distance ALGAE_BARGE_HEIGHT = Meters.of(0.72);
     public static final Distance ALGAE_PROCESSOR_HEIGHT = Meters.of(0.0);
     public static final Distance ALGAE_HOLD_HEIGHT = Meters.zero();
@@ -250,8 +250,8 @@ public class Constants {
     public static final Angle LEVEL_2_ANGLE = Rotations.of(0.71);
     public static final Angle LEVEL_3_ANGLE = Rotations.of(0.172);
     public static final Angle LEVEL_4_ANGLE = Rotations.of(0.16);
-    public static final Angle ALGAE_LOWER_ANGLE = Rotations.of(0.06);
-    public static final Angle ALGAE_UPPER_ANGLE = Rotations.of(0.105);
+    public static final Angle ALGAE_LOW_ANGLE = Rotations.of(0.06);
+    public static final Angle ALGAE_HIGH_ANGLE = Rotations.of(0.105);
     public static final Angle ALGAE_BARGE_ANGLE = Rotation.of(0.75);
     public static final Angle ALGAE_PROCESSOR_ANGLE = Rotation.of(0.963);
     public static final Angle ALGAE_HOLD_ANGLE = Rotations.of(0.5);
@@ -323,6 +323,12 @@ public class Constants {
     public static final double ALIGN_THETA_kP = 5.0;
     public static final double ALIGN_THETA_kI = 0.0;
     public static final double ALIGN_THETA_kD = 0.0;
+
+    /** Pose of the robot relative to a reef branch for scoring */
+    public static final Transform2d RELATIVE_ALGAE_INTAKE_POSE = new Transform2d(
+        inchesToMeters(-40),
+        inchesToMeters(12),
+        Rotation2d.fromDegrees(-90));
 
     /** Pose of the robot relative to a reef branch for scoring coral on L4 */
     public static final Transform2d RELATIVE_SCORING_POSE_CORAL_L4 = new Transform2d(
@@ -414,6 +420,50 @@ public class Constants {
               new Pose2d(12.674074, 3.673180, Rotation2d.fromDegrees(60)), // 7
               new Pose2d(12.553672, 4.210903, Rotation2d.fromDegrees(0)), // 9
               new Pose2d(12.958666, 4.585500, Rotation2d.fromDegrees(-60)))// 11
+        .collect(toUnmodifiableList());
+
+    // spotless:off
+    /*
+     * The reef algae are in the arrays like this:
+     *    ----------------------------------------
+     *    |     2  / \ 3      |      5 / \ 0     |
+     *    B      /     \      |      /     \     |
+     *    L     |       | 4   |     |       | 1  R
+     * +X U   1 |       |     |   4 |       |    E
+     *    E      \     /      |      \     /     D
+     *    |      0 \ / 5      |      3 \ / 2     |
+     *    |___________________|__________________|
+     * (0, 0)               +Y
+     */
+    // spotless:on
+    /**
+     * Poses of the algae on the red reef. Translation is the center of the algae, rotation is pointing toward reef
+     * center.
+     */
+    public static final List<Pose2d> REEF_ALGAE_POSES_RED = Stream
+        .of(
+            new Pose2d(13.412, 4.618, Rotation2d.fromDegrees(-120)), // 0
+              new Pose2d(13.761, 4.020, Rotation2d.fromDegrees(180)), // 1
+              new Pose2d(13.412, 3.452, Rotation2d.fromDegrees(120)), // 2
+              new Pose2d(12.734, 3.452, Rotation2d.fromDegrees(60)), // 3
+              new Pose2d(12.375, 4.020, Rotation2d.fromDegrees(0)), // 4
+              new Pose2d(12.734, 4.618, Rotation2d.fromDegrees(-60))) // 5
+        .map(reefPose -> reefPose.plus(RELATIVE_ALGAE_INTAKE_POSE))
+        .collect(toUnmodifiableList());
+
+    /**
+     * Poses of the algae on the blue reef. Translation is the center of the algae, rotation is pointing toward reef
+     * center.
+     */
+    public static final List<Pose2d> REEF_ALGAE_POSES_BLUE = Stream
+        .of(
+            new Pose2d(4.138, 3.452, Rotation2d.fromDegrees(60)), // 0
+              new Pose2d(3.799, 4.020, Rotation2d.fromDegrees(0)), // 1
+              new Pose2d(4.138, 4.618, Rotation2d.fromDegrees(-60)), // 2
+              new Pose2d(4.836, 4.618, Rotation2d.fromDegrees(-120)), // 3
+              new Pose2d(5.165, 4.020, Rotation2d.fromDegrees(180)), // 4
+              new Pose2d(4.836, 3.452, Rotation2d.fromDegrees(120))) // 5
+        .map(reefPose -> reefPose.plus(RELATIVE_ALGAE_INTAKE_POSE))
         .collect(toUnmodifiableList());
 
     /** Poses of the robot for scoring on L4 left branches on the red alliance */
@@ -517,14 +567,19 @@ public class Constants {
         .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE_CORAL_L1))
         .collect(toUnmodifiableList());
 
-    public static final Distance DISTANCE_TARGET_L4 = Meters.of(0.34);
     public static final Distance DISTANCE_TARGET_L3 = Meters.of(0.34);
+    public static final Distance DISTANCE_TARGET_L4 = Meters.of(0.34);
+    public static final Distance DISTANCE_TARGET_ALGAE_LOW = Meters.of(0.34);
+    public static final Distance DISTANCE_TARGET_ALGAE_HIGH = Meters.of(0.34);
 
     public static final Distance LATERAL_TARGET_L3_LEFT = Meters.of(0.05);
     public static final Distance LATERAL_TARGET_L3_RIGHT = Meters.of(0.02);
 
     public static final Distance LATERAL_TARGET_L4_LEFT = Meters.of(0.05);
     public static final Distance LATERAL_TARGET_L4_RIGHT = Meters.of(0.02);
+
+    public static final Distance LATERAL_TARGET_ALGAE_HIGH = Meters.of(0.02);
+    public static final Distance LATERAL_TARGET_ALGAE_LOW = Meters.of(0.02);
   }
 
   /**

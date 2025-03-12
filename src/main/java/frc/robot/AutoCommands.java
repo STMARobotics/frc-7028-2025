@@ -1,12 +1,18 @@
 package frc.robot;
 
 import static edu.wpi.first.wpilibj.util.Color.kGreen;
+import static frc.robot.Constants.AlignmentConstants.DISTANCE_TARGET_ALGAE_HIGH;
+import static frc.robot.Constants.AlignmentConstants.DISTANCE_TARGET_ALGAE_LOW;
 import static frc.robot.Constants.AlignmentConstants.DISTANCE_TARGET_L3;
 import static frc.robot.Constants.AlignmentConstants.DISTANCE_TARGET_L4;
+import static frc.robot.Constants.AlignmentConstants.LATERAL_TARGET_ALGAE_HIGH;
+import static frc.robot.Constants.AlignmentConstants.LATERAL_TARGET_ALGAE_LOW;
 import static frc.robot.Constants.AlignmentConstants.LATERAL_TARGET_L3_LEFT;
 import static frc.robot.Constants.AlignmentConstants.LATERAL_TARGET_L3_RIGHT;
 import static frc.robot.Constants.AlignmentConstants.LATERAL_TARGET_L4_LEFT;
 import static frc.robot.Constants.AlignmentConstants.LATERAL_TARGET_L4_RIGHT;
+import static frc.robot.Constants.AlignmentConstants.REEF_ALGAE_POSES_BLUE;
+import static frc.robot.Constants.AlignmentConstants.REEF_ALGAE_POSES_RED;
 import static frc.robot.Constants.AlignmentConstants.REEF_L1_SCORE_POSES_BLUE;
 import static frc.robot.Constants.AlignmentConstants.REEF_L1_SCORE_POSES_RED;
 import static frc.robot.Constants.AlignmentConstants.REEF_L2_SCORE_POSES_BLUE_LEFT;
@@ -22,6 +28,7 @@ import static frc.robot.Constants.AlignmentConstants.REEF_L4_SCORE_POSES_BLUE_RI
 import static frc.robot.Constants.AlignmentConstants.REEF_L4_SCORE_POSES_RED_LEFT;
 import static frc.robot.Constants.AlignmentConstants.REEF_L4_SCORE_POSES_RED_RIGHT;
 
+import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.measure.Distance;
@@ -154,6 +161,16 @@ public class AutoCommands {
     table.getStructArrayTopic("reef_l1_red", Pose2d.struct)
         .publish()
         .set(REEF_L1_SCORE_POSES_RED.toArray(Pose2d[]::new));
+
+    // Algae
+    table.getStructArrayTopic("reef_algae_red", Pose2d.struct)
+        .publish()
+        .set(REEF_ALGAE_POSES_RED.toArray(Pose2d[]::new));
+
+    table.getStructArrayTopic("reef_algae_blue", Pose2d.struct)
+        .publish()
+        .set(REEF_ALGAE_POSES_BLUE.toArray(Pose2d[]::new));
+
   }
 
   /**
@@ -175,9 +192,37 @@ public class AutoCommands {
   }
 
   /**
-   * Creates a command that will auto align and score on the left side of level 3
+   * Creates a command that will:
+   * <ol>
+   * <li>Drive to the nearest algae location</li>
+   * <li>Align to the reef using the CANranges</li>
+   * <li>Get the arm and elevator into position to grab the algae on level 1</li>
+   * <li>Intake the algae</li>
+   * </ol>
    * 
    * @return new command
+   */
+  public Command autoIntakeAlgaeLow() {
+    return autoIntakeAlgae(armSubsystem::moveToAlgaeLevelLow, DISTANCE_TARGET_ALGAE_LOW, LATERAL_TARGET_ALGAE_LOW);
+  }
+
+  /**
+   * Creates a command that will:
+   * <ol>
+   * <li>Drive to the nearest algae location</li>
+   * <li>Align to the reef using the CANranges</li>
+   * <li>Get the arm and elevator into position to grab the algae on level 2</li>
+   * <li>Intake the algae</li>
+   * </ol>
+   * 
+   * @return new command
+   */
+  public Command autoIntakeAlgaeHigh() {
+    return autoIntakeAlgae(armSubsystem::moveToAlgaeHigh, DISTANCE_TARGET_ALGAE_HIGH, LATERAL_TARGET_ALGAE_HIGH);
+  }
+
+  /**
+   * Creates a command that will drive to the nearest L2 reef scoring location
    */
   public Command scoreCoralLevel3Left() {
     return autoScoreCoral(armSubsystem::moveToLevel3, DISTANCE_TARGET_L3, LATERAL_TARGET_L3_LEFT, highCameraForLeft);
@@ -259,5 +304,24 @@ public class AutoCommands {
                         .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectCoral))
                         .withTimeout(0.25)))
         .finallyDo(() -> ledSubsystem.runPattern(LEDPattern.kOff));
+  }
+
+  private Command autoIntakeAlgae(Runnable armMethod, Distance distanceTarget, Distance lateralTarget) {
+    var driveToReef = new DriveToNearestPose(
+        drivetrain,
+        () -> drivetrain.getState().Pose,
+        REEF_ALGAE_POSES_RED,
+        REEF_ALGAE_POSES_BLUE);
+    var alignToReef = new AlignToReefCommand(
+        drivetrain,
+        alignmentSubsystem,
+        distanceTarget,
+        lateralTarget,
+        highCameraForLeft,
+        false);
+    return driveToReef.andThen(alignToReef)
+        .andThen(drivetrain.applyRequest(SwerveRequest.SwerveDriveBrake::new))
+        .andThen(armSubsystem.run(armMethod))
+        .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::intakeAlgae));
   }
 }
