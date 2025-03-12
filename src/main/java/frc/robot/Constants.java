@@ -252,9 +252,9 @@ public class Constants {
     public static final Angle LEVEL_4_ANGLE = Rotations.of(0.16);
     public static final Angle ALGAE_LOW_ANGLE = Rotations.of(0.06);
     public static final Angle ALGAE_HIGH_ANGLE = Rotations.of(0.105);
-    public static final Angle ALGAE_BARGE_ANGLE = Rotation.of(0.405);
+    public static final Angle ALGAE_BARGE_ANGLE = Rotation.of(0.75);
     public static final Angle ALGAE_PROCESSOR_ANGLE = Rotation.of(0.963);
-    public static final Angle ALGAE_HOLD_ANGLE = Rotations.of(0.35);
+    public static final Angle ALGAE_HOLD_ANGLE = Rotations.of(0.5);
 
     // Values for Mechanism2d visualization
     public static final Distance ARM_PIVOT_LENGTH = Meters.of(0.577);
@@ -278,7 +278,7 @@ public class Constants {
     public static final AngularVelocity EJECT_VELOCITY = RadiansPerSecond.of(-5);
     public static final AngularVelocity SCORE_VELOCITY = RadiansPerSecond.of(-5);
 
-    public static final Current WHEEL_HOLD_CORAL_CURRENT = Amps.of(6.0);
+    public static final Current WHEEL_HOLD_CORAL_CURRENT = Amps.of(5.0);
     public static final Current WHEEL_HOLD_ALGAE_CURRENT = Amps.of(-10.0);
 
   }
@@ -312,7 +312,7 @@ public class Constants {
     public static final AngularAcceleration MAX_ALIGN_ANGULAR_ACCELERATION = RadiansPerSecondPerSecond
         .of(6.0 * Math.PI);
 
-    public static final double ALIGN_DISTANCE_kP = 6.0;
+    public static final double ALIGN_DISTANCE_kP = 7.0;
     public static final double ALIGN_DISTANCE_kI = 0.0;
     public static final double ALIGN_DISTANCE_kD = 0.0;
 

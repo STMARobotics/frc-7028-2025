@@ -98,4 +98,9 @@ public class XBoxControlBindings extends ControlBindings {
   public Optional<Trigger> climb() {
     return Optional.of(driverController.rightTrigger());
   }
+
+  @Override
+  public Optional<Trigger> moveArmToReefLevel4() {
+    return Optional.of(driverController.rightBumper());
+  }
 }

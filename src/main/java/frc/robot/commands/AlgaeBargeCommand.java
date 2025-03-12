@@ -1,8 +1,6 @@
 package frc.robot.commands;
 
-import static edu.wpi.first.units.Units.Meters;
-import static frc.robot.Constants.ArmConstants.ALGAE_BARGE_ANGLE;
-import static frc.robot.Constants.ArmConstants.ALGAE_BARGE_HEIGHT;
+import static edu.wpi.first.units.Units.Rotations;
 
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
@@ -46,20 +44,16 @@ public class AlgaeBargeCommand extends Command {
   public void execute() {
     // Move the elevator and arm to the barge
     armSubsystem.moveToBarge();
-    ledSubsystem.setLEDSegments(Color.kGreen, this::isElevatorReady, this::isArmReady);
+    ledSubsystem.setLEDSegments(Color.kGreen, this::isArmReady);
 
-    if (isElevatorReady() && isArmReady()) {
+    if (isArmReady()) {
       // Launch the algae when the elevator and arm are >= 75% of the way to the barge
       gamePieceManipulatorSubsystem.shootAlgae();
     }
   }
 
-  private boolean isElevatorReady() {
-    return armSubsystem.getElevatorMeters() >= ALGAE_BARGE_HEIGHT.in(Meters) * 0.75;
-  }
-
   private boolean isArmReady() {
-    return armSubsystem.getArmAngle().gte(ALGAE_BARGE_ANGLE);
+    return armSubsystem.getArmAngle().in(Rotations) <= 0.3;
   }
 
   @Override

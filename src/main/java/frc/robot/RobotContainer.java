@@ -82,7 +82,6 @@ public class RobotContainer {
 
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
   private final DrivetrainTelemetry drivetrainTelemetry = new DrivetrainTelemetry();
-  private final Command slowModeCommand;
   private final AutoCommands autoCommands = new AutoCommands(
       drivetrain,
       armSubsystem,
@@ -134,13 +133,6 @@ public class RobotContainer {
     SmartDashboard.putData("Auto Mode", autoChooser);
 
     // Configure controls
-    slowModeCommand = drivetrain
-        .applyRequest(
-            () -> drive.withVelocityX(controlBindings.translationX().get().div(2))
-                .withVelocityY(controlBindings.translationY().get().div(2))
-                .withRotationalRate(controlBindings.omega().get().div(2)))
-        .finallyDo(() -> drivetrain.setControl(new SwerveRequest.Idle()));
-
     configureBindings();
 
     // Start PhotonVision thread
@@ -164,6 +156,15 @@ public class RobotContainer {
 
     // Run the boot animation
     new LEDBootAnimationCommand(ledSubsystem).schedule();
+  }
+
+  private Command makeSlowModeCommand() {
+    return drivetrain
+        .applyRequest(
+            () -> drive.withVelocityX(controlBindings.translationX().get().div(2))
+                .withVelocityY(controlBindings.translationY().get().div(2))
+                .withRotationalRate(controlBindings.omega().get().div(2)))
+        .finallyDo(() -> drivetrain.setControl(new SwerveRequest.Idle()));
   }
 
   private void configureBindings() {
@@ -193,16 +194,22 @@ public class RobotContainer {
 
     controlBindings.moveArmToReefLevel2()
         .ifPresent(
-            trigger -> trigger
-                .toggleOnTrue(armSubsystem.run(armSubsystem::moveToLevel2).finallyDo(armSubsystem::stop)));
+            trigger -> trigger.toggleOnTrue(
+                armSubsystem.run(armSubsystem::moveToLevel2)
+                    .alongWith(makeSlowModeCommand())
+                    .finallyDo(armSubsystem::stop)));
     controlBindings.moveArmToReefLevel3()
         .ifPresent(
-            trigger -> trigger
-                .toggleOnTrue(armSubsystem.run(armSubsystem::moveToLevel3).finallyDo(armSubsystem::stop)));
+            trigger -> trigger.toggleOnTrue(
+                armSubsystem.run(armSubsystem::moveToLevel3)
+                    .alongWith(makeSlowModeCommand())
+                    .finallyDo(armSubsystem::stop)));
     controlBindings.moveArmToReefLevel4()
         .ifPresent(
-            trigger -> trigger
-                .toggleOnTrue(armSubsystem.run(armSubsystem::moveToLevel4).finallyDo(armSubsystem::stop)));
+            trigger -> trigger.toggleOnTrue(
+                armSubsystem.run(armSubsystem::moveToLevel4)
+                    .alongWith(makeSlowModeCommand())
+                    .finallyDo(armSubsystem::stop)));
     controlBindings.releaseCoral()
         .ifPresent(
             trigger -> trigger.whileTrue(
@@ -236,10 +243,13 @@ public class RobotContainer {
                       gamePieceManipulatorSubsystem.stop();
                     })));
 
-    controlBindings.holdAlgae().ifPresent(trigger -> trigger.onTrue(Commands.run(() -> {
+    controlBindings.holdAlgae().ifPresent(trigger -> trigger.toggleOnTrue(Commands.run(() -> {
       armSubsystem.moveToHoldAlgae();
       gamePieceManipulatorSubsystem.activeHoldAlgae();
-    }, armSubsystem, gamePieceManipulatorSubsystem).finallyDo(armSubsystem::stop)));
+    }, armSubsystem, gamePieceManipulatorSubsystem).finallyDo(() -> {
+      armSubsystem.stop();
+      gamePieceManipulatorSubsystem.stop();
+    })));
 
     controlBindings.shootAlgae()
         .ifPresent(
@@ -261,7 +271,7 @@ public class RobotContainer {
                       armSubsystem.stop();
                     })));
 
-    controlBindings.slowMode().ifPresent(trigger -> trigger.whileTrue(slowModeCommand));
+    controlBindings.slowMode().ifPresent(trigger -> trigger.whileTrue(makeSlowModeCommand()));
 
     // Coral scoring level selection
     controlBindings.selectCoralLevel1().ifPresent(trigger -> trigger.onTrue(runOnce(scoreChooser::selectLevel1)));

@@ -53,7 +53,7 @@ public class IntakeAndHoldCoralCommand extends Command {
       armSubsystem.park();
       gamePieceManipulatorSubsystem.activeHoldCoral();
       indexerSubsystem.stop();
-      ledSubsystem.runPattern(LEDPattern.solid(Color.kWhite));
+      ledSubsystem.runPattern(LEDPattern.gradient(GradientType.kDiscontinuous, Color.kWhite, Color.kGray));
     } else {
       // No coral detected, so intake
       armSubsystem.moveToCoralIntakePosition();
