@@ -17,7 +17,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "intakeCoral"
+                  "name": "holdCoral"
                 }
               }
             ]
@@ -55,7 +55,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "intakeCoral"
+                  "name": "intakeAndHoldCoral"
                 }
               }
             ]
@@ -64,7 +64,13 @@
         {
           "type": "named",
           "data": {
-            "name": "scoreCoralLevel4Right"
+            "name": "intakeCoral"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "scoreCoralLevel4Left"
           }
         },
         {
@@ -93,7 +99,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "intakeCoral"
+                  "name": "intakeAndHoldCoral"
                 }
               }
             ]
@@ -102,13 +108,13 @@
         {
           "type": "named",
           "data": {
-            "name": "scoreCoralLevel4Right"
+            "name": "intakeCoral"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "intakeCoral"
+            "name": "scoreCoralLevel4Right"
           }
         }
       ]

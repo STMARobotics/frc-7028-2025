@@ -8,11 +8,27 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.352065397350993,
-        "y": 6.971370033112582
+        "x": 4.685805433391627,
+        "y": 5.86134861861391
       },
       "isLocked": false,
       "linkedName": "ThreeCoralLeftScore1"
+    },
+    {
+      "anchor": {
+        "x": 4.634478476821192,
+        "y": 5.891866721854305
+      },
+      "prevControl": {
+        "x": 4.937218897981768,
+        "y": 5.7121392943554685
+      },
+      "nextControl": {
+        "x": 3.938038824739585,
+        "y": 6.3053209497270375
+      },
+      "isLocked": false,
+      "linkedName": null
     },
     {
       "anchor": {
@@ -20,20 +36,20 @@
         "y": 7.3301531456953635
       },
       "prevControl": {
-        "x": 2.9128932119205295,
-        "y": 5.986299668874171
+        "x": 1.8063985383501764,
+        "y": 7.180960732330483
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "ThreeCoralLeftPickup1"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.9485714285714312,
-      "maxWaypointRelativePos": 1.0,
+      "minWaypointRelativePos": 1.8929870129870117,
+      "maxWaypointRelativePos": 2.0,
       "constraints": {
         "maxVelocity": 0.5,
         "maxAcceleration": 6.0,

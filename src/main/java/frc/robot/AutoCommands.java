@@ -29,6 +29,8 @@ import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.AlignToReefCommand;
 import frc.robot.commands.DriveToNearestPose;
+import frc.robot.commands.HoldCoralCommand;
+import frc.robot.commands.IntakeCoralCommand;
 import frc.robot.subsystems.AlignmentSubsystem;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -154,6 +156,24 @@ public class AutoCommands {
     table.getStructArrayTopic("reef_l1_red", Pose2d.struct)
         .publish()
         .set(REEF_L1_SCORE_POSES_RED.toArray(Pose2d[]::new));
+  }
+
+  /**
+   * Creates a command to intake coral. The command finishes when coral is in the arm.
+   * 
+   * @return new command
+   */
+  public Command intakeCoral() {
+    return new IntakeCoralCommand(indexerSubsystem, gamePieceManipulatorSubsystem, armSubsystem, ledSubsystem);
+  }
+
+  /**
+   * Creates a command to hold coral. The command finishes when there is no coral in the arm.
+   * 
+   * @return
+   */
+  public Command holdCoral() {
+    return new HoldCoralCommand(indexerSubsystem, gamePieceManipulatorSubsystem, armSubsystem, ledSubsystem);
   }
 
   /**

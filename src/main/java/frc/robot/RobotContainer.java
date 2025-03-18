@@ -32,7 +32,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.AlgaeBargeCommand;
 import frc.robot.commands.EjectCoralCommand;
-import frc.robot.commands.IntakeAndHoldCoralCommand;
 import frc.robot.commands.TuneArmCommand;
 import frc.robot.commands.led.DefaultLEDCommand;
 import frc.robot.commands.led.LEDBootAnimationCommand;
@@ -93,11 +92,6 @@ public class RobotContainer {
       highFrontCamera,
       highBackCamera);
   private final ScoreChooser scoreChooser = new ScoreChooser();
-  private final IntakeAndHoldCoralCommand intakeAndHoldCoralCommand = new IntakeAndHoldCoralCommand(
-      indexerSubsystem,
-      gamePieceManipulatorSubsystem,
-      armSubsystem,
-      ledSubsystem);
 
   private final TestMode testMode = new TestMode(
       gamePieceManipulatorSubsystem,
@@ -127,7 +121,9 @@ public class RobotContainer {
     // Configure PathPlanner
     NamedCommands.registerCommand("scoreCoralLevel4Right", autoCommands.scoreCoralLevel4Right());
     NamedCommands.registerCommand("scoreCoralLevel4Left", autoCommands.scoreCoralLevel4Left());
-    NamedCommands.registerCommand("intakeCoral", intakeAndHoldCoralCommand);
+    NamedCommands.registerCommand("intakeAndHoldCoral", autoCommands.intakeCoral().andThen(autoCommands.holdCoral()));
+    NamedCommands.registerCommand("intakeCoral", autoCommands.intakeCoral());
+    NamedCommands.registerCommand("holdCoral", autoCommands.holdCoral());
 
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Mode", autoChooser);
@@ -144,7 +140,7 @@ public class RobotContainer {
     new Trigger(
         () -> RobotState.isEnabled() && RobotState.isTeleop() && armSubsystem.getCurrentCommand() == null
             && indexerSubsystem.getCurrentCommand() == null)
-        .onTrue(intakeAndHoldCoralCommand);
+        .onTrue(autoCommands.intakeCoral().andThen(autoCommands.holdCoral()).repeatedly());
 
     // Default to holding coral when nothing else is running. The trigger above WILL interupt this if the arm and intake
     // are not running any command

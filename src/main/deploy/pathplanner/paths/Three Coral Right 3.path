@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.033443994111285,
-        "y": 1.3172135707079806
+        "x": 2.0561243437751977,
+        "y": 1.338929967325361
       },
       "isLocked": false,
       "linkedName": "ThreeCoralRightPickup1"
@@ -20,8 +20,8 @@
         "y": 2.710202814569535
       },
       "prevControl": {
-        "x": 2.9327383790052464,
-        "y": 1.926100058626133
+        "x": 2.9210377857893794,
+        "y": 1.931649508728758
       },
       "nextControl": null,
       "isLocked": false,

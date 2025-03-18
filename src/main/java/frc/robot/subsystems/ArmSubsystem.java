@@ -149,6 +149,7 @@ public class ArmSubsystem extends SubsystemBase {
   private final StatusSignal<Boolean> hasCoralSignal = armCanDi.getS2Closed();
 
   private final Debouncer armDangerDebouncer = new Debouncer(0.1, DebounceType.kFalling);
+  private final Debouncer coralDebouncer = new Debouncer(0.1, DebounceType.kBoth);
 
   @NotLogged
   private final MutAngle armTarget = Rotations.mutable(0);
@@ -232,6 +233,8 @@ public class ArmSubsystem extends SubsystemBase {
       // 0 is straight down for the ligament, but 0 is straight out to the right for the real arm
       armLigament.setAngle(getArmAngle().in(Degrees) - 90);
     }
+    // Keep the coral sensor debouncer updated, even when it's not checked externally
+    coralDebouncer.calculate(hasCoralSignal.refresh().getValue());
   }
 
   @Override
@@ -469,7 +472,7 @@ public class ArmSubsystem extends SubsystemBase {
    * @return true if the coral sensor is tripped, otherwise false
    */
   public boolean hasCoral() {
-    return hasCoralSignal.refresh().getValue();
+    return coralDebouncer.calculate(hasCoralSignal.refresh().getValue());
   }
 
   /**
