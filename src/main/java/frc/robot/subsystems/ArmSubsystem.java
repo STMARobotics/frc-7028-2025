@@ -152,6 +152,7 @@ public class ArmSubsystem extends SubsystemBase {
 
   @NotLogged
   private final MutAngle armTarget = Rotations.mutable(0);
+  private final MutAngle armAngle = Rotations.mutable(0);
 
   // Mechanism is on a 2d plane, so its the elevator viewed from the back (pop-tart side) of the robot
   // The width of the mechanism pallete is big enough to fit the mechanism in all configurations, pus a little margin
@@ -532,6 +533,18 @@ public class ArmSubsystem extends SubsystemBase {
   public Measure<AngleUnit> getArmAngle() {
     BaseStatusSignal.refreshAll(armPositionSignal, armVelocitySignal);
     return BaseStatusSignal.getLatencyCompensatedValue(armPositionSignal, armVelocitySignal);
+  }
+
+  /**
+   * Gets the arm angle. This angle <em>is</em> wrapped to one rotation.
+   * 
+   * @return arm angle
+   */
+  public Measure<AngleUnit> getNormalizedArmAngle() {
+    BaseStatusSignal.refreshAll(armPositionSignal, armVelocitySignal);
+    return armAngle.mut_replace(
+        normalizeArmAngle(BaseStatusSignal.getLatencyCompensatedValue(armPositionSignal, armVelocitySignal)),
+          Rotations);
   }
 
   /**

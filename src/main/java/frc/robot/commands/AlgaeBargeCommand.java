@@ -47,13 +47,13 @@ public class AlgaeBargeCommand extends Command {
     ledSubsystem.setLEDSegments(Color.kGreen, this::isArmReady);
 
     if (isArmReady()) {
-      // Launch the algae when the elevator and arm are >= 75% of the way to the barge
+      // Release the algae
       gamePieceManipulatorSubsystem.shootAlgae();
     }
   }
 
   private boolean isArmReady() {
-    return armSubsystem.getArmAngle().in(Rotations) <= 0.3;
+    return armSubsystem.getNormalizedArmAngle().in(Rotations) <= 0.47;
   }
 
   @Override

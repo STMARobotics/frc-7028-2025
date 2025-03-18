@@ -241,8 +241,8 @@ public class Constants {
     public static final Distance LEVEL_3_HEIGHT = Meters.of(0);
     public static final Distance LEVEL_4_HEIGHT = Meters.of(0.675);
     public static final Distance ALGAE_LOWER_HEIGHT = Meters.of(0.0);
-    public static final Distance ALGAE_UPPER_HEIGHT = Meters.of(0.317);
-    public static final Distance ALGAE_BARGE_HEIGHT = Meters.of(0.72);
+    public static final Distance ALGAE_UPPER_HEIGHT = Meters.of(0.25);
+    public static final Distance ALGAE_BARGE_HEIGHT = Meters.of(0.727);
     public static final Distance ALGAE_PROCESSOR_HEIGHT = Meters.of(0.0);
     public static final Distance ALGAE_HOLD_HEIGHT = Meters.zero();
 
@@ -252,7 +252,7 @@ public class Constants {
     public static final Angle LEVEL_4_ANGLE = Rotations.of(0.16);
     public static final Angle ALGAE_LOWER_ANGLE = Rotations.of(0.06);
     public static final Angle ALGAE_UPPER_ANGLE = Rotations.of(0.105);
-    public static final Angle ALGAE_BARGE_ANGLE = Rotation.of(0.75);
+    public static final Angle ALGAE_BARGE_ANGLE = Rotation.of(0.25);
     public static final Angle ALGAE_PROCESSOR_ANGLE = Rotation.of(0.963);
     public static final Angle ALGAE_HOLD_ANGLE = Rotations.of(0.5);
 
@@ -279,7 +279,7 @@ public class Constants {
     public static final AngularVelocity SCORE_VELOCITY = RadiansPerSecond.of(-5);
 
     public static final Current WHEEL_HOLD_CORAL_CURRENT = Amps.of(5.0);
-    public static final Current WHEEL_HOLD_ALGAE_CURRENT = Amps.of(-10.0);
+    public static final Voltage WHEEL_HOLD_ALGAE_VOLTAGE = Volts.of(-4.0);
 
   }
 
