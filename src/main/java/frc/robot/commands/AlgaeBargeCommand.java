@@ -53,7 +53,7 @@ public class AlgaeBargeCommand extends Command {
   }
 
   private boolean isArmReady() {
-    return armSubsystem.getNormalizedArmAngle().in(Rotations) <= 0.47;
+    return armSubsystem.getArmAngleNormalized().in(Rotations) <= 0.47;
   }
 
   @Override

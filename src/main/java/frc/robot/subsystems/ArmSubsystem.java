@@ -329,7 +329,7 @@ public class ArmSubsystem extends SubsystemBase {
    * @param park true if the elevator should power down if the arm is in position and the elevator is below the park
    *          height
    */
-  void moveToPosition(Distance targetElevatorHeight, Angle targetArmAngle, boolean park) {
+  private void moveToPosition(Distance targetElevatorHeight, Angle targetArmAngle, boolean park) {
     // First, handle the arm forbidden zone and choose which direction to go
     Angle calculatedTargetArmAngle = calculateArmTarget(
         (Angle) getArmAngle(),
@@ -530,7 +530,7 @@ public class ArmSubsystem extends SubsystemBase {
    * 
    * @return arm angle
    */
-  public Measure<AngleUnit> getArmAngle() {
+  private Measure<AngleUnit> getArmAngle() {
     BaseStatusSignal.refreshAll(armPositionSignal, armVelocitySignal);
     return BaseStatusSignal.getLatencyCompensatedValue(armPositionSignal, armVelocitySignal);
   }
@@ -540,7 +540,7 @@ public class ArmSubsystem extends SubsystemBase {
    * 
    * @return arm angle
    */
-  public Measure<AngleUnit> getNormalizedArmAngle() {
+  public Measure<AngleUnit> getArmAngleNormalized() {
     BaseStatusSignal.refreshAll(armPositionSignal, armVelocitySignal);
     return armAngle.mut_replace(
         normalizeArmAngle(BaseStatusSignal.getLatencyCompensatedValue(armPositionSignal, armVelocitySignal)),
@@ -548,7 +548,8 @@ public class ArmSubsystem extends SubsystemBase {
   }
 
   /**
-   * Gets the arm angle in rotations. This is helpful for Epilogue
+   * Gets the arm angle in rotations. This angle is <em>not</em> wrapped to one rotation, it's the raw value from the
+   * motor. This is helpful for Epilogue.
    * 
    * @return arm angle in rotations
    */
