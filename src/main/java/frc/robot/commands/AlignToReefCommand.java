@@ -7,7 +7,6 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
-import static frc.robot.Constants.AlignmentConstants.ALIGNMENT_TOLERANCE;
 import static frc.robot.Constants.AlignmentConstants.ALIGN_DISTANCE_kD;
 import static frc.robot.Constants.AlignmentConstants.ALIGN_DISTANCE_kI;
 import static frc.robot.Constants.AlignmentConstants.ALIGN_DISTANCE_kP;
@@ -202,19 +201,37 @@ public class AlignToReefCommand extends Command {
 
   @Override
   public boolean isFinished() {
-    return atDistanceGoal() && atLateralGoal();
+    return atDistanceGoal() && atLateralGoal() && atThetaGoal();
   }
 
+  /**
+   * Indicates if the robot is at the distance target
+   * 
+   * @return true if the robot is at the distance target
+   */
   public boolean atDistanceGoal() {
-    return alignmentSubsystem.getFrontDistance().isNear(targetDistance, ALIGNMENT_TOLERANCE)
-        && alignmentSubsystem.getBackDistance().isNear(targetDistance, ALIGNMENT_TOLERANCE);
+    return distanceController.atGoal();
   }
 
+  /**
+   * Indicates if the robot is at the lateral target
+   * 
+   * @return true if the robot is at the lateral target
+   */
   public boolean atLateralGoal() {
     if (allowScoreWithoutTag) {
       return !sawTag || (sawTag && lateralController.atGoal());
     }
     return lateralController.atGoal();
+  }
+
+  /**
+   * Indicates if the robot is at the theta target
+   * 
+   * @return true if the robot is at the theta target
+   */
+  public boolean atThetaGoal() {
+    return thetaController.atGoal();
   }
 
   @Override

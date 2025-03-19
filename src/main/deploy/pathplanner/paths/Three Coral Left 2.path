@@ -3,41 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.4698468543046355,
-        "y": 5.383381622516556
+        "x": 5.498903145695364,
+        "y": 5.623096026490066
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.685805433391627,
-        "y": 5.86134861861391
+        "x": 4.720003106654505,
+        "y": 5.9458926183916345
       },
       "isLocked": false,
       "linkedName": "ThreeCoralLeftScore1"
     },
     {
       "anchor": {
-        "x": 4.634478476821192,
-        "y": 5.891866721854305
+        "x": 1.6562086092715231,
+        "y": 7.235720198675497
       },
       "prevControl": {
-        "x": 4.937218897981768,
-        "y": 5.7121392943554685
-      },
-      "nextControl": {
-        "x": 3.938038824739585,
-        "y": 6.3053209497270375
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 1.5545115894039734,
-        "y": 7.3301531456953635
-      },
-      "prevControl": {
-        "x": 1.8063985383501764,
-        "y": 7.180960732330483
+        "x": 2.042294696702867,
+        "y": 7.068468419662357
       },
       "nextControl": null,
       "isLocked": false,
@@ -48,8 +32,8 @@
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 1.8929870129870117,
-      "maxWaypointRelativePos": 2.0,
+      "minWaypointRelativePos": 0.9,
+      "maxWaypointRelativePos": 1.0,
       "constraints": {
         "maxVelocity": 0.5,
         "maxAcceleration": 6.0,

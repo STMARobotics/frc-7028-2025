@@ -119,8 +119,8 @@ public class RobotContainer {
     }
 
     // Configure PathPlanner
-    NamedCommands.registerCommand("scoreCoralLevel4Right", autoCommands.scoreCoralLevel4Right());
-    NamedCommands.registerCommand("scoreCoralLevel4Left", autoCommands.scoreCoralLevel4Left());
+    NamedCommands.registerCommand("scoreCoralLevel4Right", autoCommands.scoreCoralLevel4Right(true));
+    NamedCommands.registerCommand("scoreCoralLevel4Left", autoCommands.scoreCoralLevel4Left(true));
     NamedCommands.registerCommand("intakeAndHoldCoral", autoCommands.intakeCoral().andThen(autoCommands.holdCoral()));
     NamedCommands.registerCommand("intakeCoral", autoCommands.intakeCoral());
     NamedCommands.registerCommand("holdCoral", autoCommands.holdCoral());
@@ -276,8 +276,8 @@ public class RobotContainer {
     Map<Integer, Command> scoreMapLeft = Map.ofEntries(
         entry(1, autoCommands.driveToCoralLevel1()),
           entry(2, autoCommands.driveToCoralLevel2Left()),
-          entry(3, autoCommands.scoreCoralLevel3Left()),
-          entry(4, autoCommands.scoreCoralLevel4Left()));
+          entry(3, autoCommands.scoreCoralLevel3Left(false)),
+          entry(4, autoCommands.scoreCoralLevel4Left(false)));
     controlBindings.scoreCoralLeft()
         .ifPresent(trigger -> trigger.whileTrue(select(scoreMapLeft, scoreChooser::getSelectedLevel)));
 
@@ -285,8 +285,8 @@ public class RobotContainer {
     Map<Integer, Command> scoreMapRight = Map.ofEntries(
         entry(1, autoCommands.driveToCoralLevel1()),
           entry(2, autoCommands.driveToCoralLevel2Right()),
-          entry(3, autoCommands.scoreCoralLevel3Right()),
-          entry(4, autoCommands.scoreCoralLevel4Right()));
+          entry(3, autoCommands.scoreCoralLevel3Right(false)),
+          entry(4, autoCommands.scoreCoralLevel4Right(false)));
     controlBindings.scoreCoralRight()
         .ifPresent(trigger -> trigger.whileTrue(select(scoreMapRight, scoreChooser::getSelectedLevel)));
   }

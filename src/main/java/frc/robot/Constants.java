@@ -233,8 +233,8 @@ public class Constants {
         .withKA(0.03); // V*s^2/rotation
 
     public static final MotionMagicConfigs ARM_MOTION_MAGIC_CONFIGS = new MotionMagicConfigs()
-        .withMotionMagicAcceleration(6.0)
-        .withMotionMagicCruiseVelocity(6.0);
+        .withMotionMagicAcceleration(4.0)
+        .withMotionMagicCruiseVelocity(5.0);
 
     public static final Distance ELEVATOR_INTAKE_POSITION = Meters.of(0);
     public static final Distance LEVEL_2_HEIGHT = Meters.of(0.32);
@@ -304,19 +304,17 @@ public class Constants {
     public static final int DEVICE_ID_FRONT_CANRANGE = 38;
     public static final int DEVICE_ID_BACK_CANRANGE = 39;
 
-    public static final Distance ALIGNMENT_TOLERANCE = Inches.of(0.5);
-
     public static final LinearVelocity MAX_ALIGN_TRANSLATION_VELOCITY = MAX_TELEOP_VELOCITY.div(2.0);
     public static final LinearAcceleration MAX_ALIGN_TRANSLATION_ACCELERATION = MetersPerSecondPerSecond.of(6.0);
     public static final AngularVelocity MAX_ALIGN_ANGULAR_VELOCITY = MAX_TELEOP_ANGULAR_VELOCITY.times(0.75);
     public static final AngularAcceleration MAX_ALIGN_ANGULAR_ACCELERATION = RadiansPerSecondPerSecond
         .of(6.0 * Math.PI);
 
-    public static final double ALIGN_DISTANCE_kP = 7.0;
+    public static final double ALIGN_DISTANCE_kP = 8.0;
     public static final double ALIGN_DISTANCE_kI = 0.0;
     public static final double ALIGN_DISTANCE_kD = 0.0;
 
-    public static final double ALIGN_LATERAL_kP = 7.0;
+    public static final double ALIGN_LATERAL_kP = 8.0;
     public static final double ALIGN_LATERAL_kI = 0.0;
     public static final double ALIGN_LATERAL_kD = 0.0;
 

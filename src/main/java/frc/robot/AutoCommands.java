@@ -1,6 +1,7 @@
 package frc.robot;
 
 import static edu.wpi.first.wpilibj.util.Color.kGreen;
+import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 import static frc.robot.Constants.AlignmentConstants.DISTANCE_TARGET_L3;
 import static frc.robot.Constants.AlignmentConstants.DISTANCE_TARGET_L4;
 import static frc.robot.Constants.AlignmentConstants.LATERAL_TARGET_L3_LEFT;
@@ -179,37 +180,61 @@ public class AutoCommands {
   /**
    * Creates a command that will auto align and score on the left side of level 4
    * 
+   * @param allowScoreWithoutTag true to allow scoring if the apriltag was never seen, otherwise false
    * @return new command
    */
-  public Command scoreCoralLevel4Left() {
-    return autoScoreCoral(armSubsystem::moveToLevel4, DISTANCE_TARGET_L4, LATERAL_TARGET_L4_LEFT, highCameraForLeft);
+  public Command scoreCoralLevel4Left(boolean allowScoreWithoutTag) {
+    return autoScoreCoral(
+        armSubsystem::moveToLevel4,
+          DISTANCE_TARGET_L4,
+          LATERAL_TARGET_L4_LEFT,
+          highCameraForLeft,
+          allowScoreWithoutTag);
   }
 
   /**
    * Creates a command that will auto align and score on the right side of level 4
    * 
+   * @param allowScoreWithoutTag true to allow scoring if the apriltag was never seen, otherwise false
    * @return new command
    */
-  public Command scoreCoralLevel4Right() {
-    return autoScoreCoral(armSubsystem::moveToLevel4, DISTANCE_TARGET_L4, LATERAL_TARGET_L4_RIGHT, highCameraForRight);
+  public Command scoreCoralLevel4Right(boolean allowScoreWithoutTag) {
+    return autoScoreCoral(
+        armSubsystem::moveToLevel4,
+          DISTANCE_TARGET_L4,
+          LATERAL_TARGET_L4_RIGHT,
+          highCameraForRight,
+          allowScoreWithoutTag);
   }
 
   /**
    * Creates a command that will auto align and score on the left side of level 3
    * 
+   * @param allowScoreWithoutTag true to allow scoring if the apriltag was never seen, otherwise false
    * @return new command
    */
-  public Command scoreCoralLevel3Left() {
-    return autoScoreCoral(armSubsystem::moveToLevel3, DISTANCE_TARGET_L3, LATERAL_TARGET_L3_LEFT, highCameraForLeft);
+  public Command scoreCoralLevel3Left(boolean allowScoreWithoutTag) {
+    return autoScoreCoral(
+        armSubsystem::moveToLevel3,
+          DISTANCE_TARGET_L3,
+          LATERAL_TARGET_L3_LEFT,
+          highCameraForLeft,
+          allowScoreWithoutTag);
   }
 
   /**
    * Creates a command that will auto align and score on the right side of level 3
    * 
+   * @param allowScoreWithoutTag true to allow scoring if the apriltag was never seen, otherwise false
    * @return new command
    */
-  public Command scoreCoralLevel3Right() {
-    return autoScoreCoral(armSubsystem::moveToLevel3, DISTANCE_TARGET_L3, LATERAL_TARGET_L3_RIGHT, highCameraForRight);
+  public Command scoreCoralLevel3Right(boolean allowScoreWithoutTag) {
+    return autoScoreCoral(
+        armSubsystem::moveToLevel3,
+          DISTANCE_TARGET_L3,
+          LATERAL_TARGET_L3_RIGHT,
+          highCameraForRight,
+          allowScoreWithoutTag);
   }
 
   /**
@@ -222,7 +247,7 @@ public class AutoCommands {
         drivetrain,
         () -> drivetrain.getState().Pose,
         REEF_L2_SCORE_POSES_RED_LEFT,
-        REEF_L2_SCORE_POSES_BLUE_LEFT);
+        REEF_L2_SCORE_POSES_BLUE_LEFT).alongWith(armSubsystem.run(armSubsystem::moveToLevel2));
   }
 
   /**
@@ -235,7 +260,7 @@ public class AutoCommands {
         drivetrain,
         () -> drivetrain.getState().Pose,
         REEF_L2_SCORE_POSES_RED_RIGHT,
-        REEF_L2_SCORE_POSES_BLUE_RIGHT);
+        REEF_L2_SCORE_POSES_BLUE_RIGHT).alongWith(armSubsystem.run(armSubsystem::moveToLevel2));
   }
 
   /**
@@ -255,29 +280,32 @@ public class AutoCommands {
       Runnable armMethod,
       Distance targetDistance,
       Distance lateralTarget,
-      PhotonCamera highCamera) {
+      PhotonCamera highCamera,
+      boolean allowScoreWithoutTag) {
     var alignToReef = new AlignToReefCommand(
         drivetrain,
         alignmentSubsystem,
         targetDistance,
         lateralTarget,
         highCamera,
-        true);
+        allowScoreWithoutTag);
 
     return ledSubsystem
         .setLEDSegmentsAsCommand(
             kGreen,
               armSubsystem::isAtPosition,
               alignToReef::atDistanceGoal,
-              alignToReef::atLateralGoal)
+              alignToReef::atLateralGoal,
+              alignToReef::atThetaGoal)
         .withDeadline(
             armSubsystem.run(armMethod)
                 .until(armSubsystem::isAtPosition)
+                .andThen(waitSeconds(0.2))
                 .alongWith(alignToReef)
                 .andThen(
                     armSubsystem.run(armMethod)
                         .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectCoral))
-                        .withTimeout(0.25)))
+                        .withTimeout(0.1)))
         .finallyDo(() -> ledSubsystem.runPattern(LEDPattern.kOff));
   }
 }
