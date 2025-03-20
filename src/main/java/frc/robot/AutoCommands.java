@@ -300,12 +300,14 @@ public class AutoCommands {
         .withDeadline(
             armSubsystem.run(armMethod)
                 .until(armSubsystem::isAtPosition)
-                .andThen(waitSeconds(0.2))
                 .alongWith(alignToReef)
+                .andThen(waitSeconds(0.1))
                 .andThen(
                     armSubsystem.run(armMethod)
-                        .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectCoral))
-                        .withTimeout(0.1)))
-        .finallyDo(() -> ledSubsystem.runPattern(LEDPattern.kOff));
+                        .alongWith(
+                            gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectCoral).asProxy())
+                        .until(() -> !armSubsystem.hasCoral())))
+        .finallyDo(() -> ledSubsystem.runPattern(LEDPattern.kOff))
+        .finallyDo(armSubsystem::stop);
   }
 }

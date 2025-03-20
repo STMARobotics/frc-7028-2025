@@ -121,9 +121,11 @@ public class RobotContainer {
     // Configure PathPlanner
     NamedCommands.registerCommand("scoreCoralLevel4Right", autoCommands.scoreCoralLevel4Right(true));
     NamedCommands.registerCommand("scoreCoralLevel4Left", autoCommands.scoreCoralLevel4Left(true));
-    NamedCommands.registerCommand("intakeAndHoldCoral", autoCommands.intakeCoral().andThen(autoCommands.holdCoral()));
     NamedCommands.registerCommand("intakeCoral", autoCommands.intakeCoral());
     NamedCommands.registerCommand("holdCoral", autoCommands.holdCoral());
+    NamedCommands.registerCommand(
+        "intakeAndHoldCoral",
+          autoCommands.intakeCoral().andThen(autoCommands.holdCoral()).repeatedly());
 
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Mode", autoChooser);
