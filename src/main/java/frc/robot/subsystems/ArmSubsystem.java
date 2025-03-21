@@ -63,9 +63,6 @@ import static frc.robot.Constants.ArmConstants.LEVEL_3_ANGLE;
 import static frc.robot.Constants.ArmConstants.LEVEL_3_HEIGHT;
 import static frc.robot.Constants.ArmConstants.LEVEL_4_ANGLE;
 import static frc.robot.Constants.ArmConstants.LEVEL_4_HEIGHT;
-
-import java.util.function.IntSupplier;
-
 import static frc.robot.Constants.CANIVORE_BUS_NAME;
 
 import com.ctre.phoenix6.BaseStatusSignal;
@@ -104,6 +101,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Robot;
+import java.util.function.IntSupplier;
 
 /**
  * The is the Subsytem for the Arm, including the elevator.

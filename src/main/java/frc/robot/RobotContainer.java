@@ -60,7 +60,7 @@ public class RobotContainer {
       .withDriveRequestType(DriveRequestType.Velocity)
       .withSteerRequestType(SteerRequestType.MotionMagicExpo);
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-  
+
   private final ScoreChooser scoreChooser = new ScoreChooser();
   @Logged
   private final IndexerSubsystem indexerSubsystem = new IndexerSubsystem();
