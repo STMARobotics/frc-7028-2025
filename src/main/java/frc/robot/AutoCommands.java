@@ -43,7 +43,6 @@ import org.photonvision.PhotonCamera;
 /**
  * Library of commands to perform complex actions
  */
-@SuppressWarnings("unused")
 public class AutoCommands {
 
   private final CommandSwerveDrivetrain drivetrain;
@@ -299,13 +298,13 @@ public class AutoCommands {
               alignToReef::atThetaGoal)
         .withDeadline(
             armSubsystem.run(armMethod)
+                .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::activeHoldCoral))
                 .until(armSubsystem::isAtPosition)
                 .alongWith(alignToReef)
-                .andThen(waitSeconds(0.1))
+                .andThen(waitSeconds(0.2))
                 .andThen(
                     armSubsystem.run(armMethod)
-                        .alongWith(
-                            gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectCoral).asProxy())
+                        .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectCoral))
                         .until(() -> !armSubsystem.hasCoral())))
         .finallyDo(() -> ledSubsystem.runPattern(LEDPattern.kOff))
         .finallyDo(armSubsystem::stop);

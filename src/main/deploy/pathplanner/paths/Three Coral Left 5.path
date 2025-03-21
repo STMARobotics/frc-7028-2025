@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.6852649006622515,
-        "y": 7.257512417218543
+        "x": 1.6271523178807947,
+        "y": 7.402793874172184
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.6551423746389937,
-        "y": 6.230779751749872
+        "x": 2.651122723119136,
+        "y": 6.169852710192876
       },
       "isLocked": false,
       "linkedName": "ThreeCoralLeftPickup2"
@@ -20,8 +20,8 @@
         "y": 5.506870860927152
       },
       "prevControl": {
-        "x": 2.847291733021539,
-        "y": 6.549286525283442
+        "x": 3.010933359444247,
+        "y": 6.326984498877945
       },
       "nextControl": null,
       "isLocked": false,
@@ -34,7 +34,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 4.25,
-    "maxAcceleration": 6.0,
+    "maxAcceleration": 5.0,
     "maxAngularVelocity": 360.0,
     "maxAngularAcceleration": 540.0,
     "nominalVoltage": 12.0,
