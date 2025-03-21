@@ -60,13 +60,14 @@ public class RobotContainer {
       .withDriveRequestType(DriveRequestType.Velocity)
       .withSteerRequestType(SteerRequestType.MotionMagicExpo);
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-
+  
+  private final ScoreChooser scoreChooser = new ScoreChooser();
   @Logged
   private final IndexerSubsystem indexerSubsystem = new IndexerSubsystem();
   @Logged
   private final GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem = new GamePieceManipulatorSubsystem();
   @Logged
-  private final ArmSubsystem armSubsystem = new ArmSubsystem();
+  private final ArmSubsystem armSubsystem = new ArmSubsystem(scoreChooser::getSelectedLevel);
   private final ClimbSubsystem climbSubsystem = new ClimbSubsystem();
   private final LEDSubsystem ledSubsystem = new LEDSubsystem();
   @Logged
@@ -91,7 +92,6 @@ public class RobotContainer {
       ledSubsystem,
       highFrontCamera,
       highBackCamera);
-  private final ScoreChooser scoreChooser = new ScoreChooser();
 
   private final TestMode testMode = new TestMode(
       gamePieceManipulatorSubsystem,

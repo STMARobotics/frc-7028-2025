@@ -217,7 +217,8 @@ public class Constants {
 
     public static final Distance ELEVATOR_PARK_HEIGHT = Meters.of(0.0);
     public static final Distance ELEVATOR_PARK_TOLERANCE = Meters.of(0.01);
-    public static final Angle ARM_PARK_ANGLE = Rotations.of(0.35);
+    public static final Angle ARM_PARK_ANGLE_HIGH = Rotations.of(0.35);
+    public static final Angle ARM_PARK_ANGLE_LOW = Rotations.of(0.765);
 
     public static final Current ARM_STATOR_CURRENT_LIMIT = Amps.of(40);
     public static final Current ARM_SUPPLY_CURRENT_LIMIT = Amps.of(40);
