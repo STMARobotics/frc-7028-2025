@@ -31,7 +31,6 @@ import static frc.robot.Constants.ArmConstants.ARM_INTAKE_ANGLE;
 import static frc.robot.Constants.ArmConstants.ARM_MAGNETIC_OFFSET;
 import static frc.robot.Constants.ArmConstants.ARM_MOTION_MAGIC_CONFIGS;
 import static frc.robot.Constants.ArmConstants.ARM_PARK_ANGLE;
-import static frc.robot.Constants.ArmConstants.ARM_PARK_ANGLE_L1;
 import static frc.robot.Constants.ArmConstants.ARM_PIVOT_LENGTH;
 import static frc.robot.Constants.ArmConstants.ARM_POSITION_TOLERANCE;
 import static frc.robot.Constants.ArmConstants.ARM_ROTOR_TO_SENSOR_RATIO;
@@ -394,13 +393,6 @@ public class ArmSubsystem extends SubsystemBase {
    */
   public void park() {
     moveToPosition(ELEVATOR_PARK_HEIGHT, ARM_PARK_ANGLE, true);
-  }
-
-  /**
-   * Moves the arm and elevator to the park position that's ready for scoring on L1
-   */
-  public void parkForLevel1() {
-    moveToPosition(ELEVATOR_PARK_HEIGHT, ARM_PARK_ANGLE_L1, true);
   }
 
   /**

@@ -8,8 +8,6 @@ import static frc.robot.Constants.AlignmentConstants.LATERAL_TARGET_L3_LEFT;
 import static frc.robot.Constants.AlignmentConstants.LATERAL_TARGET_L3_RIGHT;
 import static frc.robot.Constants.AlignmentConstants.LATERAL_TARGET_L4_LEFT;
 import static frc.robot.Constants.AlignmentConstants.LATERAL_TARGET_L4_RIGHT;
-import static frc.robot.Constants.AlignmentConstants.REEF_L1_SCORE_POSES_BLUE;
-import static frc.robot.Constants.AlignmentConstants.REEF_L1_SCORE_POSES_RED;
 import static frc.robot.Constants.AlignmentConstants.REEF_L2_SCORE_POSES_BLUE_LEFT;
 import static frc.robot.Constants.AlignmentConstants.REEF_L2_SCORE_POSES_BLUE_RIGHT;
 import static frc.robot.Constants.AlignmentConstants.REEF_L2_SCORE_POSES_RED_LEFT;
@@ -147,16 +145,6 @@ public class AutoCommands {
     table.getStructArrayTopic("reef_l2_red_right", Pose2d.struct)
         .publish()
         .set(REEF_L2_SCORE_POSES_RED_RIGHT.toArray(Pose2d[]::new));
-
-    // L1 Blue
-    table.getStructArrayTopic("reef_l1_blue", Pose2d.struct)
-        .publish()
-        .set(REEF_L1_SCORE_POSES_BLUE.toArray(Pose2d[]::new));
-
-    // L1 Red
-    table.getStructArrayTopic("reef_l1_red", Pose2d.struct)
-        .publish()
-        .set(REEF_L1_SCORE_POSES_RED.toArray(Pose2d[]::new));
   }
 
   /**
@@ -282,19 +270,6 @@ public class AutoCommands {
         () -> drivetrain.getState().Pose,
         REEF_L2_SCORE_POSES_RED_RIGHT,
         REEF_L2_SCORE_POSES_BLUE_RIGHT).alongWith(armSubsystem.run(armSubsystem::moveToLevel2));
-  }
-
-  /**
-   * Creates a command that will drive to the nearest L1 reef scoring location
-   * 
-   * @return new command
-   */
-  public Command driveToCoralLevel1() {
-    return new DriveToNearestPose(
-        drivetrain,
-        () -> drivetrain.getState().Pose,
-        REEF_L1_SCORE_POSES_RED,
-        REEF_L1_SCORE_POSES_BLUE);
   }
 
   private Command autoScoreCoral(

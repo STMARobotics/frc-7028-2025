@@ -47,7 +47,7 @@ public class HoldCoralCommand extends Command {
   @Override
   public void execute() {
     if (parkForLevel1.getAsBoolean()) {
-      armSubsystem.parkForLevel1();
+      armSubsystem.moveToCoralIntakePosition();
     } else {
       armSubsystem.park();
     }
