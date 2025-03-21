@@ -30,8 +30,8 @@ import static frc.robot.Constants.ArmConstants.ARM_FORBIDDEN_ZONE_MIN;
 import static frc.robot.Constants.ArmConstants.ARM_INTAKE_ANGLE;
 import static frc.robot.Constants.ArmConstants.ARM_MAGNETIC_OFFSET;
 import static frc.robot.Constants.ArmConstants.ARM_MOTION_MAGIC_CONFIGS;
-import static frc.robot.Constants.ArmConstants.ARM_PARK_ANGLE_HIGH;
-import static frc.robot.Constants.ArmConstants.ARM_PARK_ANGLE_LOW;
+import static frc.robot.Constants.ArmConstants.ARM_PARK_ANGLE;
+import static frc.robot.Constants.ArmConstants.ARM_PARK_ANGLE_L1;
 import static frc.robot.Constants.ArmConstants.ARM_PIVOT_LENGTH;
 import static frc.robot.Constants.ArmConstants.ARM_POSITION_TOLERANCE;
 import static frc.robot.Constants.ArmConstants.ARM_ROTOR_TO_SENSOR_RATIO;
@@ -101,7 +101,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Robot;
-import java.util.function.IntSupplier;
 
 /**
  * The is the Subsytem for the Arm, including the elevator.
@@ -174,12 +173,10 @@ public class ArmSubsystem extends SubsystemBase {
   private final MechanismLigament2d armLigament = elevatorStageLigament
       .append(new MechanismLigament2d("arm", ARM_PIVOT_LENGTH.in(Meters), 90, 5, new Color8Bit(Color.kOrange)));
 
-  private final IntSupplier levelModeSupplier;
-
   /**
    * Creates a new ArmSubsystem.
    */
-  public ArmSubsystem(IntSupplier levelModeSupplier) {
+  public ArmSubsystem() {
     var elevatorCanDiConfiguration = new CANdiConfiguration();
     elevatorCanDiConfiguration.DigitalInputs.withS1CloseState(S1CloseStateValue.CloseWhenLow)
         .withS2CloseState(S2CloseStateValue.CloseWhenLow);
@@ -227,8 +224,6 @@ public class ArmSubsystem extends SubsystemBase {
 
     armMotor.getConfigurator().apply(armTalonConfig);
     SmartDashboard.putData("Arm", armMechanism);
-
-    this.levelModeSupplier = levelModeSupplier;
   }
 
   @Override
@@ -398,14 +393,14 @@ public class ArmSubsystem extends SubsystemBase {
    * Moves the arm and elevator to the park position
    */
   public void park() {
-    switch (levelModeSupplier.getAsInt()) {
-      case 1:
-        moveToPosition(ELEVATOR_PARK_HEIGHT, ARM_PARK_ANGLE_LOW, true);
-        break;
-      default:
-        moveToPosition(ELEVATOR_PARK_HEIGHT, ARM_PARK_ANGLE_HIGH, true);
-        break;
-    }
+    moveToPosition(ELEVATOR_PARK_HEIGHT, ARM_PARK_ANGLE, true);
+  }
+
+  /**
+   * Moves the arm and elevator to the park position that's ready for scoring on L1
+   */
+  public void parkForLevel1() {
+    moveToPosition(ELEVATOR_PARK_HEIGHT, ARM_PARK_ANGLE_L1, true);
   }
 
   /**

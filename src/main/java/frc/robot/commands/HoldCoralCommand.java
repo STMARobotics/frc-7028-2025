@@ -8,6 +8,7 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.GamePieceManipulatorSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
+import java.util.function.BooleanSupplier;
 
 /**
  * Command to hold coral in the game piece manipulator with the arm parked
@@ -18,6 +19,7 @@ public class HoldCoralCommand extends Command {
   private final GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem;
   private final ArmSubsystem armSubsystem;
   private final LEDSubsystem ledSubsystem;
+  private final BooleanSupplier parkForLevel1;
 
   /**
    * Constructs an IntakeCoralAndHoldCommand
@@ -31,18 +33,24 @@ public class HoldCoralCommand extends Command {
       IndexerSubsystem indexerSubsystem,
       GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem,
       ArmSubsystem armSubsystem,
-      LEDSubsystem ledSubsystem) {
+      LEDSubsystem ledSubsystem,
+      BooleanSupplier parkForlevel1) {
     this.indexerSubsystem = indexerSubsystem;
     this.gamePieceManipulatorSubsystem = gamePieceManipulatorSubsystem;
     this.armSubsystem = armSubsystem;
     this.ledSubsystem = ledSubsystem;
+    this.parkForLevel1 = parkForlevel1;
 
     addRequirements(indexerSubsystem, gamePieceManipulatorSubsystem, armSubsystem, ledSubsystem);
   }
 
   @Override
   public void execute() {
-    armSubsystem.park();
+    if (parkForLevel1.getAsBoolean()) {
+      armSubsystem.parkForLevel1();
+    } else {
+      armSubsystem.park();
+    }
     gamePieceManipulatorSubsystem.activeHoldCoral();
     indexerSubsystem.stop();
     ledSubsystem.runPattern(LEDPattern.gradient(GradientType.kDiscontinuous, Color.kWhite, Color.kBlack));

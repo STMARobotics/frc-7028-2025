@@ -38,6 +38,7 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.GamePieceManipulatorSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
+import java.util.function.BooleanSupplier;
 import org.photonvision.PhotonCamera;
 
 /**
@@ -170,10 +171,31 @@ public class AutoCommands {
   /**
    * Creates a command to hold coral. The command finishes when there is no coral in the arm.
    * 
-   * @return
+   * @return new command
    */
   public Command holdCoral() {
-    return new HoldCoralCommand(indexerSubsystem, gamePieceManipulatorSubsystem, armSubsystem, ledSubsystem);
+    return new HoldCoralCommand(
+        indexerSubsystem,
+        gamePieceManipulatorSubsystem,
+        armSubsystem,
+        ledSubsystem,
+        () -> false);
+  }
+
+  /**
+   * Creates a command to hold coral and park. The parking position is controlled by the park for level 1 supplier.
+   * 
+   * @param parkForLevel1 when the supplier returns true, the arm will park at a position best for scoring L1, otherwise
+   *          it will park in the standard park position
+   * @return new command
+   */
+  public Command holdCoral(BooleanSupplier parkForLevel1) {
+    return new HoldCoralCommand(
+        indexerSubsystem,
+        gamePieceManipulatorSubsystem,
+        armSubsystem,
+        ledSubsystem,
+        parkForLevel1);
   }
 
   /**

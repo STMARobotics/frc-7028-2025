@@ -61,13 +61,12 @@ public class RobotContainer {
       .withSteerRequestType(SteerRequestType.MotionMagicExpo);
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
 
-  private final ScoreChooser scoreChooser = new ScoreChooser();
   @Logged
   private final IndexerSubsystem indexerSubsystem = new IndexerSubsystem();
   @Logged
   private final GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem = new GamePieceManipulatorSubsystem();
   @Logged
-  private final ArmSubsystem armSubsystem = new ArmSubsystem(scoreChooser::getSelectedLevel);
+  private final ArmSubsystem armSubsystem = new ArmSubsystem();
   private final ClimbSubsystem climbSubsystem = new ClimbSubsystem();
   private final LEDSubsystem ledSubsystem = new LEDSubsystem();
   @Logged
@@ -92,6 +91,7 @@ public class RobotContainer {
       ledSubsystem,
       highFrontCamera,
       highBackCamera);
+  private final ScoreChooser scoreChooser = new ScoreChooser();
 
   private final TestMode testMode = new TestMode(
       gamePieceManipulatorSubsystem,
@@ -142,7 +142,10 @@ public class RobotContainer {
     new Trigger(
         () -> RobotState.isEnabled() && RobotState.isTeleop() && armSubsystem.getCurrentCommand() == null
             && indexerSubsystem.getCurrentCommand() == null)
-        .onTrue(autoCommands.intakeCoral().andThen(autoCommands.holdCoral()).repeatedly());
+        .onTrue(
+            autoCommands.intakeCoral()
+                .andThen(autoCommands.holdCoral(() -> scoreChooser.getSelectedLevel() == 1))
+                .repeatedly());
 
     // Default to holding coral when nothing else is running. The trigger above WILL interupt this if the arm and intake
     // are not running any command
