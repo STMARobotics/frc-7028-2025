@@ -64,12 +64,6 @@
         {
           "type": "named",
           "data": {
-            "name": "intakeCoral"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "scoreCoralLevel4Right"
           }
         },
@@ -103,12 +97,6 @@
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "intakeCoral"
           }
         },
         {

@@ -21,6 +21,7 @@ import edu.wpi.first.networktables.RawSubscriber;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotState;
 import frc.robot.Constants.VisionConstants;
 import java.io.IOException;
 import java.util.Arrays;
@@ -107,6 +108,11 @@ public class PhotonRunnable implements Runnable {
         signaledHandles = WPIUtilJNI.waitForObjects(waitHandles);
       } catch (InterruptedException e) {
         Thread.currentThread().interrupt();
+      }
+
+      if (RobotState.isAutonomous()) {
+        // Don's use AprilTags in auto
+        continue;
       }
 
       var currentRobotPose = poseSupplier.get();

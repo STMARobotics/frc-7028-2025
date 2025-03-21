@@ -251,7 +251,7 @@ public class Constants {
     public static final Angle LEVEL_2_ANGLE = Rotations.of(0.72);
     public static final Angle LEVEL_3_ANGLE = Rotations.of(0.172);
     public static final Angle LEVEL_4_ANGLE = Rotations.of(0.16);
-    public static final Angle ALGAE_LOWER_ANGLE = Rotations.of(0.06);
+    public static final Angle ALGAE_LOWER_ANGLE = Rotations.of(0.05);
     public static final Angle ALGAE_UPPER_ANGLE = Rotations.of(0.105);
     public static final Angle ALGAE_BARGE_ANGLE = Rotation.of(0.25);
     public static final Angle ALGAE_PROCESSOR_ANGLE = Rotation.of(0.963);
@@ -306,7 +306,7 @@ public class Constants {
     public static final int DEVICE_ID_BACK_CANRANGE = 39;
 
     public static final LinearVelocity MAX_ALIGN_TRANSLATION_VELOCITY = MAX_TELEOP_VELOCITY.div(2.0);
-    public static final LinearAcceleration MAX_ALIGN_TRANSLATION_ACCELERATION = MetersPerSecondPerSecond.of(6.0);
+    public static final LinearAcceleration MAX_ALIGN_TRANSLATION_ACCELERATION = MetersPerSecondPerSecond.of(5.0);
     public static final AngularVelocity MAX_ALIGN_ANGULAR_VELOCITY = MAX_TELEOP_ANGULAR_VELOCITY.times(0.75);
     public static final AngularAcceleration MAX_ALIGN_ANGULAR_ACCELERATION = RadiansPerSecondPerSecond
         .of(6.0 * Math.PI);
@@ -523,7 +523,7 @@ public class Constants {
     public static final Distance LATERAL_TARGET_L3_RIGHT = Meters.of(0.02);
 
     public static final Distance LATERAL_TARGET_L4_LEFT = Meters.of(0.05);
-    public static final Distance LATERAL_TARGET_L4_RIGHT = Meters.of(0.02);
+    public static final Distance LATERAL_TARGET_L4_RIGHT = Meters.of(0.04);
   }
 
   /**

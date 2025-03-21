@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.6556061893599288,
-        "y": 6.389382105688671
+        "x": 2.702011140457188,
+        "y": 6.1571306469824645
       },
       "isLocked": false,
       "linkedName": "ThreeCoralLeftPickup1"
@@ -20,8 +20,8 @@
         "y": 5.7320571192052965
       },
       "prevControl": {
-        "x": 3.1136724001325504,
-        "y": 6.515772247702359
+        "x": 3.027597376200957,
+        "y": 6.492829784068893
       },
       "nextControl": null,
       "isLocked": false,
@@ -34,7 +34,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 4.25,
-    "maxAcceleration": 6.0,
+    "maxAcceleration": 5.0,
     "maxAngularVelocity": 360.0,
     "maxAngularAcceleration": 540.0,
     "nominalVoltage": 12.0,
