@@ -64,7 +64,7 @@ public class JoystickControlBindings extends ControlBindings {
 
   @Override
   public Optional<Trigger> climb() {
-    return Optional.of(rightJoystick.button(9));
+    return Optional.of(rightJoystick.button(10));
   }
 
   @Override
@@ -98,11 +98,6 @@ public class JoystickControlBindings extends ControlBindings {
   }
 
   @Override
-  public Optional<Trigger> selectCoralLevel2() {
-    return Optional.of(rightJoystick.button(4));
-  }
-
-  @Override
   public Optional<Trigger> selectCoralLevel3() {
     return Optional.of(rightJoystick.button(3));
   }
@@ -123,18 +118,8 @@ public class JoystickControlBindings extends ControlBindings {
   }
 
   @Override
-  public Optional<Trigger> slowMode() {
-    return Optional.of(leftJoystick.button(3));
-  }
-
-  @Override
   public Optional<Trigger> holdAlgae() {
     return Optional.of(leftJoystick.button(10));
-  }
-
-  @Override
-  public Optional<Trigger> shootAlgae() {
-    return Optional.of(leftJoystick.button(9));
   }
 
   @Override

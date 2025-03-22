@@ -454,26 +454,6 @@ public class Constants {
         .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE_CORAL_L3))
         .collect(toUnmodifiableList());
 
-    /** Poses of the robot for scoring on L2 left branch on the red alliance */
-    public static final List<Pose2d> REEF_L2_SCORE_POSES_RED_LEFT = REEF_BRANCH_POSES_RED_LEFT.stream()
-        .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE_CORAL_L2))
-        .collect(toUnmodifiableList());
-
-    /** Poses of the robot for scoring on L2 right branch on the red alliance */
-    public static final List<Pose2d> REEF_L2_SCORE_POSES_RED_RIGHT = REEF_BRANCH_POSES_RED_RIGHT.stream()
-        .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE_CORAL_L2))
-        .collect(toUnmodifiableList());
-
-    /** Poses of the robot for scoring on L2 left branch on the blue alliance */
-    public static final List<Pose2d> REEF_L2_SCORE_POSES_BLUE_LEFT = REEF_BRANCH_POSES_BLUE_LEFT.stream()
-        .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE_CORAL_L2))
-        .collect(toUnmodifiableList());
-
-    /** Poses of the robot for scoring on L2 right on the blue alliance */
-    public static final List<Pose2d> REEF_L2_SCORE_POSES_BLUE_RIGHT = REEF_BRANCH_POSES_BLUE_RIGHT.stream()
-        .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE_CORAL_L2))
-        .collect(toUnmodifiableList());
-
     public static final Distance DISTANCE_TARGET_L4 = Meters.of(0.34);
     public static final Distance DISTANCE_TARGET_L3 = Meters.of(0.34);
 

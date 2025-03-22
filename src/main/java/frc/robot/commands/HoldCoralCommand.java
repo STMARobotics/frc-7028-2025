@@ -1,8 +1,13 @@
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.LEDPattern;
-import edu.wpi.first.wpilibj.LEDPattern.GradientType;
-import edu.wpi.first.wpilibj.util.Color;
+import static edu.wpi.first.wpilibj.LEDPattern.GradientType.kDiscontinuous;
+import static edu.wpi.first.wpilibj.LEDPattern.gradient;
+import static edu.wpi.first.wpilibj.LEDPattern.kOff;
+import static edu.wpi.first.wpilibj.LEDPattern.solid;
+import static edu.wpi.first.wpilibj.util.Color.kBlack;
+import static edu.wpi.first.wpilibj.util.Color.kCornflowerBlue;
+import static edu.wpi.first.wpilibj.util.Color.kWhite;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.GamePieceManipulatorSubsystem;
@@ -48,12 +53,13 @@ public class HoldCoralCommand extends Command {
   public void execute() {
     if (parkForLevel1.getAsBoolean()) {
       armSubsystem.moveToCoralIntakePosition();
+      ledSubsystem.runPattern(solid(kCornflowerBlue));
     } else {
       armSubsystem.park();
+      ledSubsystem.runPattern(gradient(kDiscontinuous, kWhite, kBlack));
     }
     gamePieceManipulatorSubsystem.activeHoldCoral();
     indexerSubsystem.stop();
-    ledSubsystem.runPattern(LEDPattern.gradient(GradientType.kDiscontinuous, Color.kWhite, Color.kBlack));
   }
 
   @Override
@@ -66,6 +72,6 @@ public class HoldCoralCommand extends Command {
     indexerSubsystem.stop();
     gamePieceManipulatorSubsystem.stop();
     armSubsystem.stop();
-    ledSubsystem.runPattern(LEDPattern.kOff);
+    ledSubsystem.runPattern(kOff);
   }
 }

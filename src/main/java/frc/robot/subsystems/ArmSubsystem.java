@@ -452,13 +452,6 @@ public class ArmSubsystem extends SubsystemBase {
   }
 
   /**
-   * Moves the arm to the position to score in the processor.
-   */
-  public void moveToProcessor() {
-    moveToPosition(LEVEL_4_HEIGHT, armTarget);
-  }
-
-  /**
    * Stops the arm and the elevator
    */
   public void stop() {

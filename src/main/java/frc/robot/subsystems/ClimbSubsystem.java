@@ -87,13 +87,21 @@ public class ClimbSubsystem extends SubsystemBase {
    * Runs the climb in the direction that makes the robot go up
    */
   public void climb() {
-    var climbPosition = StatusSignal.getLatencyCompensatedValue(climbPositionSignal, climbVelocitySignal);
+    climbMotor.setControl(climbControl.withOutput(CLIMB_VOLTAGE).withLimitForwardMotion(isAtLimit()));
+  }
+
+  /**
+   * Checks if the climb is at the forward limit
+   * 
+   * @return true if the climb is at the forward limit, otherwise false
+   */
+  public boolean isAtLimit() {
     // Normalize the position to one rotation so it can be used to limit forward motion even when the climb has been
     // manually moved past one turn
+    StatusSignal.refreshAll(climbPositionSignal, climbVelocitySignal);
+    var climbPosition = StatusSignal.getLatencyCompensatedValue(climbPositionSignal, climbVelocitySignal);
     var normalizedPosition = ((climbPosition.in(Rotations) % 1.0) + 1.0) % 1.0;
-    climbMotor.setControl(
-        climbControl.withOutput(CLIMB_VOLTAGE)
-            .withLimitForwardMotion(normalizedPosition >= CLIMB_FORWARD_SOFT_LIMIT.in(Rotations)));
+    return normalizedPosition >= CLIMB_FORWARD_SOFT_LIMIT.in(Rotations);
   }
 
   public void stop() {

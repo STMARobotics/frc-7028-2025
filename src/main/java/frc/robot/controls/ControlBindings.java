@@ -154,24 +154,6 @@ public abstract class ControlBindings {
   }
 
   /**
-   * Shoots the algae in the barge.
-   * 
-   * @return optional command
-   */
-  public Optional<Trigger> shootAlgae() {
-    return Optional.empty();
-  }
-
-  /**
-   * Moves the arm to the position to score in the processor.
-   * 
-   * @return optional command
-   */
-  public Optional<Trigger> moveArmToProcessor() {
-    return Optional.empty();
-  }
-
-  /**
    * Runs the manipulator wheels to eject algae
    * 
    * @return optional trigger
@@ -186,15 +168,6 @@ public abstract class ControlBindings {
    * @return optional trigger
    */
   public Optional<Trigger> selectCoralLevel1() {
-    return Optional.empty();
-  }
-
-  /**
-   * Selects level 2 for scoring coral.
-   * 
-   * @return optional trigger
-   */
-  public Optional<Trigger> selectCoralLevel2() {
     return Optional.empty();
   }
 
@@ -234,12 +207,4 @@ public abstract class ControlBindings {
     return Optional.empty();
   }
 
-  /**
-   * Changes the drivetrain into slow mode
-   * 
-   * @return optional trigger
-   */
-  public Optional<Trigger> slowMode() {
-    return Optional.empty();
-  }
 }

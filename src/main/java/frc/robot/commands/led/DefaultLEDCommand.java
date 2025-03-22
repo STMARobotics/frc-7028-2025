@@ -2,13 +2,18 @@ package frc.robot.commands.led;
 
 import static edu.wpi.first.units.Units.Percent;
 import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.wpilibj.LEDPattern.GradientType.kContinuous;
+import static edu.wpi.first.wpilibj.LEDPattern.gradient;
+import static edu.wpi.first.wpilibj.LEDPattern.kOff;
+import static edu.wpi.first.wpilibj.util.Color.kBlack;
+import static edu.wpi.first.wpilibj.util.Color.kBlue;
+import static edu.wpi.first.wpilibj.util.Color.kDarkRed;
+import static edu.wpi.first.wpilibj.util.Color.kIndianRed;
+import static edu.wpi.first.wpilibj.util.Color.kOrange;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.LEDPattern;
-import edu.wpi.first.wpilibj.LEDPattern.GradientType;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.LEDSubsystem;
 
@@ -29,7 +34,6 @@ public class DefaultLEDCommand extends Command {
   private final Timer timer = new Timer();
   private boolean candyCaneState = false;
   private static final double RED_AND_WHITE_CANDY_CANE_SPEED = 0.5;
-  private static final double BLUE_AND_YELLOW_CANDY_CANE_SPEED = 1.0;
   private static final double ORANGE_AND_BLACK_CANDY_CANE_SPEED = 0.5;
 
   /**
@@ -56,28 +60,20 @@ public class DefaultLEDCommand extends Command {
         if (timer.advanceIfElapsed(RED_AND_WHITE_CANDY_CANE_SPEED)) {
           candyCaneState = !candyCaneState;
         }
-        ledSubsystem.setCandyCane(
-            candyCaneState ? Color.kDarkRed : Color.kIndianRed,
-              candyCaneState ? Color.kIndianRed : Color.kDarkRed);
+        ledSubsystem.setCandyCane(candyCaneState ? kDarkRed : kIndianRed, candyCaneState ? kIndianRed : kDarkRed);
         break;
       case DISABLED:
-        if (timer.advanceIfElapsed(BLUE_AND_YELLOW_CANDY_CANE_SPEED)) {
-          candyCaneState = !candyCaneState;
-        }
         ledSubsystem
-            .setCandyCane(candyCaneState ? Color.kBlue : Color.kOrange, candyCaneState ? Color.kOrange : Color.kBlue);
+            .runPattern(gradient(kContinuous, kBlue, kOrange).scrollAtRelativeSpeed(Percent.per(Second).of(25)));
         break;
       case TEST:
         if (timer.advanceIfElapsed(ORANGE_AND_BLACK_CANDY_CANE_SPEED)) {
           candyCaneState = !candyCaneState;
         }
-        ledSubsystem
-            .setCandyCane(candyCaneState ? Color.kOrange : Color.kBlack, candyCaneState ? Color.kBlack : Color.kOrange);
+        ledSubsystem.setCandyCane(candyCaneState ? kOrange : kBlack, candyCaneState ? kBlack : kOrange);
         break;
       default:
-        ledSubsystem.runPattern(
-            LEDPattern.gradient(GradientType.kContinuous, Color.kBlue, Color.kOrange)
-                .scrollAtRelativeSpeed(Percent.per(Second).of(25)));
+        ledSubsystem.runPattern(kOff);
         break;
     }
   }
@@ -85,7 +81,7 @@ public class DefaultLEDCommand extends Command {
   @Override
   public void end(boolean interrupted) {
     timer.stop();
-    ledSubsystem.runPattern(LEDPattern.kOff);
+    ledSubsystem.runPattern(kOff);
   }
 
   @Override

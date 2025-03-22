@@ -11,7 +11,6 @@ public class ScoreChooser {
 
   private final NetworkTable scoreChooserTable = NetworkTableInstance.getDefault().getTable("ScoreChooser");
   private final BooleanPublisher level1Publisher = scoreChooserTable.getBooleanTopic("Level 1").publish();
-  private final BooleanPublisher level2Publisher = scoreChooserTable.getBooleanTopic("Level 2").publish();
   private final BooleanPublisher level3Publisher = scoreChooserTable.getBooleanTopic("Level 3").publish();
   private final BooleanPublisher level4Publisher = scoreChooserTable.getBooleanTopic("Level 4").publish();
 
@@ -29,13 +28,6 @@ public class ScoreChooser {
    */
   public void selectLevel1() {
     selectLevel(1);
-  }
-
-  /**
-   * Selects level 2 for coral scoring
-   */
-  public void selectLevel2() {
-    selectLevel(2);
   }
 
   /**
@@ -64,7 +56,6 @@ public class ScoreChooser {
   private void selectLevel(int level) {
     selectedLevel = level;
     level1Publisher.set(1 == selectedLevel);
-    level2Publisher.set(2 == selectedLevel);
     level3Publisher.set(3 == selectedLevel);
     level4Publisher.set(4 == selectedLevel);
   }

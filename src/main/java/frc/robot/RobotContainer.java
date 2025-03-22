@@ -5,7 +5,18 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Percent;
 import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.wpilibj.LEDPattern.GradientType.kContinuous;
+import static edu.wpi.first.wpilibj.LEDPattern.gradient;
+import static edu.wpi.first.wpilibj.LEDPattern.rainbow;
+import static edu.wpi.first.wpilibj.LEDPattern.solid;
+import static edu.wpi.first.wpilibj.util.Color.kAqua;
+import static edu.wpi.first.wpilibj.util.Color.kBlack;
+import static edu.wpi.first.wpilibj.util.Color.kBlue;
+import static edu.wpi.first.wpilibj.util.Color.kGreenYellow;
+import static edu.wpi.first.wpilibj.util.Color.kOrange;
 import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 import static edu.wpi.first.wpilibj2.command.Commands.select;
 import static edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kForward;
@@ -29,8 +40,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.AlgaeBargeCommand;
 import frc.robot.commands.EjectCoralCommand;
 import frc.robot.commands.TuneArmCommand;
 import frc.robot.commands.led.DefaultLEDCommand;
@@ -138,10 +149,15 @@ public class RobotContainer {
     photonThread.setDaemon(true);
     photonThread.start();
 
+    // Set up default commmands
+    var defaultLedCommand = new DefaultLEDCommand(ledSubsystem);
+    ledSubsystem.setDefaultCommand(defaultLedCommand);
+
     // Run IntakeAndHoldCommand when enabled in teleop and no other command is running on arm and intake
     new Trigger(
         () -> RobotState.isEnabled() && RobotState.isTeleop() && armSubsystem.getCurrentCommand() == null
-            && indexerSubsystem.getCurrentCommand() == null)
+            && indexerSubsystem.getCurrentCommand() == null
+            && (ledSubsystem.getCurrentCommand() == null || ledSubsystem.getCurrentCommand() == defaultLedCommand))
         .onTrue(
             autoCommands.intakeCoral()
                 .andThen(autoCommands.holdCoral(() -> scoreChooser.getSelectedLevel() == 1))
@@ -151,9 +167,6 @@ public class RobotContainer {
     // are not running any command
     gamePieceManipulatorSubsystem
         .setDefaultCommand(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::activeHoldCoral));
-
-    // Set up default commmands
-    ledSubsystem.setDefaultCommand(new DefaultLEDCommand(ledSubsystem));
 
     // Run the boot animation
     new LEDBootAnimationCommand(ledSubsystem).schedule();
@@ -182,34 +195,46 @@ public class RobotContainer {
 
     controlBindings.climb()
         .ifPresent(
-            trigger -> trigger
-                .whileTrue(climbSubsystem.run(() -> climbSubsystem.climb()).finallyDo(climbSubsystem::stop)));
+            trigger -> trigger.whileTrue(
+                climbSubsystem.run(() -> climbSubsystem.climb())
+                    .finallyDo(climbSubsystem::stop)
+                    .alongWith(
+                        new ScheduleCommand(
+                            ledSubsystem.runPatternAsCommand(solid(kGreenYellow))
+                                .until(climbSubsystem::isAtLimit)
+                                .andThen(
+                                    ledSubsystem.runPatternAsCommand(
+                                        rainbow(255, 255).scrollAtRelativeSpeed(Percent.per(Second).of(200))))))));
 
     drivetrain.registerTelemetry(drivetrainTelemetry::telemeterize);
 
     // Coral bindings
     controlBindings.ejectCoral()
         .ifPresent(
-            trigger -> trigger
-                .whileTrue(new EjectCoralCommand(gamePieceManipulatorSubsystem, armSubsystem, indexerSubsystem)));
+            trigger -> trigger.whileTrue(
+                new EjectCoralCommand(gamePieceManipulatorSubsystem, armSubsystem, indexerSubsystem)
+                    .alongWith(ledSubsystem.runPatternAsCommand(rainbow(255, 255)))));
 
     controlBindings.moveArmToReefLevel2()
         .ifPresent(
             trigger -> trigger.toggleOnTrue(
                 armSubsystem.run(armSubsystem::moveToLevel2)
                     .alongWith(makeSlowModeCommand())
+                    .alongWith(ledSubsystem.runPatternAsCommand(solid(Color.kBlueViolet)))
                     .finallyDo(armSubsystem::stop)));
     controlBindings.moveArmToReefLevel3()
         .ifPresent(
             trigger -> trigger.toggleOnTrue(
                 armSubsystem.run(armSubsystem::moveToLevel3)
                     .alongWith(makeSlowModeCommand())
+                    .alongWith(ledSubsystem.runPatternAsCommand(solid(kOrange)))
                     .finallyDo(armSubsystem::stop)));
     controlBindings.moveArmToReefLevel4()
         .ifPresent(
             trigger -> trigger.toggleOnTrue(
                 armSubsystem.run(armSubsystem::moveToLevel4)
                     .alongWith(makeSlowModeCommand())
+                    .alongWith(ledSubsystem.runPatternAsCommand(solid(kBlue)))
                     .finallyDo(armSubsystem::stop)));
     controlBindings.releaseCoral()
         .ifPresent(
@@ -227,6 +252,10 @@ public class RobotContainer {
             trigger -> trigger.onTrue(
                 armSubsystem.run(armSubsystem::moveToAlgaeLevel1)
                     .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::intakeAlgae))
+                    .alongWith(
+                        ledSubsystem.runPatternAsCommand(
+                            gradient(kContinuous, kAqua, kBlack).scrollAtRelativeSpeed(Percent.per(Second).of(100))
+                                .reversed()))
                     .finallyDo(() -> {
                       armSubsystem.stop();
                       gamePieceManipulatorSubsystem.stop();
@@ -236,6 +265,9 @@ public class RobotContainer {
             trigger -> trigger.onTrue(
                 armSubsystem.run(armSubsystem::moveToAlgaeLevel2)
                     .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::intakeAlgae))
+                    .alongWith(
+                        ledSubsystem.runPatternAsCommand(
+                            gradient(kContinuous, kAqua, kBlack).scrollAtRelativeSpeed(Percent.per(Second).of(100))))
                     .finallyDo(() -> {
                       armSubsystem.stop();
                       gamePieceManipulatorSubsystem.stop();
@@ -249,16 +281,6 @@ public class RobotContainer {
       gamePieceManipulatorSubsystem.stop();
     })));
 
-    controlBindings.shootAlgae()
-        .ifPresent(
-            trigger -> trigger
-                .whileTrue(new AlgaeBargeCommand(armSubsystem, gamePieceManipulatorSubsystem, ledSubsystem)));
-
-    controlBindings.moveArmToProcessor().ifPresent(trigger -> trigger.onTrue(Commands.run(() -> {
-      armSubsystem.moveToProcessor();
-      gamePieceManipulatorSubsystem.activeHoldAlgae();
-    }, armSubsystem, gamePieceManipulatorSubsystem)));
-
     controlBindings.ejectAlgae()
         .ifPresent(
             trigger -> trigger.whileTrue(
@@ -269,18 +291,14 @@ public class RobotContainer {
                       armSubsystem.stop();
                     })));
 
-    controlBindings.slowMode().ifPresent(trigger -> trigger.whileTrue(makeSlowModeCommand()));
-
     // Coral scoring level selection
     controlBindings.selectCoralLevel1().ifPresent(trigger -> trigger.onTrue(runOnce(scoreChooser::selectLevel1)));
-    controlBindings.selectCoralLevel2().ifPresent(trigger -> trigger.onTrue(runOnce(scoreChooser::selectLevel2)));
     controlBindings.selectCoralLevel3().ifPresent(trigger -> trigger.onTrue(runOnce(scoreChooser::selectLevel3)));
     controlBindings.selectCoralLevel4().ifPresent(trigger -> trigger.onTrue(runOnce(scoreChooser::selectLevel4)));
 
     // Left branch coral scoring
     Map<Integer, Command> scoreMapLeft = Map.ofEntries(
         entry(1, new EjectCoralCommand(gamePieceManipulatorSubsystem, armSubsystem, indexerSubsystem)),
-          entry(2, autoCommands.driveToCoralLevel2Left()),
           entry(3, autoCommands.scoreCoralLevel3Left(false)),
           entry(4, autoCommands.scoreCoralLevel4Left(false)));
     controlBindings.scoreCoralLeft()
@@ -289,7 +307,6 @@ public class RobotContainer {
     // Left branch coral scoring
     Map<Integer, Command> scoreMapRight = Map.ofEntries(
         entry(1, new EjectCoralCommand(gamePieceManipulatorSubsystem, armSubsystem, indexerSubsystem)),
-          entry(2, autoCommands.driveToCoralLevel2Right()),
           entry(3, autoCommands.scoreCoralLevel3Right(false)),
           entry(4, autoCommands.scoreCoralLevel4Right(false)));
     controlBindings.scoreCoralRight()
