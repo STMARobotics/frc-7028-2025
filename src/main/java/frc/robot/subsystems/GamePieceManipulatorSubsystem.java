@@ -111,13 +111,6 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
   }
 
   /**
-   * Score speed to put the coral onto the reef
-   */
-  public void scoreCoral() {
-    wheelMotor.setControl(wheelVoltageOut.withOutput(-12.0));
-  }
-
-  /**
    * Runs the wheels to intake algae
    */
   public void intakeAlgae() {

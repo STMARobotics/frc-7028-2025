@@ -239,7 +239,7 @@ public class RobotContainer {
     controlBindings.releaseCoral()
         .ifPresent(
             trigger -> trigger.whileTrue(
-                gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::scoreCoral)
+                gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectCoral)
                     .finallyDo(gamePieceManipulatorSubsystem::stop)));
 
     controlBindings.parkArm()
