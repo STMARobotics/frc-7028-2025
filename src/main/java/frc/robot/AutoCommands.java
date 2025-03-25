@@ -1,6 +1,7 @@
 package frc.robot;
 
 import static edu.wpi.first.wpilibj.util.Color.*;
+import static edu.wpi.first.wpilibj2.command.Commands.parallel;
 import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 import static frc.robot.Constants.AlignmentConstants.DISTANCE_TARGET_L3;
 import static frc.robot.Constants.AlignmentConstants.DISTANCE_TARGET_L4;
@@ -260,7 +261,72 @@ public class AutoCommands {
                 .andThen(
                     armSubsystem.run(armMethod)
                         .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectCoral))
+                        .alongWith(indexerSubsystem.run(indexerSubsystem::eject))
                         .until(() -> !armSubsystem.hasCoral())))
+        .finallyDo(() -> ledSubsystem.runPattern(LEDPattern.kOff))
+        .finallyDo(armSubsystem::stop);
+  }
+
+  /**
+   * Creates a command that will auto align on the left side of level 4, and then runs <code>driveCommand</code>.
+   * This command does not score nor end on its own.
+   * 
+   * @param driveCommand command to run after alignment, while holding the arm up
+   * @return new command
+   */
+  public Command autoAlignCoralLevel4Left(Command driveCommand) {
+    return autoAlignCoral(
+        armSubsystem::moveToLevel4,
+          DISTANCE_TARGET_L4,
+          LATERAL_TARGET_L4_LEFT,
+          highCameraForLeft,
+          kOrange,
+          driveCommand);
+  }
+
+  /**
+   * Creates a command that will auto align on the right side of level 4, and then runs <code>driveCommand</code>. This
+   * command does not score nor end on its own.
+   * 
+   * @param driveCommand command to run after alignment, while holding the arm up
+   * @return new command
+   */
+  public Command autoAlignCoralLevel4Right(Command driveCommand) {
+    return autoAlignCoral(
+        armSubsystem::moveToLevel4,
+          DISTANCE_TARGET_L4,
+          LATERAL_TARGET_L4_RIGHT,
+          highCameraForRight,
+          kBlue,
+          driveCommand);
+  }
+
+  private Command autoAlignCoral(
+      Runnable armMethod,
+      Distance targetDistance,
+      Distance lateralTarget,
+      PhotonCamera highCamera,
+      Color ledColor,
+      Command driveCommand) {
+    var alignToReef = new AlignToReefCommand(
+        drivetrain,
+        alignmentSubsystem,
+        targetDistance,
+        lateralTarget,
+        highCamera,
+        false);
+
+    return ledSubsystem.setLEDSegmentsAsCommand(
+        ledColor,
+          // segment order is bottom up
+          armSubsystem::isElevatorAtPosition,
+          armSubsystem::isArmAtAngle,
+          alignToReef::atDistanceGoal,
+          alignToReef::atLateralGoal,
+          alignToReef::atThetaGoal)
+        .withDeadline(
+            parallel(armSubsystem.run(armMethod).until(armSubsystem::isAtPosition), alignToReef)
+                .andThen(parallel(driveCommand, armSubsystem.run(armMethod))))
         .finallyDo(() -> ledSubsystem.runPattern(LEDPattern.kOff))
         .finallyDo(armSubsystem::stop);
   }

@@ -45,12 +45,30 @@ public class ScoreChooser {
   }
 
   /**
-   * Gets the currently selected level.
+   * Checks if level 1 is selected
    * 
-   * @return the selected level in range [1,4]
+   * @return true if level 1 is selected, otherwise false
    */
-  public int getSelectedLevel() {
-    return selectedLevel;
+  public boolean isLevel1Selected() {
+    return 1 == selectedLevel;
+  }
+
+  /**
+   * Checks if level 3 is selected
+   * 
+   * @return true if level 3 is selected, otherwise false
+   */
+  public boolean isLevel3Selected() {
+    return 3 == selectedLevel;
+  }
+
+  /**
+   * Checks if level 4 is selected
+   * 
+   * @return true if level 4 is selected, otherwise false
+   */
+  public boolean isLevel4Selected() {
+    return 4 == selectedLevel;
   }
 
   private void selectLevel(int level) {

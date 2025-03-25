@@ -18,14 +18,12 @@ import static edu.wpi.first.wpilibj.util.Color.kBlue;
 import static edu.wpi.first.wpilibj.util.Color.kGreenYellow;
 import static edu.wpi.first.wpilibj.util.Color.kOrange;
 import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
-import static edu.wpi.first.wpilibj2.command.Commands.select;
 import static edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kForward;
 import static edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kReverse;
 import static frc.robot.Constants.TeleopDriveConstants.MAX_TELEOP_ANGULAR_VELOCITY;
 import static frc.robot.Constants.TeleopDriveConstants.MAX_TELEOP_VELOCITY;
 import static frc.robot.Constants.VisionConstants.CAMERA_NAMES;
 import static frc.robot.Constants.VisionConstants.ROBOT_TO_CAMERA_TRANSFORMS;
-import static java.util.Map.entry;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
@@ -58,7 +56,6 @@ import frc.robot.subsystems.GamePieceManipulatorSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.MitoCANdriaSubsytem;
-import java.util.Map;
 import org.photonvision.PhotonCamera;
 
 @Logged(strategy = Logged.Strategy.OPT_IN)
@@ -136,7 +133,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("holdCoral", autoCommands.holdCoral());
     NamedCommands.registerCommand(
         "intakeAndHoldCoral",
-          autoCommands.intakeCoral().andThen(autoCommands.holdCoral()).repeatedly());
+          new EjectCoralCommand(gamePieceManipulatorSubsystem, armSubsystem, indexerSubsystem).withTimeout(0.25)
+              .andThen(autoCommands.intakeCoral().andThen(autoCommands.holdCoral()).repeatedly()));
 
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Mode", autoChooser);
@@ -159,9 +157,7 @@ public class RobotContainer {
             && indexerSubsystem.getCurrentCommand() == null
             && (ledSubsystem.getCurrentCommand() == null || ledSubsystem.getCurrentCommand() == defaultLedCommand))
         .onTrue(
-            autoCommands.intakeCoral()
-                .andThen(autoCommands.holdCoral(() -> scoreChooser.getSelectedLevel() == 1))
-                .repeatedly());
+            autoCommands.intakeCoral().andThen(autoCommands.holdCoral(scoreChooser::isLevel1Selected)).repeatedly());
 
     // Default to holding coral when nothing else is running. The trigger above WILL interupt this if the arm and intake
     // are not running any command
@@ -297,20 +293,35 @@ public class RobotContainer {
     controlBindings.selectCoralLevel4().ifPresent(trigger -> trigger.onTrue(runOnce(scoreChooser::selectLevel4)));
 
     // Left branch coral scoring
-    Map<Integer, Command> scoreMapLeft = Map.ofEntries(
-        entry(1, new EjectCoralCommand(gamePieceManipulatorSubsystem, armSubsystem, indexerSubsystem)),
-          entry(3, autoCommands.scoreCoralLevel3Left(false)),
-          entry(4, autoCommands.scoreCoralLevel4Left(false)));
     controlBindings.scoreCoralLeft()
-        .ifPresent(trigger -> trigger.whileTrue(select(scoreMapLeft, scoreChooser::getSelectedLevel)));
+        .ifPresent(
+            trigger -> trigger.and(scoreChooser::isLevel1Selected)
+                .whileTrue(new EjectCoralCommand(gamePieceManipulatorSubsystem, armSubsystem, indexerSubsystem)));
 
-    // Left branch coral scoring
-    Map<Integer, Command> scoreMapRight = Map.ofEntries(
-        entry(1, new EjectCoralCommand(gamePieceManipulatorSubsystem, armSubsystem, indexerSubsystem)),
-          entry(3, autoCommands.scoreCoralLevel3Right(false)),
-          entry(4, autoCommands.scoreCoralLevel4Right(false)));
+    controlBindings.scoreCoralLeft()
+        .ifPresent(
+            trigger -> trigger.and(scoreChooser::isLevel3Selected).whileTrue(autoCommands.scoreCoralLevel3Left(false)));
+
+    controlBindings.scoreCoralLeft()
+        .ifPresent(
+            trigger -> trigger.and(scoreChooser::isLevel4Selected)
+                .whileTrue(autoCommands.autoAlignCoralLevel4Left(makeSlowModeCommand())));
+
+    // Right branch coral scoring
     controlBindings.scoreCoralRight()
-        .ifPresent(trigger -> trigger.whileTrue(select(scoreMapRight, scoreChooser::getSelectedLevel)));
+        .ifPresent(
+            trigger -> trigger.and(scoreChooser::isLevel1Selected)
+                .whileTrue(new EjectCoralCommand(gamePieceManipulatorSubsystem, armSubsystem, indexerSubsystem)));
+
+    controlBindings.scoreCoralRight()
+        .ifPresent(
+            trigger -> trigger.and(scoreChooser::isLevel3Selected)
+                .whileTrue(autoCommands.scoreCoralLevel3Right(false)));
+
+    controlBindings.scoreCoralRight()
+        .ifPresent(
+            trigger -> trigger.and(scoreChooser::isLevel4Selected)
+                .whileTrue(autoCommands.autoAlignCoralLevel4Right(makeSlowModeCommand())));
   }
 
   public Command getAutonomousCommand() {
