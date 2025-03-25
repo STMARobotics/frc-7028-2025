@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.859664735099338,
-        "y": 2.463224337748345
+        "x": 5.034002483443708,
+        "y": 2.3469991721854297
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.5411810599715885,
-        "y": 1.449213920933094
+        "x": 3.845011255456362,
+        "y": 1.2052766752097763
       },
       "isLocked": false,
       "linkedName": "ThreeCoralRightScore1"
     },
     {
       "anchor": {
-        "x": 1.3075331125827814,
-        "y": 0.6326779801324506
+        "x": 1.2421564569536423,
+        "y": 0.661734271523178
       },
       "prevControl": {
-        "x": 2.051800829544344,
-        "y": 0.962356711979875
+        "x": 1.7247473537960971,
+        "y": 0.8425156827537459
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,7 +32,7 @@
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.9329870129870125,
+      "minWaypointRelativePos": 0.8997402597402565,
       "maxWaypointRelativePos": 1.0,
       "constraints": {
         "maxVelocity": 0.5,

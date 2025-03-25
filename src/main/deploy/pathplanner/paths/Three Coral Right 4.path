@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.034745722772146,
-        "y": 1.808093071929759
+        "x": 2.8789676126144528,
+        "y": 1.6161839460745109
       },
       "isLocked": false,
       "linkedName": "ThreeCoralRightScore2"
     },
     {
       "anchor": {
-        "x": 1.3947019867549668,
-        "y": 0.5890935430463583
+        "x": 1.2058360927152316,
+        "y": 0.6326779801324506
       },
       "prevControl": {
-        "x": 1.839689059965551,
-        "y": 1.1290774230449103
+        "x": 1.4898369722763074,
+        "y": 0.9971942479413556
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,7 +32,7 @@
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.929870129870132,
+      "minWaypointRelativePos": 0.8810389610389592,
       "maxWaypointRelativePos": 1.0,
       "constraints": {
         "maxVelocity": 0.5,

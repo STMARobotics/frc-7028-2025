@@ -34,22 +34,28 @@
           "data": {
             "commands": [
               {
-                "type": "sequential",
+                "type": "path",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "Three Coral Right 2"
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "Three Coral Right 3"
-                      }
-                    }
-                  ]
+                  "pathName": "Three Coral Right 2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intakeAndHoldCoral"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Three Coral Right 3"
                 }
               },
               {
@@ -72,22 +78,28 @@
           "data": {
             "commands": [
               {
-                "type": "sequential",
+                "type": "path",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "Three Coral Right 4"
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "Three Coral Right 5"
-                      }
-                    }
-                  ]
+                  "pathName": "Three Coral Right 4"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intakeAndHoldCoral"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Three Coral Right 5"
                 }
               },
               {
@@ -103,6 +115,25 @@
           "type": "named",
           "data": {
             "name": "scoreCoralLevel4Left"
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Three Coral Right 6"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intakeAndHoldCoral"
+                }
+              }
+            ]
           }
         }
       ]
