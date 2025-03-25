@@ -64,7 +64,7 @@ public class DefaultLEDCommand extends Command {
         break;
       case DISABLED:
         ledSubsystem
-            .runPattern(gradient(kContinuous, kBlue, kOrange).scrollAtRelativeSpeed(Percent.per(Second).of(25)));
+            .runPattern(gradient(kContinuous, kBlue, kOrange).scrollAtRelativeSpeed(Percent.per(Second).of(75)));
         break;
       case TEST:
         if (timer.advanceIfElapsed(ORANGE_AND_BLACK_CANDY_CANE_SPEED)) {
