@@ -23,6 +23,8 @@ public class AlignmentSubsystem extends SubsystemBase {
 
   private final StatusSignal<Distance> frontDistanceSignal = frontCanRange.getDistance();
   private final StatusSignal<Distance> backDistanceSignal = backCanRange.getDistance();
+  private final StatusSignal<Double> backStrengthSignal = backCanRange.getSignalStrength();
+  private final StatusSignal<Double> frontStrengthSignal = frontCanRange.getSignalStrength();
 
   /**
    * Constructs a new AlignmentSubsystem
@@ -51,6 +53,27 @@ public class AlignmentSubsystem extends SubsystemBase {
    */
   public Distance getBackDistance() {
     return backDistanceSignal.refresh().getValue();
+  }
+
+  /**
+   * Approximate signal strength of the measurement from the front distance sensor. A higher value indicates a higher
+   * strength of signal.
+   * 
+   * @return SignalStrength Status Signal Object
+   */
+  public double getFrontSignalStrength() {
+    return frontStrengthSignal.refresh().getValueAsDouble();
+  }
+
+  /**
+   * Approximate signal strength of the measurement from the back distance sensor. A higher value indicates a higher
+   * strength of signal.
+   * 
+   * @return SignalStrength Status Signal Object
+   */
+
+  public double getBackSignalStrength() {
+    return backStrengthSignal.refresh().getValueAsDouble();
   }
 
 }

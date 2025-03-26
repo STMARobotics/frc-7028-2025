@@ -20,6 +20,7 @@ import static frc.robot.Constants.AlignmentConstants.MAX_ALIGN_ANGULAR_ACCELERAT
 import static frc.robot.Constants.AlignmentConstants.MAX_ALIGN_ANGULAR_VELOCITY;
 import static frc.robot.Constants.AlignmentConstants.MAX_ALIGN_TRANSLATION_ACCELERATION;
 import static frc.robot.Constants.AlignmentConstants.MAX_ALIGN_TRANSLATION_VELOCITY;
+import static frc.robot.Constants.AlignmentConstants.SIGNAL_STRENGTH_THRESHOLD;
 import static java.util.stream.Collectors.toUnmodifiableSet;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -146,15 +147,19 @@ public class AlignToReefCommand extends Command {
 
   @Override
   public void execute() {
+    // Note: The robot is rotated 90 degrees, so robot Y is distance and X is lateral
     var frontDistance = alignmentSubsystem.getFrontDistance().in(Meters);
     var backDistance = alignmentSubsystem.getBackDistance().in(Meters);
+    var frontSignalStrength = alignmentSubsystem.getFrontSignalStrength();
+    var backSignalStrength = alignmentSubsystem.getBackSignalStrength();
 
-    if (frontDistance < 1.2 && backDistance < 1.2) {
-      // We see something to align to
-      var theta = backDistance - frontDistance;
-      var averageDistance = (frontDistance + backDistance) / 2;
+    // We see something to align to
+    var theta = backDistance - frontDistance;
+    var averageDistance = (frontDistance + backDistance) / 2;
 
-      double thetaCorrection = thetaController.calculate(theta);
+    if ((frontSignalStrength >= SIGNAL_STRENGTH_THRESHOLD) && (backSignalStrength >= SIGNAL_STRENGTH_THRESHOLD)) {
+      // Strong distance sensor values, so try to align
+      var thetaCorrection = thetaController.calculate(theta);
       if (thetaController.atGoal()) {
         thetaCorrection = 0;
       }
@@ -162,6 +167,7 @@ public class AlignToReefCommand extends Command {
       if (distanceController.atGoal()) {
         distanceCorrection = 0;
       }
+      // Look for an Apriltag to align laterally
       getTagY().ifPresentOrElse(tagY -> {
         if (!sawTag) {
           // This is the first time a tag has been seen, set goal
@@ -175,11 +181,19 @@ public class AlignToReefCommand extends Command {
         robotCentricRequest.withVelocityX(lateralCorrection);
       }, () -> robotCentricRequest.withVelocityX(0));
 
-      // The robot is rotated 90 degrees, so Y is distance and X is lateral
       drivetrain.setControl(robotCentricRequest.withRotationalRate(thetaCorrection).withVelocityY(distanceCorrection));
     } else {
-      // We don't see anything or it's too far away to safely align
-      drivetrain.setControl(new SwerveRequest.Idle());
+      // Weak distance sensor values, so try to get into a better position
+      distanceController.reset(averageDistance);
+      thetaController.reset(theta);
+      if ((frontSignalStrength >= SIGNAL_STRENGTH_THRESHOLD) || (backSignalStrength >= SIGNAL_STRENGTH_THRESHOLD)) {
+        // One signal is strong, so the other sensor is probably off the edge of the reef. Move toward the strong signal
+        var velocityX = frontSignalStrength > backSignalStrength ? 0.5 : -0.5;
+        drivetrain.setControl(robotCentricRequest.withRotationalRate(0).withVelocityY(0).withVelocityX(velocityX));
+      } else {
+        // Both sensor have weak signals so drive forward, hoping to find the reef
+        drivetrain.setControl(robotCentricRequest.withRotationalRate(0).withVelocityY(0.5).withVelocityX(0));
+      }
     }
   }
 

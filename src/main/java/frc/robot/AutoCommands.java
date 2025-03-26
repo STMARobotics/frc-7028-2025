@@ -314,7 +314,7 @@ public class AutoCommands {
         targetDistance,
         lateralTarget,
         highCamera,
-        false);
+        true);
 
     return ledSubsystem.setLEDSegmentsAsCommand(
         ledColor,

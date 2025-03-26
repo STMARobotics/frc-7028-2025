@@ -7,6 +7,7 @@ import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
@@ -304,8 +305,8 @@ public class Constants {
     public static final int DEVICE_ID_FRONT_CANRANGE = 38;
     public static final int DEVICE_ID_BACK_CANRANGE = 39;
 
-    public static final LinearVelocity MAX_ALIGN_TRANSLATION_VELOCITY = MAX_TELEOP_VELOCITY.div(2.0);
-    public static final LinearAcceleration MAX_ALIGN_TRANSLATION_ACCELERATION = MetersPerSecondPerSecond.of(5.0);
+    public static final LinearVelocity MAX_ALIGN_TRANSLATION_VELOCITY = MetersPerSecond.of(0.5);
+    public static final LinearAcceleration MAX_ALIGN_TRANSLATION_ACCELERATION = MetersPerSecondPerSecond.of(0.5);
     public static final AngularVelocity MAX_ALIGN_ANGULAR_VELOCITY = MAX_TELEOP_ANGULAR_VELOCITY.times(0.75);
     public static final AngularAcceleration MAX_ALIGN_ANGULAR_ACCELERATION = RadiansPerSecondPerSecond
         .of(6.0 * Math.PI);
@@ -321,6 +322,8 @@ public class Constants {
     public static final double ALIGN_THETA_kP = 5.0;
     public static final double ALIGN_THETA_kI = 0.0;
     public static final double ALIGN_THETA_kD = 0.0;
+
+    public static final double SIGNAL_STRENGTH_THRESHOLD = 2000;
 
     /** Pose of the robot relative to a reef branch for scoring coral on L4 */
     public static final Transform2d RELATIVE_SCORING_POSE_CORAL_L4 = new Transform2d(
