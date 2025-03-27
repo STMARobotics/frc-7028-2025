@@ -104,6 +104,19 @@
               "robot_color": 4294198070,
               "trajectory_color": 4294967295
             }
+          },
+          {
+            "title": "Climb Cam",
+            "x": 768.0,
+            "y": 0.0,
+            "width": 896.0,
+            "height": 640.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/photonvision_Port_1182_Output_MJPEG_Server",
+              "period": 0.06,
+              "rotation_turns": 0
+            }
           }
         ]
       }
