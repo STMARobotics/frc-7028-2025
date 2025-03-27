@@ -33,8 +33,7 @@ public class DefaultLEDCommand extends Command {
 
   private final Timer timer = new Timer();
   private boolean candyCaneState = false;
-  private static final double RED_AND_WHITE_CANDY_CANE_SPEED = 0.5;
-  private static final double ORANGE_AND_BLACK_CANDY_CANE_SPEED = 0.5;
+  private static final double CANDY_CANE_SPEED = 0.5;
 
   /**
    * Creates a new DefaultLEDCommand
@@ -49,15 +48,15 @@ public class DefaultLEDCommand extends Command {
 
   @Override
   public void initialize() {
-    timer.reset();
-    timer.start();
+    timer.restart();
   }
 
   @Override
   public void execute() {
+    boolean advanceCandyCane = timer.advanceIfElapsed(CANDY_CANE_SPEED);
     switch (getMode()) {
       case DISCONNECTED:
-        if (timer.advanceIfElapsed(RED_AND_WHITE_CANDY_CANE_SPEED)) {
+        if (advanceCandyCane) {
           candyCaneState = !candyCaneState;
         }
         ledSubsystem.setCandyCane(candyCaneState ? kDarkRed : kIndianRed, candyCaneState ? kIndianRed : kDarkRed);
@@ -67,7 +66,7 @@ public class DefaultLEDCommand extends Command {
             .runPattern(gradient(kContinuous, kBlue, kOrange).scrollAtRelativeSpeed(Percent.per(Second).of(75)));
         break;
       case TEST:
-        if (timer.advanceIfElapsed(ORANGE_AND_BLACK_CANDY_CANE_SPEED)) {
+        if (advanceCandyCane) {
           candyCaneState = !candyCaneState;
         }
         ledSubsystem.setCandyCane(candyCaneState ? kOrange : kBlack, candyCaneState ? kBlack : kOrange);
