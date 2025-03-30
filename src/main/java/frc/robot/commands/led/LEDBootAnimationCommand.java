@@ -39,13 +39,16 @@ public class LEDBootAnimationCommand extends Command {
         ledSubsystem.runPattern(LEDPattern.kOff);
         initialized = true;
       }
-      for (int index = 0; index < ledSubsystem.getStripLength(); index++) {
-        if (index <= blipIndex && index >= blipIndex - (BLIP_SIZE - 1)) {
-          ledSubsystem.setLED(index, Color.kOrange);
-        } else {
-          ledSubsystem.setLED(index, Color.kBlue);
+      ledSubsystem.runPattern((reader, writer) -> {
+        for (int index = 0; index < reader.getLength(); index++) {
+          if (index <= blipIndex && index >= blipIndex - (BLIP_SIZE - 1)) {
+            writer.setLED(index, Color.kOrange);
+          } else {
+            writer.setLED(index, Color.kBlue);
+          }
         }
-      }
+      });
+
       blipIndex++;
       done = blipIndex - (BLIP_SIZE + 1) >= ledSubsystem.getStripLength();
     }

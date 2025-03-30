@@ -17,6 +17,7 @@ import static frc.robot.Constants.AlignmentConstants.REEF_L4_SCORE_POSES_BLUE_LE
 import static frc.robot.Constants.AlignmentConstants.REEF_L4_SCORE_POSES_BLUE_RIGHT;
 import static frc.robot.Constants.AlignmentConstants.REEF_L4_SCORE_POSES_RED_LEFT;
 import static frc.robot.Constants.AlignmentConstants.REEF_L4_SCORE_POSES_RED_RIGHT;
+import static frc.robot.subsystems.LEDSubsystem.ledSegments;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -244,14 +245,15 @@ public class AutoCommands {
         highCamera,
         allowScoreWithoutTag);
 
-    return ledSubsystem.setLEDSegmentsAsCommand(
-        ledColor,
-          // segment order is bottom up
-          armSubsystem::isElevatorAtPosition,
-          armSubsystem::isArmAtAngle,
-          alignToReef::atDistanceGoal,
-          alignToReef::atLateralGoal,
-          alignToReef::atThetaGoal)
+    return ledSubsystem.runPatternAsCommand(
+        ledSegments(
+            ledColor,
+              // segment order is bottom up
+              armSubsystem::isElevatorAtPosition,
+              armSubsystem::isArmAtAngle,
+              alignToReef::atDistanceGoal,
+              alignToReef::atLateralGoal,
+              alignToReef::atThetaGoal))
         .withDeadline(
             armSubsystem.run(armMethod)
                 .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::activeHoldCoral))
@@ -316,14 +318,15 @@ public class AutoCommands {
         highCamera,
         true);
 
-    return ledSubsystem.setLEDSegmentsAsCommand(
-        ledColor,
-          // segment order is bottom up
-          armSubsystem::isElevatorAtPosition,
-          armSubsystem::isArmAtAngle,
-          alignToReef::atDistanceGoal,
-          alignToReef::atLateralGoal,
-          alignToReef::atThetaGoal)
+    return ledSubsystem.runPatternAsCommand(
+        ledSegments(
+            ledColor,
+              // segment order is bottom up
+              armSubsystem::isElevatorAtPosition,
+              armSubsystem::isArmAtAngle,
+              alignToReef::atDistanceGoal,
+              alignToReef::atLateralGoal,
+              alignToReef::atThetaGoal))
         .withDeadline(
             parallel(armSubsystem.run(armMethod).until(armSubsystem::isAtPosition), alignToReef)
                 .andThen(parallel(driveCommand, armSubsystem.run(armMethod))))

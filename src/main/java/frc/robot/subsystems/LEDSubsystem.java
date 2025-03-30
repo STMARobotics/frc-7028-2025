@@ -92,43 +92,22 @@ public class LEDSubsystem extends SubsystemBase {
   }
 
   /**
-   * Sets the RGB value for an LED at a specific index.
-   *
-   * @param index the index of the LED to write to
-   * @param color the color to set
-   */
-  public void setLED(int index, Color color) {
-    frontStripBuffer.setLED(index, color);
-    backStripBuffer.setLED(index, color);
-  }
-
-  /**
    * Lights up the LEDs in segments. Useful for indicating ready state, for example.
    *
    * @param color the color of the segments when lit
    * @param segmentValues array of boolean suppliers. The strip will be split into segments one segment for each element
    *          of the array.
    */
-  public void setLEDSegments(Color color, BooleanSupplier... segmentValues) {
-    final int ledsPerStatus = LED_STRIP_LENGTH / segmentValues.length;
-    int ledIndex = 0;
-    for (int segmentId = 0; segmentId < segmentValues.length; segmentId++) {
-      for (; ledIndex < (ledsPerStatus * (segmentId + 1)); ledIndex++) {
-        setLED(ledIndex, segmentValues[segmentId].getAsBoolean() ? color : Color.kBlack);
+  public static LEDPattern ledSegments(Color color, BooleanSupplier... segmentValues) {
+    return (reader, writer) -> {
+      final int ledsPerStatus = reader.getLength() / segmentValues.length;
+      int ledIndex = 0;
+      for (int segmentId = 0; segmentId < segmentValues.length; segmentId++) {
+        for (; ledIndex < (ledsPerStatus * (segmentId + 1)); ledIndex++) {
+          writer.setLED(ledIndex, segmentValues[segmentId].getAsBoolean() ? color : Color.kBlack);
+        }
       }
-    }
-  }
-
-  /**
-   * Creates a command to light up the LED strips in segments. Useful for indicating ready state, for example.
-   * 
-   * @param color the color of the segments when lit
-   * @param segmentValues array of boolean suppliers. The strip will be split into segments one segment for each element
-   *          of the array.
-   * @return command to light up the LED segments
-   */
-  public Command setLEDSegmentsAsCommand(Color color, BooleanSupplier... segmentValues) {
-    return run(() -> setLEDSegments(color, segmentValues));
+    };
   }
 
   /**

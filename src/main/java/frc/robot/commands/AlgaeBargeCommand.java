@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import static edu.wpi.first.units.Units.Rotations;
+import static frc.robot.subsystems.LEDSubsystem.ledSegments;
 
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
@@ -44,7 +45,7 @@ public class AlgaeBargeCommand extends Command {
   public void execute() {
     // Move the elevator and arm to the barge
     armSubsystem.moveToBarge();
-    ledSubsystem.setLEDSegments(Color.kGreen, this::isArmReady);
+    ledSubsystem.runPattern(ledSegments(Color.kGreen, this::isArmReady));
 
     if (isArmReady()) {
       // Release the algae

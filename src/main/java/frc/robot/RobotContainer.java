@@ -26,6 +26,7 @@ import static frc.robot.Constants.TeleopDriveConstants.MAX_TELEOP_VELOCITY;
 import static frc.robot.Constants.VisionConstants.CAMERA_NAMES;
 import static frc.robot.Constants.VisionConstants.ROBOT_TO_CAMERA_TRANSFORMS;
 import static frc.robot.subsystems.LEDSubsystem.candyCane;
+import static frc.robot.subsystems.LEDSubsystem.ledSegments;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
@@ -359,7 +360,7 @@ public class RobotContainer {
     SmartDashboard.putData(
         "Run Tests",
           testMode.testCommand()
-              .deadlineFor(ledSubsystem.setLEDSegmentsAsCommand(Color.kBlue, testMode.getTestResults())));
+              .deadlineFor(ledSubsystem.runPatternAsCommand(ledSegments(Color.kBlue, testMode.getTestResults()))));
     SmartDashboard.putData("Arm in coast", armSubsystem.runOnce(armSubsystem::coast).ignoringDisable(true));
     SmartDashboard.putData("Arm in brake", armSubsystem.runOnce(armSubsystem::brake).ignoringDisable(true));
 
