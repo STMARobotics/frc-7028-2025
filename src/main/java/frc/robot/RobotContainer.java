@@ -8,14 +8,15 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Percent;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.wpilibj.LEDPattern.GradientType.kContinuous;
 import static edu.wpi.first.wpilibj.LEDPattern.gradient;
+import static edu.wpi.first.wpilibj.LEDPattern.progressMaskLayer;
 import static edu.wpi.first.wpilibj.LEDPattern.rainbow;
 import static edu.wpi.first.wpilibj.LEDPattern.solid;
 import static edu.wpi.first.wpilibj.util.Color.kAqua;
 import static edu.wpi.first.wpilibj.util.Color.kBlack;
 import static edu.wpi.first.wpilibj.util.Color.kBlue;
-import static edu.wpi.first.wpilibj.util.Color.kGreenYellow;
 import static edu.wpi.first.wpilibj.util.Color.kOrange;
 import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 import static edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kForward;
@@ -24,6 +25,7 @@ import static frc.robot.Constants.TeleopDriveConstants.MAX_TELEOP_ANGULAR_VELOCI
 import static frc.robot.Constants.TeleopDriveConstants.MAX_TELEOP_VELOCITY;
 import static frc.robot.Constants.VisionConstants.CAMERA_NAMES;
 import static frc.robot.Constants.VisionConstants.ROBOT_TO_CAMERA_TRANSFORMS;
+import static frc.robot.subsystems.LEDSubsystem.candyCane;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
@@ -196,7 +198,10 @@ public class RobotContainer {
                     .finallyDo(climbSubsystem::stop)
                     .alongWith(
                         new ScheduleCommand(
-                            ledSubsystem.runPatternAsCommand(solid(kGreenYellow))
+                            ledSubsystem
+                                .runPatternAsCommand(
+                                    candyCane(kBlue, kOrange, Seconds.of(0.25))
+                                        .mask(progressMaskLayer(climbSubsystem::getClimbProgress)))
                                 .until(climbSubsystem::isAtLimit)
                                 .andThen(
                                     ledSubsystem.runPatternAsCommand(
@@ -243,6 +248,7 @@ public class RobotContainer {
 
     controlBindings.tuneArm().ifPresent(trigger -> trigger.onTrue(new TuneArmCommand(armSubsystem)));
 
+    // Algae
     controlBindings.moveArmToReefLowerAlgae()
         .ifPresent(
             trigger -> trigger.onTrue(
@@ -286,6 +292,22 @@ public class RobotContainer {
                       gamePieceManipulatorSubsystem.stop();
                       armSubsystem.stop();
                     })));
+
+    controlBindings.moveArmToBarge()
+        .ifPresent(
+            trigger -> trigger.toggleOnTrue(
+                armSubsystem.run(armSubsystem::moveToBarge)
+                    .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::activeHoldAlgae))
+                    .finallyDo(armSubsystem::stop)
+                    .finallyDo(gamePieceManipulatorSubsystem::stop)));
+
+    controlBindings.shootAlgae()
+        .ifPresent(
+            trigger -> trigger.whileTrue(
+                gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::shootAlgae)
+                    .alongWith(armSubsystem.run(armSubsystem::moveToBarge))
+                    .finallyDo(gamePieceManipulatorSubsystem::stop)
+                    .finallyDo(armSubsystem::stop)));
 
     // Coral scoring level selection
     controlBindings.selectCoralLevel1().ifPresent(trigger -> trigger.onTrue(runOnce(scoreChooser::selectLevel1)));

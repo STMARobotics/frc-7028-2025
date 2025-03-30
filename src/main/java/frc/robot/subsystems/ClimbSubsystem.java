@@ -9,6 +9,7 @@ import static frc.robot.Constants.CANIVORE_BUS_NAME;
 import static frc.robot.Constants.ClimbConstants.CLIMB_FORWARD_SOFT_LIMIT;
 import static frc.robot.Constants.ClimbConstants.CLIMB_MAGNETIC_OFFSET_FRONT;
 import static frc.robot.Constants.ClimbConstants.CLIMB_ROTOR_TO_SENSOR_RATIO;
+import static frc.robot.Constants.ClimbConstants.CLIMB_START_POSITION;
 import static frc.robot.Constants.ClimbConstants.CLIMB_STATOR_CURRENT_LIMIT;
 import static frc.robot.Constants.ClimbConstants.CLIMB_SUPPLY_CURRENT_LIMIT;
 import static frc.robot.Constants.ClimbConstants.CLIMB_VOLTAGE;
@@ -98,10 +99,17 @@ public class ClimbSubsystem extends SubsystemBase {
   public boolean isAtLimit() {
     // Normalize the position to one rotation so it can be used to limit forward motion even when the climb has been
     // manually moved past one turn
-    StatusSignal.refreshAll(climbPositionSignal, climbVelocitySignal);
-    var climbPosition = StatusSignal.getLatencyCompensatedValue(climbPositionSignal, climbVelocitySignal);
-    var normalizedPosition = ((climbPosition.in(Rotations) % 1.0) + 1.0) % 1.0;
-    return normalizedPosition >= CLIMB_FORWARD_SOFT_LIMIT.in(Rotations);
+    return getNormalizedPosition() >= CLIMB_FORWARD_SOFT_LIMIT.in(Rotations);
+  }
+
+  /**
+   * Returns a value to represent the climb progress from the starting position to the end position
+   * 
+   * @return percentage of climb progress
+   */
+  public double getClimbProgress() {
+    final var climbStartRots = CLIMB_START_POSITION.in(Rotations);
+    return (getNormalizedPosition() - climbStartRots) / (CLIMB_FORWARD_SOFT_LIMIT.in(Rotations) - climbStartRots);
   }
 
   public void stop() {
@@ -130,6 +138,12 @@ public class ClimbSubsystem extends SubsystemBase {
     climbMotorSim.update(0.020);
     climbMotorSimState.setRawRotorPosition(climbMotorSim.getAngularPosition().times(CLIMB_ROTOR_TO_SENSOR_RATIO));
     climbMotorSimState.setRotorVelocity(climbMotorSim.getAngularVelocity().times(CLIMB_ROTOR_TO_SENSOR_RATIO));
+  }
+
+  private double getNormalizedPosition() {
+    StatusSignal.refreshAll(climbPositionSignal, climbVelocitySignal);
+    var climbPosition = StatusSignal.getLatencyCompensatedValue(climbPositionSignal, climbVelocitySignal);
+    return ((climbPosition.in(Rotations) % 1.0) + 1.0) % 1.0;
   }
 
 }

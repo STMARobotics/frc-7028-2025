@@ -164,6 +164,7 @@ public class Constants {
     public static final double CLIMB_ROTOR_TO_SENSOR_RATIO = 144;
 
     public static final Angle CLIMB_FORWARD_SOFT_LIMIT = Rotations.of(0.826);
+    public static final Angle CLIMB_START_POSITION = Rotations.of(0.23);
 
     public static final Voltage CLIMB_VOLTAGE = Volts.of(6);
   }
@@ -209,9 +210,9 @@ public class Constants {
     public static final Angle ARM_DANGER_TOLERANCE = Degrees.of(20);
 
     /** Min of the zone that the arm is never allowed to be commanded into, or to pass through. */
-    public static final Angle ARM_FORBIDDEN_ZONE_MIN = Rotations.of(0.8);
+    public static final Angle ARM_FORBIDDEN_ZONE_MIN = Rotations.of(0.9);
     /** Max of the zone that the arm is never allowed to be commanded into, or to pass through. */
-    public static final Angle ARM_FORBIDDEN_ZONE_MAX = Rotations.of(0.9);
+    public static final Angle ARM_FORBIDDEN_ZONE_MAX = Rotations.of(0.999999);
 
     public static final Distance ELEVATOR_POSITION_TOLERANCE = Inches.of(0.5);
     public static final Angle ARM_POSITION_TOLERANCE = Degrees.of(5);
@@ -223,7 +224,7 @@ public class Constants {
     public static final Current ARM_STATOR_CURRENT_LIMIT = Amps.of(40);
     public static final Current ARM_SUPPLY_CURRENT_LIMIT = Amps.of(40);
     public static final double ARM_ROTOR_TO_SENSOR_RATIO = (68.0 / 14.0) * (68.0 / 26.0) * (34.0 / 16.0);
-    public static final Angle ARM_MAGNETIC_OFFSET = Rotations.of(-0.135498);
+    public static final Angle ARM_MAGNETIC_OFFSET = Rotations.of(-0.04248046875);
 
     public static final SlotConfigs ARM_SLOT_CONFIGS = new SlotConfigs().withGravityType(Arm_Cosine)
         .withKP(30.0)
@@ -253,7 +254,7 @@ public class Constants {
     public static final Angle LEVEL_4_ANGLE = Rotations.of(0.16);
     public static final Angle ALGAE_LOWER_ANGLE = Rotations.of(0.05);
     public static final Angle ALGAE_UPPER_ANGLE = Rotations.of(0.105);
-    public static final Angle ALGAE_BARGE_ANGLE = Rotation.of(0.25);
+    public static final Angle ALGAE_BARGE_ANGLE = Rotation.of(0.33);
     public static final Angle ALGAE_PROCESSOR_ANGLE = Rotation.of(0.963);
     public static final Angle ALGAE_HOLD_ANGLE = Rotations.of(0.5);
 
@@ -271,9 +272,9 @@ public class Constants {
 
     public static final SlotConfigs MANIPULATION_SLOT_CONFIGS = new SlotConfigs().withKP(0.0).withKD(0.0).withKS(0.0);
 
-    public static final Current STATOR_CURRENT_LIMIT = Amps.of(30);
+    public static final Current STATOR_CURRENT_LIMIT = Amps.of(100);
     public static final Current TORQUE_CURRENT_LIMIT = Amps.of(10);
-    public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(20);
+    public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(30);
 
     public static final AngularVelocity INAKE_VELOCITY = RadiansPerSecond.of(5);
     public static final AngularVelocity EJECT_VELOCITY = RadiansPerSecond.of(-5);

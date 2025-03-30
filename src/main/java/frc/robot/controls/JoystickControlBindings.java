@@ -126,4 +126,14 @@ public class JoystickControlBindings extends ControlBindings {
   public Optional<Trigger> seedFieldCentric() {
     return Optional.of(leftJoystick.button(11));
   }
+
+  @Override
+  public Optional<Trigger> moveArmToBarge() {
+    return Optional.of(leftJoystick.button(2));
+  }
+
+  @Override
+  public Optional<Trigger> shootAlgae() {
+    return Optional.of(leftJoystick.button(3));
+  }
 }

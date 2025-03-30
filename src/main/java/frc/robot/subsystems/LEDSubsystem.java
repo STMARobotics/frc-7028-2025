@@ -1,13 +1,16 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Microsecond;
 import static frc.robot.Constants.LEDConstants.DEVICE_ID_LEDS;
 import static frc.robot.Constants.LEDConstants.LED_STRIP_LENGTH;
 import static frc.robot.Constants.LEDConstants.TOTAL_LEDS;
 
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.AddressableLEDBufferView;
 import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -53,7 +56,7 @@ public class LEDSubsystem extends SubsystemBase {
     return run(() -> {
       pattern.applyTo(frontStripBuffer);
       pattern.applyTo(backStripBuffer);
-    }).finallyDo(() -> LEDPattern.kOff.applyTo(ledBuffer));
+    }).finallyDo(() -> LEDPattern.kOff.applyTo(ledBuffer)).ignoringDisable(true);
   }
 
   /**
@@ -68,16 +71,24 @@ public class LEDSubsystem extends SubsystemBase {
   }
 
   /**
-   * Applies a candy cane pattern (alternating colors) to each LED strip.
+   * Creates an LEDPattern that makes an animated candy cane effect (alternating colors)
    * 
    * @param color1 The first color
    * @param color2 The second color
+   * @param period The length of time before swapping the colors
    */
-  public void setCandyCane(Color color1, Color color2) {
-    for (int i = 0; i < LED_STRIP_LENGTH; i++) {
-      frontStripBuffer.setLED(i, i % 2 == 0 ? color1 : color2);
-      backStripBuffer.setLED(i, i % 2 == 0 ? color1 : color2);
-    }
+  public static LEDPattern candyCane(Color color1, Color color2, Time period) {
+    var periodMicros = (long) period.in(Microsecond);
+    return (reader, writer) -> {
+      var isOdd = (RobotController.getTime() / periodMicros) % 2 == 1;
+      for (int led = 0; led < reader.getLength(); led++) {
+        if (isOdd) {
+          writer.setLED(led, led % 2 == 0 ? color1 : color2);
+        } else {
+          writer.setLED(led, led % 2 == 0 ? color2 : color1);
+        }
+      }
+    };
   }
 
   /**

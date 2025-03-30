@@ -2,6 +2,7 @@ package frc.robot.commands.led;
 
 import static edu.wpi.first.units.Units.Percent;
 import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.wpilibj.LEDPattern.GradientType.kContinuous;
 import static edu.wpi.first.wpilibj.LEDPattern.gradient;
 import static edu.wpi.first.wpilibj.LEDPattern.kOff;
@@ -10,10 +11,12 @@ import static edu.wpi.first.wpilibj.util.Color.kBlue;
 import static edu.wpi.first.wpilibj.util.Color.kDarkRed;
 import static edu.wpi.first.wpilibj.util.Color.kIndianRed;
 import static edu.wpi.first.wpilibj.util.Color.kOrange;
+import static frc.robot.subsystems.LEDSubsystem.candyCane;
 
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.RobotState;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.LEDSubsystem;
 
@@ -22,18 +25,9 @@ import frc.robot.subsystems.LEDSubsystem;
  */
 public class DefaultLEDCommand extends Command {
 
-  private enum LEDMode {
-    DISCONNECTED,
-    DISABLED,
-    TEST,
-    DEFAULT
-  }
+  private static final Time CANDY_CANE_SPEED = Seconds.of(0.5);
 
   private final LEDSubsystem ledSubsystem;
-
-  private final Timer timer = new Timer();
-  private boolean candyCaneState = false;
-  private static final double CANDY_CANE_SPEED = 0.5;
 
   /**
    * Creates a new DefaultLEDCommand
@@ -47,63 +41,28 @@ public class DefaultLEDCommand extends Command {
   }
 
   @Override
-  public void initialize() {
-    timer.restart();
-  }
-
-  @Override
   public void execute() {
-    boolean advanceCandyCane = timer.advanceIfElapsed(CANDY_CANE_SPEED);
-    switch (getMode()) {
-      case DISCONNECTED:
-        if (advanceCandyCane) {
-          candyCaneState = !candyCaneState;
-        }
-        ledSubsystem.setCandyCane(candyCaneState ? kDarkRed : kIndianRed, candyCaneState ? kIndianRed : kDarkRed);
-        break;
-      case DISABLED:
-        ledSubsystem
-            .runPattern(gradient(kContinuous, kBlue, kOrange).scrollAtRelativeSpeed(Percent.per(Second).of(75)));
-        break;
-      case TEST:
-        if (advanceCandyCane) {
-          candyCaneState = !candyCaneState;
-        }
-        ledSubsystem.setCandyCane(candyCaneState ? kOrange : kBlack, candyCaneState ? kBlack : kOrange);
-        break;
-      default:
-        ledSubsystem.runPattern(kOff);
-        break;
+    LEDPattern pattern;
+    if (!DriverStation.isDSAttached()) {
+      pattern = candyCane(kDarkRed, kIndianRed, CANDY_CANE_SPEED);
+    } else if (RobotState.isDisabled()) {
+      pattern = gradient(kContinuous, kBlue, kOrange).scrollAtRelativeSpeed(Percent.per(Second).of(75));
+    } else if (RobotState.isTest()) {
+      pattern = candyCane(kOrange, kBlack, CANDY_CANE_SPEED);
+    } else {
+      pattern = kOff;
     }
+    ledSubsystem.runPattern(pattern);
   }
 
   @Override
   public void end(boolean interrupted) {
-    timer.stop();
     ledSubsystem.runPattern(kOff);
   }
 
   @Override
   public boolean runsWhenDisabled() {
     return true;
-  }
-
-  /**
-   * Gets the mode that the LEDs should be running in.
-   * 
-   * @return Current mode that the LEDs should be running in
-   */
-  private LEDMode getMode() {
-    if (!DriverStation.isDSAttached()) {
-      return LEDMode.DISCONNECTED;
-    }
-    if (RobotState.isDisabled()) {
-      return LEDMode.DISABLED;
-    }
-    if (RobotState.isTest()) {
-      return LEDMode.TEST;
-    }
-    return LEDMode.DEFAULT;
   }
 
 }
