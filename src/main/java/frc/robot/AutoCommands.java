@@ -9,18 +9,8 @@ import static frc.robot.Constants.AlignmentConstants.LATERAL_TARGET_L3_LEFT;
 import static frc.robot.Constants.AlignmentConstants.LATERAL_TARGET_L3_RIGHT;
 import static frc.robot.Constants.AlignmentConstants.LATERAL_TARGET_L4_LEFT;
 import static frc.robot.Constants.AlignmentConstants.LATERAL_TARGET_L4_RIGHT;
-import static frc.robot.Constants.AlignmentConstants.REEF_L3_SCORE_POSES_BLUE_LEFT;
-import static frc.robot.Constants.AlignmentConstants.REEF_L3_SCORE_POSES_BLUE_RIGHT;
-import static frc.robot.Constants.AlignmentConstants.REEF_L3_SCORE_POSES_RED_LEFT;
-import static frc.robot.Constants.AlignmentConstants.REEF_L3_SCORE_POSES_RED_RIGHT;
-import static frc.robot.Constants.AlignmentConstants.REEF_L4_SCORE_POSES_BLUE_LEFT;
-import static frc.robot.Constants.AlignmentConstants.REEF_L4_SCORE_POSES_BLUE_RIGHT;
-import static frc.robot.Constants.AlignmentConstants.REEF_L4_SCORE_POSES_RED_LEFT;
-import static frc.robot.Constants.AlignmentConstants.REEF_L4_SCORE_POSES_RED_RIGHT;
 import static frc.robot.subsystems.LEDSubsystem.ledSegments;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
@@ -82,49 +72,6 @@ public class AutoCommands {
     this.ledSubsystem = ledSubsystem;
     this.highCameraForLeft = highCameraForLeft;
     this.highCameraForRight = highCameraForRight;
-
-    publishScoringPoses();
-  }
-
-  /** Sends the reef poses to the dashboard for debugging */
-  private void publishScoringPoses() {
-    var table = NetworkTableInstance.getDefault().getTable("scoring_poses");
-
-    // L4 Blue
-    table.getStructArrayTopic("reef_l4_blue_left", Pose2d.struct)
-        .publish()
-        .set(REEF_L4_SCORE_POSES_BLUE_LEFT.toArray(Pose2d[]::new));
-
-    table.getStructArrayTopic("reef_l4_blue_right", Pose2d.struct)
-        .publish()
-        .set(REEF_L4_SCORE_POSES_BLUE_RIGHT.toArray(Pose2d[]::new));
-
-    // L4 Red
-    table.getStructArrayTopic("reef_l4_red_left", Pose2d.struct)
-        .publish()
-        .set(REEF_L4_SCORE_POSES_RED_LEFT.toArray(Pose2d[]::new));
-
-    table.getStructArrayTopic("reef_l4_red_right", Pose2d.struct)
-        .publish()
-        .set(REEF_L4_SCORE_POSES_RED_RIGHT.toArray(Pose2d[]::new));
-
-    // L3 Blue
-    table.getStructArrayTopic("reef_l3_blue_left", Pose2d.struct)
-        .publish()
-        .set(REEF_L3_SCORE_POSES_BLUE_LEFT.toArray(Pose2d[]::new));
-
-    table.getStructArrayTopic("reef_l3_blue_right", Pose2d.struct)
-        .publish()
-        .set(REEF_L3_SCORE_POSES_BLUE_RIGHT.toArray(Pose2d[]::new));
-
-    // L3 Red
-    table.getStructArrayTopic("reef_l3_red_left", Pose2d.struct)
-        .publish()
-        .set(REEF_L3_SCORE_POSES_RED_LEFT.toArray(Pose2d[]::new));
-
-    table.getStructArrayTopic("reef_l3_red_right", Pose2d.struct)
-        .publish()
-        .set(REEF_L3_SCORE_POSES_RED_RIGHT.toArray(Pose2d[]::new));
   }
 
   /**
