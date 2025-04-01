@@ -208,15 +208,6 @@ public abstract class ControlBindings {
   }
 
   /**
-   * Moves the arm up to the barge position, ready to shoot algae
-   * 
-   * @return optional trigger
-   */
-  public Optional<Trigger> moveArmToBarge() {
-    return Optional.empty();
-  }
-
-  /**
    * Runs the game piece manipulator to shoot algae
    * 
    * @return optional trigger

@@ -9,7 +9,6 @@ import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Rotation;
 import static edu.wpi.first.units.Units.Rotations;
@@ -165,7 +164,7 @@ public class Constants {
     public static final Angle CLIMB_FORWARD_SOFT_LIMIT = Rotations.of(0.826);
     public static final Angle CLIMB_START_POSITION = Rotations.of(0.23);
 
-    public static final Voltage CLIMB_VOLTAGE = Volts.of(6);
+    public static final Voltage CLIMB_VOLTAGE = Volts.of(12);
   }
 
   /**
@@ -250,12 +249,12 @@ public class Constants {
     public static final Angle ARM_INTAKE_ANGLE = Rotations.of(0.765);
     public static final Angle LEVEL_2_ANGLE = Rotations.of(0.72);
     public static final Angle LEVEL_3_ANGLE = Rotations.of(0.172);
-    public static final Angle LEVEL_4_ANGLE = Rotations.of(0.16);
+    public static final Angle LEVEL_4_ANGLE = Rotations.of(0.17);
     public static final Angle ALGAE_LOWER_ANGLE = Rotations.of(0.05);
     public static final Angle ALGAE_UPPER_ANGLE = Rotations.of(0.105);
     public static final Angle ALGAE_BARGE_ANGLE = Rotation.of(0.33);
     public static final Angle ALGAE_PROCESSOR_ANGLE = Rotation.of(0.963);
-    public static final Angle ALGAE_HOLD_ANGLE = Rotations.of(0.5);
+    public static final Angle ALGAE_HOLD_ANGLE = Rotations.of(0.4);
 
     // Values for Mechanism2d visualization
     public static final Distance ARM_PIVOT_LENGTH = Meters.of(0.577);
@@ -269,18 +268,19 @@ public class Constants {
 
     public static final int DEVICE_ID_MANIPULATOR_MOTOR = 20;
 
-    public static final SlotConfigs MANIPULATION_SLOT_CONFIGS = new SlotConfigs().withKP(0.0).withKD(0.0).withKS(0.0);
+    public static final SlotConfigs MANIPULATION_SLOT_CONFIGS = new SlotConfigs().withKP(10)
+        .withKD(0.0)
+        .withKS(20.0)
+        .withKV(0.25);
 
-    public static final Current STATOR_CURRENT_LIMIT = Amps.of(100);
-    public static final Current TORQUE_CURRENT_LIMIT = Amps.of(10);
+    public static final Current STATOR_CURRENT_LIMIT = Amps.of(150);
+    public static final Current TORQUE_CURRENT_LIMIT = Amps.of(50);
     public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(30);
 
-    public static final AngularVelocity INAKE_VELOCITY = RadiansPerSecond.of(5);
-    public static final AngularVelocity EJECT_VELOCITY = RadiansPerSecond.of(-5);
-    public static final AngularVelocity SCORE_VELOCITY = RadiansPerSecond.of(-5);
-
     public static final Current WHEEL_HOLD_CORAL_CURRENT = Amps.of(5.0);
-    public static final Voltage WHEEL_HOLD_ALGAE_VOLTAGE = Volts.of(-4.0);
+    public static final Current WHEEL_HOLD_ALGAE_CURRENT = Amps.of(-20.0);
+
+    public static final AngularVelocity INTAKE_ALGAE_VELOCITY = RotationsPerSecond.of(-20);
 
   }
 

@@ -2,6 +2,7 @@ package frc.robot;
 
 import static edu.wpi.first.wpilibj.util.Color.*;
 import static edu.wpi.first.wpilibj2.command.Commands.parallel;
+import static edu.wpi.first.wpilibj2.command.Commands.run;
 import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 import static frc.robot.Constants.AlignmentConstants.DISTANCE_TARGET_L3;
 import static frc.robot.Constants.AlignmentConstants.DISTANCE_TARGET_L4;
@@ -95,6 +96,21 @@ public class AutoCommands {
         armSubsystem,
         ledSubsystem,
         () -> false);
+  }
+
+  /**
+   * Creates a command to hold algae. The command has no end condition, so it must be interupted.
+   * 
+   * @return new command
+   */
+  public Command holdAlgae() {
+    return run(() -> {
+      armSubsystem.moveToHoldAlgae();
+      gamePieceManipulatorSubsystem.activeHoldAlgae();
+    }, armSubsystem, gamePieceManipulatorSubsystem).finallyDo(() -> {
+      armSubsystem.stop();
+      gamePieceManipulatorSubsystem.stop();
+    });
   }
 
   /**

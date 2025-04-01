@@ -9,11 +9,12 @@ import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.CANIVORE_BUS_NAME;
 import static frc.robot.Constants.GamePieceManipulatorConstants.DEVICE_ID_MANIPULATOR_MOTOR;
+import static frc.robot.Constants.GamePieceManipulatorConstants.INTAKE_ALGAE_VELOCITY;
 import static frc.robot.Constants.GamePieceManipulatorConstants.MANIPULATION_SLOT_CONFIGS;
 import static frc.robot.Constants.GamePieceManipulatorConstants.STATOR_CURRENT_LIMIT;
 import static frc.robot.Constants.GamePieceManipulatorConstants.SUPPLY_CURRENT_LIMIT;
 import static frc.robot.Constants.GamePieceManipulatorConstants.TORQUE_CURRENT_LIMIT;
-import static frc.robot.Constants.GamePieceManipulatorConstants.WHEEL_HOLD_ALGAE_VOLTAGE;
+import static frc.robot.Constants.GamePieceManipulatorConstants.WHEEL_HOLD_ALGAE_CURRENT;
 import static frc.robot.Constants.GamePieceManipulatorConstants.WHEEL_HOLD_CORAL_CURRENT;
 
 import com.ctre.phoenix6.SignalLogger;
@@ -21,6 +22,7 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
+import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.epilogue.Logged;
@@ -40,6 +42,7 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
 
   private final TorqueCurrentFOC wheelTorqueControl = new TorqueCurrentFOC(0.0);
   private final VoltageOut wheelVoltageOut = new VoltageOut(0.0).withEnableFOC(true);
+  private final VelocityTorqueCurrentFOC wheelVelocityTorque = new VelocityTorqueCurrentFOC(0.0);
 
   // SysId routine for rollers - NOTE: the output type is amps, NOT volts (even though it says volts)
   // https://www.chiefdelphi.com/t/sysid-with-ctre-swerve-characterization/452631/8
@@ -114,7 +117,7 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
    * Runs the wheels to intake algae
    */
   public void intakeAlgae() {
-    wheelMotor.setControl(wheelVoltageOut.withOutput(-5.0));
+    wheelMotor.setControl(wheelVelocityTorque.withVelocity(INTAKE_ALGAE_VELOCITY));
   }
 
   /**
@@ -142,7 +145,7 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
    * Runs the wheels with a little bit of torque to hold a game piece
    */
   public void activeHoldAlgae() {
-    wheelMotor.setControl(wheelVoltageOut.withOutput(WHEEL_HOLD_ALGAE_VOLTAGE));
+    wheelMotor.setControl(wheelTorqueControl.withOutput(WHEEL_HOLD_ALGAE_CURRENT));
   }
 
   /**
