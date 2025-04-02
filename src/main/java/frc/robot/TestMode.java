@@ -12,7 +12,6 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ArmSubsystem;
-import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.GamePieceManipulatorSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import java.util.function.BooleanSupplier;
@@ -30,12 +29,10 @@ public class TestMode {
       .publish();
   private final BooleanPublisher manipulatorBackwardPublisher = testingTable.getBooleanTopic("Manipulator Backward")
       .publish();
-  private final BooleanPublisher climbPublisher = testingTable.getBooleanTopic("Climb").publish();
   private final BooleanPublisher elevatorPubliser = testingTable.getBooleanTopic("Elevator").publish();
   private final BooleanPublisher armPublisher = testingTable.getBooleanTopic("Arm").publish();
 
   private final GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem;
-  private final ClimbSubsystem climbSubsystem;
   private final ArmSubsystem armSubsystem;
   private final IndexerSubsystem indexerSubsystem;
   private BooleanSubscriber[] testResults;
@@ -44,16 +41,13 @@ public class TestMode {
    * Constructs a test mode
    * 
    * @param gamePieceManipulatorSubsystem game piece manipulator subsystem
-   * @param climbSubsystem climb subsystem
    * @param armSubsystem arm subsystem
    */
   public TestMode(
       GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem,
-      ClimbSubsystem climbSubsystem,
       ArmSubsystem armSubsystem,
       IndexerSubsystem indexerSubsystem) {
     this.gamePieceManipulatorSubsystem = gamePieceManipulatorSubsystem;
-    this.climbSubsystem = climbSubsystem;
     this.armSubsystem = armSubsystem;
     this.indexerSubsystem = indexerSubsystem;
 
@@ -62,7 +56,6 @@ public class TestMode {
         indexerBackwardPublisher.getTopic().subscribe(false),
         manipulatorForwardPublisher.getTopic().subscribe(false),
         manipulatorBackwardPublisher.getTopic().subscribe(false),
-        climbPublisher.getTopic().subscribe(false),
         elevatorPubliser.getTopic().subscribe(false),
         armPublisher.getTopic().subscribe(false) };
   };
@@ -73,12 +66,11 @@ public class TestMode {
   public Command testCommand() {
     return runOnce(this::initializeResults).andThen(testGamePieceManipulatorForwardsCommand())
         .andThen(testGamePieceManipulatorBackwardsCommand())
-        .andThen(testClimbCommand())
         .andThen(testArmElevatorCommand())
         .andThen(testArmCommand())
         .andThen(testIndexerForwardsCommand())
-        .andThen(testIndexerBackwardsCommand());
-
+        .andThen(testIndexerBackwardsCommand())
+        .andThen(finishTestCommand());
   }
 
   /**
@@ -89,7 +81,6 @@ public class TestMode {
     indexerBackwardPublisher.set(false);
     manipulatorForwardPublisher.set(false);
     manipulatorBackwardPublisher.set(false);
-    climbPublisher.set(false);
     elevatorPubliser.set(false);
     armPublisher.set(false);
   }
@@ -111,30 +102,21 @@ public class TestMode {
   }
 
   private Command testGamePieceManipulatorForwardsCommand() {
-    return gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::intakeCoral)
+    return gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectCoral)
         .withTimeout(Seconds.of(5))
         .andThen(
-            () -> manipulatorForwardPublisher
-                .set(gamePieceManipulatorSubsystem.getWheelVelocity().gte(MANIPULATOR_TESTING_SPEED_TOLERANCE)))
+            () -> manipulatorForwardPublisher.set(
+                gamePieceManipulatorSubsystem.getWheelVelocity().lte(MANIPULATOR_TESTING_SPEED_TOLERANCE.unaryMinus())))
         .finallyDo(gamePieceManipulatorSubsystem::stop);
   }
 
   private Command testGamePieceManipulatorBackwardsCommand() {
-    return gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectCoral)
+    return gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::intakeCoral)
         .withTimeout(Seconds.of(5))
         .andThen(
-            () -> manipulatorForwardPublisher
-                .set(gamePieceManipulatorSubsystem.getWheelVelocity().lte(MANIPULATOR_TESTING_SPEED_TOLERANCE)))
+            () -> manipulatorBackwardPublisher.set(
+                gamePieceManipulatorSubsystem.getWheelVelocity().gte(MANIPULATOR_TESTING_SPEED_TOLERANCE.unaryMinus())))
         .finallyDo(gamePieceManipulatorSubsystem::stop);
-  }
-
-  private Command testClimbCommand() {
-    return run(() -> {
-      climbSubsystem.climb();
-    }, climbSubsystem).until(climbSubsystem::isClimbMotorMoving)
-        .withTimeout(Seconds.of(5))
-        .andThen(() -> climbPublisher.set(climbSubsystem.isClimbMotorMoving()))
-        .finallyDo(climbSubsystem::stop);
   }
 
   private Command testArmElevatorCommand() {
@@ -149,6 +131,10 @@ public class TestMode {
         .withTimeout(Seconds.of(5))
         .andThen(() -> armPublisher.set(armSubsystem.isArmAtAngle()))
         .finallyDo(armSubsystem::park);
+  }
+
+  private Command finishTestCommand() {
+    return run(() -> armSubsystem.moveToCoralIntakePosition(), armSubsystem);
   }
 
   /**

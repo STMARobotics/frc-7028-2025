@@ -289,7 +289,7 @@ public class Constants {
    */
   public static class TestingConstants {
     public static final AngularVelocity INDEXER_TESTING_SPEED_TOLERANCE = RotationsPerSecond.of(3);
-    public static final AngularVelocity MANIPULATOR_TESTING_SPEED_TOLERANCE = RotationsPerSecond.of(3);
+    public static final AngularVelocity MANIPULATOR_TESTING_SPEED_TOLERANCE = RotationsPerSecond.of(2);
     public static final AngularVelocity WHEEL_VELOCITY_TOLERANCE = RotationsPerSecond.of(3);
   }
 

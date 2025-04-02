@@ -104,11 +104,7 @@ public class RobotContainer {
       highBackCamera);
   private final ScoreChooser scoreChooser = new ScoreChooser();
 
-  private final TestMode testMode = new TestMode(
-      gamePieceManipulatorSubsystem,
-      climbSubsystem,
-      armSubsystem,
-      indexerSubsystem);
+  private final TestMode testMode = new TestMode(gamePieceManipulatorSubsystem, armSubsystem, indexerSubsystem);
 
   /* Path follower */
   private final SendableChooser<Command> autoChooser;
