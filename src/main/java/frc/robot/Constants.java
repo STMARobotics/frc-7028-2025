@@ -161,7 +161,7 @@ public class Constants {
     public static final Current CLIMB_SUPPLY_CURRENT_LIMIT = Amps.of(40);
     public static final double CLIMB_ROTOR_TO_SENSOR_RATIO = 144;
 
-    public static final Angle CLIMB_FORWARD_SOFT_LIMIT = Rotations.of(0.826);
+    public static final Angle CLIMB_FORWARD_SOFT_LIMIT = Rotations.of(0.840);
     public static final Angle CLIMB_START_POSITION = Rotations.of(0.23);
 
     public static final Voltage CLIMB_VOLTAGE = Volts.of(12);
