@@ -10,13 +10,19 @@ import static frc.robot.Constants.AlignmentConstants.LATERAL_TARGET_L3_LEFT;
 import static frc.robot.Constants.AlignmentConstants.LATERAL_TARGET_L3_RIGHT;
 import static frc.robot.Constants.AlignmentConstants.LATERAL_TARGET_L4_LEFT;
 import static frc.robot.Constants.AlignmentConstants.LATERAL_TARGET_L4_RIGHT;
+import static frc.robot.Constants.AlignmentConstants.REEF_L4_SCORE_POSES_BLUE_LEFT;
+import static frc.robot.Constants.AlignmentConstants.REEF_L4_SCORE_POSES_BLUE_RIGHT;
+import static frc.robot.Constants.AlignmentConstants.REEF_L4_SCORE_POSES_RED_LEFT;
+import static frc.robot.Constants.AlignmentConstants.REEF_L4_SCORE_POSES_RED_RIGHT;
 import static frc.robot.subsystems.LEDSubsystem.ledSegments;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.AlignToReefCommand;
+import frc.robot.commands.DriveToNearestPose;
 import frc.robot.commands.HoldCoralCommand;
 import frc.robot.commands.IntakeCoralCommand;
 import frc.robot.subsystems.AlignmentSubsystem;
@@ -25,6 +31,7 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.GamePieceManipulatorSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
+import java.util.List;
 import java.util.function.BooleanSupplier;
 import org.photonvision.PhotonCamera;
 
@@ -242,6 +249,8 @@ public class AutoCommands {
   public Command autoAlignCoralLevel4Left(Command driveCommand) {
     return autoAlignCoral(
         armSubsystem::moveToLevel4,
+          REEF_L4_SCORE_POSES_RED_LEFT,
+          REEF_L4_SCORE_POSES_BLUE_LEFT,
           DISTANCE_TARGET_L4,
           LATERAL_TARGET_L4_LEFT,
           highCameraForLeft,
@@ -259,6 +268,8 @@ public class AutoCommands {
   public Command autoAlignCoralLevel4Right(Command driveCommand) {
     return autoAlignCoral(
         armSubsystem::moveToLevel4,
+          REEF_L4_SCORE_POSES_RED_RIGHT,
+          REEF_L4_SCORE_POSES_BLUE_RIGHT,
           DISTANCE_TARGET_L4,
           LATERAL_TARGET_L4_RIGHT,
           highCameraForRight,
@@ -268,11 +279,14 @@ public class AutoCommands {
 
   private Command autoAlignCoral(
       Runnable armMethod,
+      List<Pose2d> redPoses,
+      List<Pose2d> bluePoses,
       Distance targetDistance,
       Distance lateralTarget,
       PhotonCamera highCamera,
       Color ledColor,
       Command driveCommand) {
+    var driveToReef = new DriveToNearestPose(drivetrain, () -> drivetrain.getState().Pose, redPoses, bluePoses);
     var alignToReef = new AlignToReefCommand(
         drivetrain,
         alignmentSubsystem,
@@ -290,13 +304,10 @@ public class AutoCommands {
               alignToReef::atDistanceGoal,
               alignToReef::atLateralGoal,
               alignToReef::atThetaGoal))
-        .withDeadline(parallel(armSubsystem.run(armMethod).until(armSubsystem::isAtPosition), alignToReef))
-        .andThen(
-            parallel(
-                driveCommand,
-                  armSubsystem.run(armMethod),
-                  ledSubsystem.runPatternAsCommand(LEDPattern.solid(Color.kGreen))))
-        .finallyDo(() -> ledSubsystem.runPattern(LEDPattern.kOff))
+        .withDeadline(
+            parallel(armSubsystem.run(armMethod).until(armSubsystem::isAtPosition), driveToReef.andThen(alignToReef))
+                .andThen(parallel(driveCommand, armSubsystem.run(armMethod)))
+                .finallyDo(() -> ledSubsystem.runPattern(LEDPattern.kOff)))
         .finallyDo(armSubsystem::stop);
   }
 }
