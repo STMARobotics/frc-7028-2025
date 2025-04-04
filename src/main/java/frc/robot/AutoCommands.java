@@ -296,7 +296,6 @@ public class AutoCommands {
                 driveCommand,
                   armSubsystem.run(armMethod),
                   ledSubsystem.runPatternAsCommand(LEDPattern.solid(Color.kGreen))))
-        .until(() -> !armSubsystem.hasCoral() || !driveCommand.isScheduled())
         .finallyDo(() -> ledSubsystem.runPattern(LEDPattern.kOff))
         .finallyDo(armSubsystem::stop);
   }
