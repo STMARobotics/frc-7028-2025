@@ -10,6 +10,10 @@ import static frc.robot.Constants.AlignmentConstants.LATERAL_TARGET_L3_LEFT;
 import static frc.robot.Constants.AlignmentConstants.LATERAL_TARGET_L3_RIGHT;
 import static frc.robot.Constants.AlignmentConstants.LATERAL_TARGET_L4_LEFT;
 import static frc.robot.Constants.AlignmentConstants.LATERAL_TARGET_L4_RIGHT;
+import static frc.robot.Constants.AlignmentConstants.REEF_L3_SCORE_POSES_BLUE_LEFT;
+import static frc.robot.Constants.AlignmentConstants.REEF_L3_SCORE_POSES_BLUE_RIGHT;
+import static frc.robot.Constants.AlignmentConstants.REEF_L3_SCORE_POSES_RED_LEFT;
+import static frc.robot.Constants.AlignmentConstants.REEF_L3_SCORE_POSES_RED_RIGHT;
 import static frc.robot.Constants.AlignmentConstants.REEF_L4_SCORE_POSES_BLUE_LEFT;
 import static frc.robot.Constants.AlignmentConstants.REEF_L4_SCORE_POSES_BLUE_RIGHT;
 import static frc.robot.Constants.AlignmentConstants.REEF_L4_SCORE_POSES_RED_LEFT;
@@ -174,9 +178,11 @@ public class AutoCommands {
    * @param allowScoreWithoutTag true to allow scoring if the apriltag was never seen, otherwise false
    * @return new command
    */
-  public Command scoreCoralLevel3Left(boolean allowScoreWithoutTag) {
-    return autoScoreCoral(
+  public Command scoreCoralLevel3LeftTeleop(boolean allowScoreWithoutTag) {
+    return autoScoreCoralTeleop(
         armSubsystem::moveToLevel3,
+          REEF_L3_SCORE_POSES_RED_LEFT,
+          REEF_L3_SCORE_POSES_BLUE_LEFT,
           DISTANCE_TARGET_L3,
           LATERAL_TARGET_L3_LEFT,
           highCameraForLeft,
@@ -190,9 +196,11 @@ public class AutoCommands {
    * @param allowScoreWithoutTag true to allow scoring if the apriltag was never seen, otherwise false
    * @return new command
    */
-  public Command scoreCoralLevel3Right(boolean allowScoreWithoutTag) {
-    return autoScoreCoral(
+  public Command scoreCoralLevel3RightTeleop(boolean allowScoreWithoutTag) {
+    return autoScoreCoralTeleop(
         armSubsystem::moveToLevel3,
+          REEF_L3_SCORE_POSES_RED_RIGHT,
+          REEF_L3_SCORE_POSES_BLUE_RIGHT,
           DISTANCE_TARGET_L3,
           LATERAL_TARGET_L3_RIGHT,
           highCameraForRight,
@@ -234,6 +242,49 @@ public class AutoCommands {
                     armSubsystem.run(armMethod)
                         .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectCoral))
                         .alongWith(indexerSubsystem.run(indexerSubsystem::eject))
+                        .until(() -> !armSubsystem.hasCoral())))
+        .finallyDo(() -> ledSubsystem.runPattern(LEDPattern.kOff))
+        .finallyDo(armSubsystem::stop);
+  }
+
+  private Command autoScoreCoralTeleop(
+      Runnable armMethod,
+      List<Pose2d> redPoses,
+      List<Pose2d> bluePoses,
+      Distance targetDistance,
+      Distance lateralTarget,
+      PhotonCamera highCamera,
+      boolean allowScoreWithoutTag,
+      Color ledColor) {
+
+    var driveToReef = new DriveToNearestPose(drivetrain, () -> drivetrain.getState().Pose, redPoses, bluePoses);
+    var alignToReef = new AlignToReefCommand(
+        drivetrain,
+        alignmentSubsystem,
+        targetDistance,
+        lateralTarget,
+        highCamera,
+        allowScoreWithoutTag);
+
+    return ledSubsystem.runPatternAsCommand(
+        ledSegments(
+            ledColor,
+              // segment order is bottom up
+              armSubsystem::isElevatorAtPosition,
+              armSubsystem::isArmAtAngle,
+              alignToReef::atDistanceGoal,
+              alignToReef::atLateralGoal,
+              alignToReef::atThetaGoal))
+        .withDeadline(
+            parallel(
+                armSubsystem.run(armMethod).until(armSubsystem::isAtPosition),
+                  driveToReef.andThen(alignToReef),
+                  gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::activeHoldCoral))
+                .andThen(armSubsystem.run(armMethod))
+                .andThen(waitSeconds(0.2))
+                .andThen(
+                    armSubsystem.run(armMethod)
+                        .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectCoral))
                         .until(() -> !armSubsystem.hasCoral())))
         .finallyDo(() -> ledSubsystem.runPattern(LEDPattern.kOff))
         .finallyDo(armSubsystem::stop);
