@@ -239,7 +239,7 @@ public class Constants {
 
     public static final Distance ELEVATOR_INTAKE_POSITION = Meters.of(0);
     public static final Distance LEVEL_2_HEIGHT = Meters.of(0.62);
-    public static final Distance LEVEL_3_HEIGHT = Meters.of(0);
+    public static final Distance LEVEL_3_HEIGHT = Meters.of(0.04);
     public static final Distance LEVEL_4_HEIGHT = Meters.of(0.685);
     public static final Distance ALGAE_LOWER_HEIGHT = Meters.of(0.0);
     public static final Distance ALGAE_UPPER_HEIGHT = Meters.of(0.25);
@@ -334,7 +334,7 @@ public class Constants {
     /** Pose of the robot relative to a reef branch for scoring coral on L3 */
     public static final Transform2d RELATIVE_SCORING_POSE_CORAL_L3 = new Transform2d(
         inchesToMeters(-40),
-        inchesToMeters(12),
+        inchesToMeters(8),
         Rotation2d.fromDegrees(-90));
 
     // spotless:off

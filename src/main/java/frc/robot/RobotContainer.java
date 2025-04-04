@@ -302,7 +302,8 @@ public class RobotContainer {
 
     controlBindings.scoreCoralLeft()
         .ifPresent(
-            trigger -> trigger.and(scoreChooser::isLevel3Selected).whileTrue(autoCommands.scoreCoralLevel3Left(false)));
+            trigger -> trigger.and(scoreChooser::isLevel3Selected)
+                .whileTrue(autoCommands.scoreCoralLevel3LeftTeleop(false)));
 
     controlBindings.scoreCoralLeft()
         .ifPresent(
@@ -318,7 +319,7 @@ public class RobotContainer {
     controlBindings.scoreCoralRight()
         .ifPresent(
             trigger -> trigger.and(scoreChooser::isLevel3Selected)
-                .whileTrue(autoCommands.scoreCoralLevel3Right(false)));
+                .whileTrue(autoCommands.scoreCoralLevel3RightTeleop(false)));
 
     controlBindings.scoreCoralRight()
         .ifPresent(
