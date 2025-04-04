@@ -239,7 +239,7 @@ public class Constants {
     public static final Distance ELEVATOR_INTAKE_POSITION = Meters.of(0);
     public static final Distance LEVEL_2_HEIGHT = Meters.of(0.62);
     public static final Distance LEVEL_3_HEIGHT = Meters.of(0);
-    public static final Distance LEVEL_4_HEIGHT = Meters.of(0.675);
+    public static final Distance LEVEL_4_HEIGHT = Meters.of(0.685);
     public static final Distance ALGAE_LOWER_HEIGHT = Meters.of(0.0);
     public static final Distance ALGAE_UPPER_HEIGHT = Meters.of(0.25);
     public static final Distance ALGAE_BARGE_HEIGHT = Meters.of(0.727);
@@ -305,8 +305,8 @@ public class Constants {
     public static final int DEVICE_ID_FRONT_CANRANGE = 38;
     public static final int DEVICE_ID_BACK_CANRANGE = 39;
 
-    public static final LinearVelocity MAX_ALIGN_TRANSLATION_VELOCITY = MetersPerSecond.of(0.5);
-    public static final LinearAcceleration MAX_ALIGN_TRANSLATION_ACCELERATION = MetersPerSecondPerSecond.of(0.5);
+    public static final LinearVelocity MAX_ALIGN_TRANSLATION_VELOCITY = MetersPerSecond.of(1);
+    public static final LinearAcceleration MAX_ALIGN_TRANSLATION_ACCELERATION = MetersPerSecondPerSecond.of(1);
     public static final AngularVelocity MAX_ALIGN_ANGULAR_VELOCITY = MAX_TELEOP_ANGULAR_VELOCITY.times(0.75);
     public static final AngularAcceleration MAX_ALIGN_ANGULAR_ACCELERATION = RadiansPerSecondPerSecond
         .of(6.0 * Math.PI);
@@ -394,7 +394,7 @@ public class Constants {
               new Pose2d(12.958666, 4.585500, Rotation2d.fromDegrees(-60)))// 11
         .collect(toUnmodifiableList());
 
-    public static final Distance DISTANCE_TARGET_L4 = Meters.of(0.34);
+    public static final Distance DISTANCE_TARGET_L4 = Meters.of(0.355);
     public static final Distance DISTANCE_TARGET_L3 = Meters.of(0.34);
 
     public static final Distance LATERAL_TARGET_L3_LEFT = Meters.of(0.05);
