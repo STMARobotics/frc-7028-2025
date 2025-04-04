@@ -447,7 +447,7 @@ public class Constants {
         .collect(toUnmodifiableList());
 
     public static final Distance DISTANCE_TARGET_L4 = Meters.of(0.355);
-    public static final Distance DISTANCE_TARGET_L3 = Meters.of(0.355);
+    public static final Distance DISTANCE_TARGET_L3 = Meters.of(0.34);
 
     public static final Distance LATERAL_TARGET_L3_LEFT = Meters.of(0.05);
     public static final Distance LATERAL_TARGET_L3_RIGHT = Meters.of(0.02);
