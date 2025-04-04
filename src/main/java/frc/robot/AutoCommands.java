@@ -276,12 +276,12 @@ public class AutoCommands {
               alignToReef::atLateralGoal,
               alignToReef::atThetaGoal))
         .withDeadline(
-            parallel(
-                armSubsystem.run(armMethod).until(armSubsystem::isAtPosition),
-                  driveToReef.andThen(alignToReef),
-                  gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::activeHoldCoral))
-                .andThen(armSubsystem.run(armMethod))
-                .andThen(waitSeconds(0.2))
+            gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::activeHoldCoral)
+                .withDeadline(
+                    parallel(
+                        armSubsystem.run(armMethod).until(armSubsystem::isAtPosition),
+                          driveToReef.andThen(alignToReef))
+                        .andThen(armSubsystem.run(armMethod).withTimeout(0.2)))
                 .andThen(
                     armSubsystem.run(armMethod)
                         .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectCoral))
