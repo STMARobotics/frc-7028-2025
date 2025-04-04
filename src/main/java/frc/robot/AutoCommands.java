@@ -306,7 +306,11 @@ public class AutoCommands {
               alignToReef::atThetaGoal))
         .withDeadline(
             parallel(armSubsystem.run(armMethod).until(armSubsystem::isAtPosition), driveToReef.andThen(alignToReef))
-                .andThen(parallel(driveCommand, armSubsystem.run(armMethod)))
+                .andThen(
+                    parallel(
+                        driveCommand,
+                          armSubsystem.run(armMethod),
+                          ledSubsystem.runPatternAsCommand(LEDPattern.solid(Color.kGreen))))
                 .finallyDo(() -> ledSubsystem.runPattern(LEDPattern.kOff)))
         .finallyDo(armSubsystem::stop);
   }
