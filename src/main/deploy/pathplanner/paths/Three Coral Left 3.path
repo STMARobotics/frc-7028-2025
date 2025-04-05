@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.4725171232876713,
-        "y": 7.413291952054794
+        "x": 1.6049512987012986,
+        "y": 7.358360389610389
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.620016674340886,
-        "y": 6.240269453341895
+        "x": 2.7524508497545135,
+        "y": 6.18533789089749
       },
       "isLocked": false,
-      "linkedName": "ThreeCoralLeftPickup2"
+      "linkedName": "ThreeCoralLeftPickup1"
     },
     {
       "anchor": {
