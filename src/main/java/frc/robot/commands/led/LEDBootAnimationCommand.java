@@ -34,7 +34,7 @@ public class LEDBootAnimationCommand extends Command {
 
   @Override
   public void execute() {
-    if (timer.advanceIfElapsed(0.05) || !initialized) {
+    if (timer.advanceIfElapsed(0.04) || !initialized) {
       if (!initialized) {
         ledSubsystem.runPattern(LEDPattern.kOff);
         initialized = true;

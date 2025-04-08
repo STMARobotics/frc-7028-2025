@@ -58,10 +58,13 @@ import static frc.robot.Constants.ArmConstants.ELEVATOR_SUPPLY_CURRENT_LIMIT;
 import static frc.robot.Constants.ArmConstants.ELEVATOR_TOP_LIMIT;
 import static frc.robot.Constants.ArmConstants.LEVEL_2_ANGLE;
 import static frc.robot.Constants.ArmConstants.LEVEL_2_HEIGHT;
-import static frc.robot.Constants.ArmConstants.LEVEL_3_ANGLE;
+import static frc.robot.Constants.ArmConstants.LEVEL_3_ANGLE_ALIGN;
+import static frc.robot.Constants.ArmConstants.LEVEL_3_ANGLE_RELEASE;
 import static frc.robot.Constants.ArmConstants.LEVEL_3_HEIGHT;
-import static frc.robot.Constants.ArmConstants.LEVEL_4_ANGLE;
+import static frc.robot.Constants.ArmConstants.LEVEL_4_ANGLE_ALIGN;
+import static frc.robot.Constants.ArmConstants.LEVEL_4_ANGLE_RELEASE;
 import static frc.robot.Constants.ArmConstants.LEVEL_4_HEIGHT;
+import static frc.robot.Constants.ArmConstants.LEVEL_4_HEIGHT_RELEASE;
 import static frc.robot.Constants.CANIVORE_BUS_NAME;
 
 import com.ctre.phoenix6.BaseStatusSignal;
@@ -412,15 +415,31 @@ public class ArmSubsystem extends SubsystemBase {
   /**
    * Moves to level 3 position
    */
-  public void moveToLevel3() {
-    moveToPosition(LEVEL_3_HEIGHT, LEVEL_3_ANGLE);
+  public void moveToLevel3Align() {
+    moveToPosition(LEVEL_3_HEIGHT, LEVEL_3_ANGLE_ALIGN);
   }
 
   /**
-   * Moves to level 4 position
+   * Moves to level 4 position for release. This is closer to the branch top, to improve manual alignment and score
+   * rate.
    */
-  public void moveToLevel4() {
-    moveToPosition(LEVEL_4_HEIGHT, LEVEL_4_ANGLE);
+  public void moveToLevel3Release() {
+    moveToPosition(LEVEL_3_HEIGHT, LEVEL_3_ANGLE_RELEASE);
+  }
+
+  /**
+   * Moves to level 4 position to use while aligning. This is slightly above the branch top, so it doesn't hit.
+   */
+  public void moveToLevel4Align() {
+    moveToPosition(LEVEL_4_HEIGHT, LEVEL_4_ANGLE_ALIGN);
+  }
+
+  /**
+   * Moves to level 4 position for release. This is closer to the branch top, to improve manual alignment and score
+   * rate.
+   */
+  public void moveToLevel4Release() {
+    moveToPosition(LEVEL_4_HEIGHT_RELEASE, LEVEL_4_ANGLE_RELEASE);
   }
 
   /**

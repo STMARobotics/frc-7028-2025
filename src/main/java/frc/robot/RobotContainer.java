@@ -223,14 +223,14 @@ public class RobotContainer {
     controlBindings.moveArmToReefLevel3()
         .ifPresent(
             trigger -> trigger.toggleOnTrue(
-                armSubsystem.run(armSubsystem::moveToLevel3)
+                armSubsystem.run(armSubsystem::moveToLevel3Align)
                     .alongWith(makeSlowModeCommand())
                     .alongWith(ledSubsystem.runPatternAsCommand(solid(kOrange)))
                     .finallyDo(armSubsystem::stop)));
     controlBindings.moveArmToReefLevel4()
         .ifPresent(
             trigger -> trigger.toggleOnTrue(
-                armSubsystem.run(armSubsystem::moveToLevel4)
+                armSubsystem.run(armSubsystem::moveToLevel4Release)
                     .alongWith(makeSlowModeCommand())
                     .alongWith(ledSubsystem.runPatternAsCommand(solid(kBlue)))
                     .finallyDo(armSubsystem::stop)));
@@ -303,7 +303,7 @@ public class RobotContainer {
     controlBindings.scoreCoralLeft()
         .ifPresent(
             trigger -> trigger.and(scoreChooser::isLevel3Selected)
-                .whileTrue(autoCommands.scoreCoralLevel3LeftTeleop(false)));
+                .whileTrue(autoCommands.scoreCoralLevel3LeftTeleop()));
 
     controlBindings.scoreCoralLeft()
         .ifPresent(
@@ -319,7 +319,7 @@ public class RobotContainer {
     controlBindings.scoreCoralRight()
         .ifPresent(
             trigger -> trigger.and(scoreChooser::isLevel3Selected)
-                .whileTrue(autoCommands.scoreCoralLevel3RightTeleop(false)));
+                .whileTrue(autoCommands.scoreCoralLevel3RightTeleop()));
 
     controlBindings.scoreCoralRight()
         .ifPresent(

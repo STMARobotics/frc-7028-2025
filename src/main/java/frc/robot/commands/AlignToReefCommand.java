@@ -89,7 +89,6 @@ public class AlignToReefCommand extends Command {
   private final double tagLateralTarget;
   private boolean sawTag = false;
   private boolean wasThetaAtGoal = false;
-  private boolean wasLateralAtGoal = false;
 
   /**
    * Constructs a new command
@@ -134,7 +133,6 @@ public class AlignToReefCommand extends Command {
     var averageDistance = (frontDistance + backDistance) / 2;
 
     wasThetaAtGoal = false;
-    wasLateralAtGoal = false;
 
     thetaController.reset(theta);
     distanceController.reset(averageDistance);
@@ -145,7 +143,6 @@ public class AlignToReefCommand extends Command {
   @Override
   public void execute() {
     boolean isThetaAtGoal = false;
-    boolean isLateralAtGoal = false;
 
     // Note: The robot is rotated 90 degrees, so robot Y is distance and X is lateral
     var frontDistance = alignmentSubsystem.getFrontDistance().in(Meters);
@@ -176,7 +173,6 @@ public class AlignToReefCommand extends Command {
         }
         var lateralCorrection = lateralController.calculate(tagY);
         if (lateralController.atGoal()) {
-          isLateralAtGoal = true;
           lateralCorrection = 0;
         }
         robotCentricRequest.withVelocityX(lateralCorrection);
@@ -185,9 +181,8 @@ public class AlignToReefCommand extends Command {
       }
 
       wasThetaAtGoal = isThetaAtGoal || wasThetaAtGoal;
-      wasLateralAtGoal = isLateralAtGoal || wasLateralAtGoal;
       var distanceCorrection = -distanceController.calculate(averageDistance);
-      if (distanceController.atGoal() || !wasThetaAtGoal || !wasLateralAtGoal) {
+      if (distanceController.atGoal() || !wasThetaAtGoal) {
         distanceCorrection = 0;
       }
 

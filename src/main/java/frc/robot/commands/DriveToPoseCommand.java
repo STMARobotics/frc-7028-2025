@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
+import static edu.wpi.first.wpilibj.LEDPattern.kOff;
 import static frc.robot.Constants.DriveToPoseConstants.MAX_DRIVE_TO_POSE_ANGULAR_ACCELERATION;
 import static frc.robot.Constants.DriveToPoseConstants.MAX_DRIVE_TO_POSE_ANGULAR_VELOCITY;
 import static frc.robot.Constants.DriveToPoseConstants.MAX_DRIVE_TO_POSE_TRANSLATION_ACCELERATION;
@@ -21,6 +22,7 @@ import static frc.robot.Constants.DriveToPoseConstants.X_kP;
 import static frc.robot.Constants.DriveToPoseConstants.Y_kD;
 import static frc.robot.Constants.DriveToPoseConstants.Y_kI;
 import static frc.robot.Constants.DriveToPoseConstants.Y_kP;
+import static frc.robot.subsystems.LEDSubsystem.ledSegments;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
@@ -32,14 +34,19 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.LEDSubsystem;
 import java.util.function.Supplier;
 
 /**
  * Command to drive to a pose.
  */
 public class DriveToPoseCommand extends Command {
+  private final CommandSwerveDrivetrain drivetrainSubsystem;
+  private final LEDSubsystem ledSubsystem;
+  private final Color ledColor;
 
   private static final Distance TRANSLATION_TOLERANCE = Inches.of(2.0);
   private static final Angle THETA_TOLERANCE = Degrees.of(3.0);
@@ -55,7 +62,6 @@ public class DriveToPoseCommand extends Command {
   private final ProfiledPIDController yController;
   private final ProfiledPIDController thetaController;
 
-  private final CommandSwerveDrivetrain drivetrainSubsystem;
   private final FieldCentric fieldCentricSwerveRequest = new FieldCentric()
       .withSteerRequestType(SteerRequestType.MotionMagicExpo)
       .withDriveRequestType(DriveRequestType.Velocity)
@@ -66,28 +72,38 @@ public class DriveToPoseCommand extends Command {
    * Constructs a DriveToPoseCommand
    * 
    * @param drivetrainSubsystem drivetrain subsystem
+   * @param ledSubsystem LED subsystem
    * @param goalPose goal pose to drive to
    */
-  public DriveToPoseCommand(CommandSwerveDrivetrain drivetrainSubsystem, Supplier<Pose2d> poseProvider) {
-    this(drivetrainSubsystem, poseProvider, DEFAULT_XY_CONSTRAINTS, DEFAULT_OMEGA_CONSTRAINTS);
+  public DriveToPoseCommand(
+      CommandSwerveDrivetrain drivetrainSubsystem,
+      LEDSubsystem ledSubsystem,
+      Color ledColor,
+      Supplier<Pose2d> poseProvider) {
+    this(drivetrainSubsystem, ledSubsystem, ledColor, poseProvider, DEFAULT_XY_CONSTRAINTS, DEFAULT_OMEGA_CONSTRAINTS);
   }
 
   /**
    * Constructs a DriveToPoseCommand with specific motion profile constraints
    * 
    * @param drivetrainSubsystem drivetrain subsystem
+   * @param ledSubsystem LED subsystem
    * @param poseProvider provider to call to get the robot pose
    * @param translationConstraints translation motion profile constraints
    * @param omegaConstraints rotation motion profile constraints
    */
   public DriveToPoseCommand(
       CommandSwerveDrivetrain drivetrainSubsystem,
+      LEDSubsystem ledSubsystem,
+      Color ledColor,
       Supplier<Pose2d> poseProvider,
       TrapezoidProfile.Constraints translationConstraints,
       TrapezoidProfile.Constraints omegaConstraints) {
 
     this.drivetrainSubsystem = drivetrainSubsystem;
+    this.ledSubsystem = ledSubsystem;
     this.poseProvider = poseProvider;
+    this.ledColor = ledColor;
 
     xController = new ProfiledPIDController(X_kP, X_kI, X_kD, translationConstraints);
     xController.setTolerance(TRANSLATION_TOLERANCE.in(Meters));
@@ -99,7 +115,7 @@ public class DriveToPoseCommand extends Command {
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
     thetaController.setTolerance(THETA_TOLERANCE.in(Radians));
 
-    addRequirements(drivetrainSubsystem);
+    addRequirements(drivetrainSubsystem, ledSubsystem);
   }
 
   /**
@@ -119,6 +135,7 @@ public class DriveToPoseCommand extends Command {
     thetaController.reset(robotPose.getRotation().getRadians());
     xController.reset(robotPose.getX());
     yController.reset(robotPose.getY());
+    ledSubsystem.runPattern(kOff);
   }
 
   @Override
@@ -142,6 +159,8 @@ public class DriveToPoseCommand extends Command {
 
     drivetrainSubsystem.setControl(
         fieldCentricSwerveRequest.withVelocityX(xSpeed).withVelocityY(ySpeed).withRotationalRate(omegaSpeed));
+
+    ledSubsystem.runPattern(ledSegments(ledColor, xController::atGoal, yController::atGoal, thetaController::atGoal));
   }
 
   @Override
@@ -152,6 +171,7 @@ public class DriveToPoseCommand extends Command {
   @Override
   public void end(boolean interrupted) {
     drivetrainSubsystem.setControl(new SwerveRequest.Idle());
+    ledSubsystem.runPattern(kOff);
   }
 
 }

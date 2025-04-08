@@ -1,11 +1,9 @@
 package frc.robot;
 
 import static edu.wpi.first.wpilibj.LEDPattern.kOff;
-import static edu.wpi.first.wpilibj.LEDPattern.solid;
 import static edu.wpi.first.wpilibj.util.Color.*;
 import static edu.wpi.first.wpilibj2.command.Commands.parallel;
 import static edu.wpi.first.wpilibj2.command.Commands.run;
-import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 import static frc.robot.Constants.AlignmentConstants.DISTANCE_TARGET_L3;
 import static frc.robot.Constants.AlignmentConstants.DISTANCE_TARGET_L4;
 import static frc.robot.Constants.AlignmentConstants.LATERAL_TARGET_L3_LEFT;
@@ -49,7 +47,7 @@ public class AutoCommands {
   private final ArmSubsystem armSubsystem;
   private final IndexerSubsystem indexerSubsystem;
   private final AlignmentSubsystem alignmentSubsystem;
-  private final GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem;
+  private final GamePieceManipulatorSubsystem gamePieceSubsystem;
   private final LEDSubsystem ledSubsystem;
   private final PhotonCamera highCameraForLeft;
   private final PhotonCamera highCameraForRight;
@@ -81,7 +79,7 @@ public class AutoCommands {
     this.armSubsystem = armSubsystem;
     this.indexerSubsystem = indexerSubsystem;
     this.alignmentSubsystem = alignmentSubsystem;
-    this.gamePieceManipulatorSubsystem = gamePieceManipulatorSubsystem;
+    this.gamePieceSubsystem = gamePieceManipulatorSubsystem;
     this.ledSubsystem = ledSubsystem;
     this.highCameraForLeft = highCameraForLeft;
     this.highCameraForRight = highCameraForRight;
@@ -93,7 +91,7 @@ public class AutoCommands {
    * @return new command
    */
   public Command intakeCoral() {
-    return new IntakeCoralCommand(indexerSubsystem, gamePieceManipulatorSubsystem, armSubsystem, ledSubsystem);
+    return new IntakeCoralCommand(indexerSubsystem, gamePieceSubsystem, armSubsystem, ledSubsystem);
   }
 
   /**
@@ -102,12 +100,7 @@ public class AutoCommands {
    * @return new command
    */
   public Command holdCoral() {
-    return new HoldCoralCommand(
-        indexerSubsystem,
-        gamePieceManipulatorSubsystem,
-        armSubsystem,
-        ledSubsystem,
-        () -> false);
+    return new HoldCoralCommand(indexerSubsystem, gamePieceSubsystem, armSubsystem, ledSubsystem, () -> false);
   }
 
   /**
@@ -118,10 +111,10 @@ public class AutoCommands {
   public Command holdAlgae() {
     return run(() -> {
       armSubsystem.moveToHoldAlgae();
-      gamePieceManipulatorSubsystem.activeHoldAlgae();
-    }, armSubsystem, gamePieceManipulatorSubsystem).finallyDo(() -> {
+      gamePieceSubsystem.activeHoldAlgae();
+    }, armSubsystem, gamePieceSubsystem).finallyDo(() -> {
       armSubsystem.stop();
-      gamePieceManipulatorSubsystem.stop();
+      gamePieceSubsystem.stop();
     });
   }
 
@@ -133,12 +126,7 @@ public class AutoCommands {
    * @return new command
    */
   public Command holdCoral(BooleanSupplier parkForLevel1) {
-    return new HoldCoralCommand(
-        indexerSubsystem,
-        gamePieceManipulatorSubsystem,
-        armSubsystem,
-        ledSubsystem,
-        parkForLevel1);
+    return new HoldCoralCommand(indexerSubsystem, gamePieceSubsystem, armSubsystem, ledSubsystem, parkForLevel1);
   }
 
   /**
@@ -149,7 +137,8 @@ public class AutoCommands {
    */
   public Command scoreCoralLevel4Left(boolean allowScoreWithoutTag) {
     return autoScoreCoral(
-        armSubsystem::moveToLevel4,
+        armSubsystem::moveToLevel4Align,
+          armSubsystem::moveToLevel4Release,
           DISTANCE_TARGET_L4,
           LATERAL_TARGET_L4_LEFT,
           highCameraForLeft,
@@ -165,7 +154,8 @@ public class AutoCommands {
    */
   public Command scoreCoralLevel4Right(boolean allowScoreWithoutTag) {
     return autoScoreCoral(
-        armSubsystem::moveToLevel4,
+        armSubsystem::moveToLevel4Align,
+          armSubsystem::moveToLevel4Release,
           DISTANCE_TARGET_L4,
           LATERAL_TARGET_L4_RIGHT,
           highCameraForRight,
@@ -176,119 +166,85 @@ public class AutoCommands {
   /**
    * Creates a command that will auto align and score on the left side of level 3
    * 
-   * @param allowScoreWithoutTag true to allow scoring if the apriltag was never seen, otherwise false
    * @return new command
    */
-  public Command scoreCoralLevel3LeftTeleop(boolean allowScoreWithoutTag) {
-    return autoScoreCoralTeleop(
-        armSubsystem::moveToLevel3,
+  public Command scoreCoralLevel3LeftTeleop() {
+    return driveToReefAndAutoScoreCoral(
+        armSubsystem::moveToLevel3Align,
+          armSubsystem::moveToLevel3Release,
           REEF_L3_SCORE_POSES_RED_LEFT,
           REEF_L3_SCORE_POSES_BLUE_LEFT,
           DISTANCE_TARGET_L3,
           LATERAL_TARGET_L3_LEFT,
           highCameraForLeft,
-          allowScoreWithoutTag,
           kOrange);
   }
 
   /**
    * Creates a command that will auto align and score on the right side of level 3
    * 
-   * @param allowScoreWithoutTag true to allow scoring if the apriltag was never seen, otherwise false
    * @return new command
    */
-  public Command scoreCoralLevel3RightTeleop(boolean allowScoreWithoutTag) {
-    return autoScoreCoralTeleop(
-        armSubsystem::moveToLevel3,
+  public Command scoreCoralLevel3RightTeleop() {
+    return driveToReefAndAutoScoreCoral(
+        armSubsystem::moveToLevel3Align,
+          armSubsystem::moveToLevel3Release,
           REEF_L3_SCORE_POSES_RED_RIGHT,
           REEF_L3_SCORE_POSES_BLUE_RIGHT,
           DISTANCE_TARGET_L3,
           LATERAL_TARGET_L3_RIGHT,
           highCameraForRight,
-          allowScoreWithoutTag,
           kBlue);
   }
 
   private Command autoScoreCoral(
       Runnable armMethod,
+      Runnable armMethodRelease,
       Distance targetDistance,
       Distance lateralTarget,
       PhotonCamera highCamera,
       boolean allowScoreWithoutTag,
       Color ledColor) {
-    var alignToReef = new AlignToReefCommand(
-        drivetrain,
-        alignmentSubsystem,
-        targetDistance,
-        lateralTarget,
-        highCamera,
-        allowScoreWithoutTag);
 
-    return ledSubsystem.runPatternAsCommand(
-        ledSegments(
-            ledColor,
-              // segment order is bottom up
-              armSubsystem::isElevatorAtPosition,
-              armSubsystem::isArmAtAngle,
-              alignToReef::atDistanceGoal,
-              alignToReef::atLateralGoal,
-              alignToReef::atThetaGoal))
+    var alignToReef = alignToReef(targetDistance, lateralTarget, highCamera, allowScoreWithoutTag);
+    var ledCommand = ledAlignCommand(ledColor, alignToReef);
+
+    return ledCommand
         .withDeadline(
-            armSubsystem.run(armMethod)
-                .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::activeHoldCoral))
-                .until(armSubsystem::isAtPosition)
-                .alongWith(alignToReef)
-                .andThen(waitSeconds(0.2))
+            gamePieceSubsystem.run(gamePieceSubsystem::activeHoldCoral)
+                .withDeadline(
+                    parallel(armSubsystem.run(armMethod).until(armSubsystem::isAtPosition), alignToReef)
+                        .andThen(armSubsystem.run(armMethodRelease).withTimeout(0.2)))
                 .andThen(
-                    armSubsystem.run(armMethod)
-                        .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectCoral))
-                        .alongWith(indexerSubsystem.run(indexerSubsystem::eject))
+                    parallel(armSubsystem.run(armMethodRelease), gamePieceSubsystem.run(gamePieceSubsystem::ejectCoral))
                         .until(() -> !armSubsystem.hasCoral())))
-        .finallyDo(() -> ledSubsystem.runPattern(kOff))
-        .finallyDo(armSubsystem::stop);
+        .finallyDo(armSubsystem::stop)
+        .finallyDo(gamePieceSubsystem::stop);
   }
 
-  private Command autoScoreCoralTeleop(
+  private Command driveToReefAndAutoScoreCoral(
       Runnable armMethod,
+      Runnable armMethodRelease,
       List<Pose2d> redPoses,
       List<Pose2d> bluePoses,
       Distance targetDistance,
       Distance lateralTarget,
       PhotonCamera highCamera,
-      boolean allowScoreWithoutTag,
       Color ledColor) {
 
-    var driveToReef = new DriveToNearestPose(drivetrain, () -> drivetrain.getState().Pose, redPoses, bluePoses);
-    var alignToReef = new AlignToReefCommand(
-        drivetrain,
-        alignmentSubsystem,
-        targetDistance,
-        lateralTarget,
-        highCamera,
-        allowScoreWithoutTag);
+    var driveToReef = driveToReef(ledColor, redPoses, bluePoses);
+    var autoScoreCommand = autoScoreCoral(
+        armMethod,
+          armMethodRelease,
+          targetDistance,
+          lateralTarget,
+          highCamera,
+          false,
+          ledColor);
 
-    return ledSubsystem.runPatternAsCommand(
-        ledSegments(
-            ledColor,
-              // segment order is bottom up
-              armSubsystem::isElevatorAtPosition,
-              armSubsystem::isArmAtAngle,
-              alignToReef::atDistanceGoal,
-              alignToReef::atLateralGoal,
-              alignToReef::atThetaGoal))
-        .withDeadline(
-            gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::activeHoldCoral)
-                .withDeadline(
-                    parallel(
-                        armSubsystem.run(armMethod).until(armSubsystem::isAtPosition),
-                          driveToReef.andThen(alignToReef))
-                        .andThen(armSubsystem.run(armMethod).withTimeout(0.2)))
-                .andThen(
-                    armSubsystem.run(armMethod)
-                        .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectCoral))
-                        .until(() -> !armSubsystem.hasCoral())))
-        .finallyDo(() -> ledSubsystem.runPattern(kOff))
-        .finallyDo(armSubsystem::stop);
+    return parallel(gamePieceSubsystem.run(gamePieceSubsystem::activeHoldCoral), armSubsystem.run(armMethod))
+        .withDeadline(driveToReef)
+        .andThen(autoScoreCommand);
   }
 
   /**
@@ -299,8 +255,9 @@ public class AutoCommands {
    * @return new command
    */
   public Command autoAlignCoralLevel4Left(Command driveCommand) {
-    return autoAlignCoral(
-        armSubsystem::moveToLevel4,
+    return driveToReefAndAlignCoral(
+        armSubsystem::moveToLevel4Align,
+          armSubsystem::moveToLevel4Release,
           REEF_L4_SCORE_POSES_RED_LEFT,
           REEF_L4_SCORE_POSES_BLUE_LEFT,
           DISTANCE_TARGET_L4,
@@ -318,8 +275,9 @@ public class AutoCommands {
    * @return new command
    */
   public Command autoAlignCoralLevel4Right(Command driveCommand) {
-    return autoAlignCoral(
-        armSubsystem::moveToLevel4,
+    return driveToReefAndAlignCoral(
+        armSubsystem::moveToLevel4Align,
+          armSubsystem::moveToLevel4Release,
           REEF_L4_SCORE_POSES_RED_RIGHT,
           REEF_L4_SCORE_POSES_BLUE_RIGHT,
           DISTANCE_TARGET_L4,
@@ -329,8 +287,9 @@ public class AutoCommands {
           driveCommand);
   }
 
-  private Command autoAlignCoral(
+  private Command driveToReefAndAlignCoral(
       Runnable armMethod,
+      Runnable armMethodRelease,
       List<Pose2d> redPoses,
       List<Pose2d> bluePoses,
       Distance targetDistance,
@@ -338,31 +297,54 @@ public class AutoCommands {
       PhotonCamera highCamera,
       Color ledColor,
       Command driveCommand) {
-    var driveToReef = new DriveToNearestPose(drivetrain, () -> drivetrain.getState().Pose, redPoses, bluePoses);
-    var alignToReef = new AlignToReefCommand(
+
+    var driveToReef = driveToReef(ledColor, redPoses, bluePoses);
+    var alignToReef = alignToReef(targetDistance, lateralTarget, highCamera, true);
+    var ledCommand = ledAlignCommand(ledColor, alignToReef);
+
+    return armSubsystem.run(armMethod)
+        .withDeadline(driveToReef)
+        .andThen(
+            ledCommand.withDeadline(
+                parallel(armSubsystem.run(armMethod).until(armSubsystem::isAtPosition), alignToReef)
+                    .andThen(parallel(armSubsystem.run(armMethodRelease), driveCommand))))
+        .finallyDo(armSubsystem::stop);
+  }
+
+  private Command ledAlignCommand(Color ledColor, AlignToReefCommand alignToReef) {
+    return ledSubsystem.runPatternAsCommand(
+        ledSegments(
+            ledColor,
+              // segment order is bottom up
+              armSubsystem::isElevatorAtPosition,
+              armSubsystem::isArmAtAngle,
+              alignToReef::atDistanceGoal,
+              alignToReef::atLateralGoal,
+              alignToReef::atThetaGoal))
+        .finallyDo(() -> ledSubsystem.runPattern(kOff));
+  }
+
+  private AlignToReefCommand alignToReef(
+      Distance targetDistance,
+      Distance lateralTarget,
+      PhotonCamera highCamera,
+      boolean allowScoreWithoutTag) {
+    return new AlignToReefCommand(
         drivetrain,
         alignmentSubsystem,
         targetDistance,
         lateralTarget,
         highCamera,
-        true);
+        allowScoreWithoutTag);
+  }
 
-    return parallel(ledSubsystem.runPatternAsCommand(solid(kGreenYellow)), armSubsystem.run(armMethod))
-        .withDeadline(driveToReef)
-        .andThen(
-            ledSubsystem.runPatternAsCommand(
-                ledSegments(
-                    ledColor,
-                      // segment order is bottom up
-                      armSubsystem::isElevatorAtPosition,
-                      armSubsystem::isArmAtAngle,
-                      alignToReef::atDistanceGoal,
-                      alignToReef::atLateralGoal,
-                      alignToReef::atThetaGoal))
-                .withDeadline(
-                    parallel(armSubsystem.run(armMethod).until(armSubsystem::isAtPosition), alignToReef)
-                        .andThen(parallel(armSubsystem.run(armMethod), driveCommand)))
-                .finallyDo(() -> ledSubsystem.runPattern(kOff)))
-        .finallyDo(armSubsystem::stop);
+  private Command driveToReef(Color baseLedColor, List<Pose2d> redPoses, List<Pose2d> bluePoses) {
+    return new DriveToNearestPose(
+        drivetrain,
+        ledSubsystem,
+        lerpRGB(baseLedColor, kWhite, 0.25),
+        () -> drivetrain.getState().Pose,
+        redPoses,
+        bluePoses);
   }
 }
