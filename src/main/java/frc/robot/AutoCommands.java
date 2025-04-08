@@ -1,5 +1,7 @@
 package frc.robot;
 
+import static edu.wpi.first.wpilibj.LEDPattern.kOff;
+import static edu.wpi.first.wpilibj.LEDPattern.solid;
 import static edu.wpi.first.wpilibj.util.Color.*;
 import static edu.wpi.first.wpilibj2.command.Commands.parallel;
 import static edu.wpi.first.wpilibj2.command.Commands.run;
@@ -22,7 +24,6 @@ import static frc.robot.subsystems.LEDSubsystem.ledSegments;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.AlignToReefCommand;
@@ -243,7 +244,7 @@ public class AutoCommands {
                         .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectCoral))
                         .alongWith(indexerSubsystem.run(indexerSubsystem::eject))
                         .until(() -> !armSubsystem.hasCoral())))
-        .finallyDo(() -> ledSubsystem.runPattern(LEDPattern.kOff))
+        .finallyDo(() -> ledSubsystem.runPattern(kOff))
         .finallyDo(armSubsystem::stop);
   }
 
@@ -286,7 +287,7 @@ public class AutoCommands {
                     armSubsystem.run(armMethod)
                         .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::ejectCoral))
                         .until(() -> !armSubsystem.hasCoral())))
-        .finallyDo(() -> ledSubsystem.runPattern(LEDPattern.kOff))
+        .finallyDo(() -> ledSubsystem.runPattern(kOff))
         .finallyDo(armSubsystem::stop);
   }
 
@@ -346,19 +347,22 @@ public class AutoCommands {
         highCamera,
         true);
 
-    return ledSubsystem.runPatternAsCommand(
-        ledSegments(
-            ledColor,
-              // segment order is bottom up
-              armSubsystem::isElevatorAtPosition,
-              armSubsystem::isArmAtAngle,
-              alignToReef::atDistanceGoal,
-              alignToReef::atLateralGoal,
-              alignToReef::atThetaGoal))
-        .withDeadline(
-            parallel(armSubsystem.run(armMethod).until(armSubsystem::isAtPosition), driveToReef.andThen(alignToReef))
-                .andThen(parallel(driveCommand, armSubsystem.run(armMethod)))
-                .finallyDo(() -> ledSubsystem.runPattern(LEDPattern.kOff)))
+    return parallel(ledSubsystem.runPatternAsCommand(solid(kGreenYellow)), armSubsystem.run(armMethod))
+        .withDeadline(driveToReef)
+        .andThen(
+            ledSubsystem.runPatternAsCommand(
+                ledSegments(
+                    ledColor,
+                      // segment order is bottom up
+                      armSubsystem::isElevatorAtPosition,
+                      armSubsystem::isArmAtAngle,
+                      alignToReef::atDistanceGoal,
+                      alignToReef::atLateralGoal,
+                      alignToReef::atThetaGoal))
+                .withDeadline(
+                    parallel(armSubsystem.run(armMethod).until(armSubsystem::isAtPosition), alignToReef)
+                        .andThen(parallel(armSubsystem.run(armMethod), driveCommand)))
+                .finallyDo(() -> ledSubsystem.runPattern(kOff)))
         .finallyDo(armSubsystem::stop);
   }
 }
