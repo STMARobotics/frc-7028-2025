@@ -88,6 +88,8 @@ public class AlignToReefCommand extends Command {
   private final boolean allowScoreWithoutTag;
   private final double tagLateralTarget;
   private boolean sawTag = false;
+  private boolean wasThetaAtGoal = false;
+  private boolean wasLateralAtGoal = false;
 
   /**
    * Constructs a new command
@@ -131,22 +133,20 @@ public class AlignToReefCommand extends Command {
     var theta = backDistance - frontDistance;
     var averageDistance = (frontDistance + backDistance) / 2;
 
+    wasThetaAtGoal = false;
+    wasLateralAtGoal = false;
+
     thetaController.reset(theta);
     distanceController.reset(averageDistance);
     lateralController.reset(100);
     sawTag = false;
-
-    // If a tag is visible, set side-to-side goal
-    getTagY().ifPresent(tagY -> initLateralTag(tagY));
-  }
-
-  private void initLateralTag(double tagY) {
-    lateralController.reset(tagY);
-    sawTag = true;
   }
 
   @Override
   public void execute() {
+    boolean isThetaAtGoal = false;
+    boolean isLateralAtGoal = false;
+
     // Note: The robot is rotated 90 degrees, so robot Y is distance and X is lateral
     var frontDistance = alignmentSubsystem.getFrontDistance().in(Meters);
     var backDistance = alignmentSubsystem.getBackDistance().in(Meters);
@@ -161,25 +161,35 @@ public class AlignToReefCommand extends Command {
       // Strong distance sensor values, so try to align
       var thetaCorrection = thetaController.calculate(theta);
       if (thetaController.atGoal()) {
+        isThetaAtGoal = true;
         thetaCorrection = 0;
       }
-      var distanceCorrection = -distanceController.calculate(averageDistance);
-      if (distanceController.atGoal()) {
-        distanceCorrection = 0;
-      }
       // Look for an Apriltag to align laterally
-      getTagY().ifPresentOrElse(tagY -> {
-        if (!sawTag) {
-          // This is the first time a tag has been seen, set goal
-          initLateralTag(tagY);
-        }
+      var tagYOpt = getTagY();
+      if (tagYOpt.isPresent() && (isThetaAtGoal || wasThetaAtGoal)) {
         // Tag is visible, do alignment
+        var tagY = tagYOpt.get();
+        if (!sawTag || (isThetaAtGoal && !wasThetaAtGoal)) {
+          // This is the first time a tag has been seen, or theta just got aligned reset controller
+          lateralController.reset(tagY);
+          sawTag = true;
+        }
         var lateralCorrection = lateralController.calculate(tagY);
         if (lateralController.atGoal()) {
+          isLateralAtGoal = true;
           lateralCorrection = 0;
         }
         robotCentricRequest.withVelocityX(lateralCorrection);
-      }, () -> robotCentricRequest.withVelocityX(0));
+      } else {
+        robotCentricRequest.withVelocityX(0);
+      }
+
+      wasThetaAtGoal = isThetaAtGoal || wasThetaAtGoal;
+      wasLateralAtGoal = isLateralAtGoal || wasLateralAtGoal;
+      var distanceCorrection = -distanceController.calculate(averageDistance);
+      if (distanceController.atGoal() || !wasThetaAtGoal || !wasLateralAtGoal) {
+        distanceCorrection = 0;
+      }
 
       drivetrain.setControl(robotCentricRequest.withRotationalRate(thetaCorrection).withVelocityY(distanceCorrection));
     } else {

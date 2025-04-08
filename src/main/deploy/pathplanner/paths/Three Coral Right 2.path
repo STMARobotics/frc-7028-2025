@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.958476027397261,
-        "y": 2.6050727739726027
+        "x": 4.753125,
+        "y": 2.514391447368421
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.7694847994099145,
-        "y": 1.4633502769969495
+        "x": 3.564133772012654,
+        "y": 1.3726689503927676
       },
       "isLocked": false,
       "linkedName": "ThreeCoralRightScore1"

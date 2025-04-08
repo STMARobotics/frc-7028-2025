@@ -41,8 +41,8 @@ import java.util.function.Supplier;
  */
 public class DriveToPoseCommand extends Command {
 
-  private static final Distance TRANSLATION_TOLERANCE = Inches.of(0.5);
-  private static final Angle THETA_TOLERANCE = Degrees.of(1.0);
+  private static final Distance TRANSLATION_TOLERANCE = Inches.of(2.0);
+  private static final Angle THETA_TOLERANCE = Degrees.of(3.0);
 
   protected static final TrapezoidProfile.Constraints DEFAULT_XY_CONSTRAINTS = new TrapezoidProfile.Constraints(
       MAX_DRIVE_TO_POSE_TRANSLATION_VELOCITY.in(MetersPerSecond),
