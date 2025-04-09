@@ -22,8 +22,6 @@ import static frc.robot.Constants.ArmConstants.ALGAE_LOWER_ANGLE;
 import static frc.robot.Constants.ArmConstants.ALGAE_LOWER_HEIGHT;
 import static frc.robot.Constants.ArmConstants.ALGAE_UPPER_ANGLE;
 import static frc.robot.Constants.ArmConstants.ALGAE_UPPER_HEIGHT;
-import static frc.robot.Constants.ArmConstants.ARM_DANGER_MAX;
-import static frc.robot.Constants.ArmConstants.ARM_DANGER_MIN;
 import static frc.robot.Constants.ArmConstants.ARM_DANGER_TOLERANCE;
 import static frc.robot.Constants.ArmConstants.ARM_FORBIDDEN_ZONE_MAX;
 import static frc.robot.Constants.ArmConstants.ARM_FORBIDDEN_ZONE_MIN;
@@ -50,8 +48,6 @@ import static frc.robot.Constants.ArmConstants.ELEVATOR_MOTION_MAGIC_CONFIGS;
 import static frc.robot.Constants.ArmConstants.ELEVATOR_PARK_HEIGHT;
 import static frc.robot.Constants.ArmConstants.ELEVATOR_PARK_TOLERANCE;
 import static frc.robot.Constants.ArmConstants.ELEVATOR_POSITION_TOLERANCE;
-import static frc.robot.Constants.ArmConstants.ELEVATOR_SAFE_HEIGHT;
-import static frc.robot.Constants.ArmConstants.ELEVATOR_SAFE_TARGET;
 import static frc.robot.Constants.ArmConstants.ELEVATOR_SLOT_CONFIGS;
 import static frc.robot.Constants.ArmConstants.ELEVATOR_STATOR_CURRENT_LIMIT;
 import static frc.robot.Constants.ArmConstants.ELEVATOR_SUPPLY_CURRENT_LIMIT;
@@ -343,52 +339,17 @@ public class ArmSubsystem extends SubsystemBase {
           ARM_FORBIDDEN_ZONE_MIN,
           ARM_FORBIDDEN_ZONE_MAX);
 
-    // Next, try to prevent the arm from powering into the belt
-    // There is only a conflict when the arm has coral, but there's no way to know if that's the case
-    // It's also only a problem in certain areas of arm travel, but it would be complex to try to handle them
-    Distance elevatorHeightSetpoint = targetElevatorHeight;
+    armMotor.setControl(armControl.withPosition(calculatedTargetArmAngle));
 
-    // Normalize / wrap arm angle to 1 rotation
-    var targetRotations = normalizeArmAngle(calculatedTargetArmAngle);
-    if (targetRotations > normalizeArmAngle(ARM_DANGER_MIN) && targetRotations < normalizeArmAngle(ARM_DANGER_MAX)) {
-      // The arm target is in the danger zone where the coral hits the belt, move the elevator target up if it's too
-      // low
-      elevatorHeightSetpoint = elevatorHeightSetpoint.lt(ELEVATOR_SAFE_HEIGHT) ? ELEVATOR_SAFE_TARGET
-          : elevatorHeightSetpoint;
-    }
-
-    armControl.withPosition(calculatedTargetArmAngle);
+    // Handle parking the elevator
     ControlRequest heightControlRequest;
-    ControlRequest angleControlRequest;
-    if (isArmAtAngleDangerZone()) {
-      // Arm is at the target angle within the tolerance for danger zone. We already made sure the targets were safe
-      angleControlRequest = armControl;
-      if (park && getElevatorMeters() < (ELEVATOR_PARK_HEIGHT.in(Meters) + ELEVATOR_PARK_TOLERANCE.in(Meters))) {
-        // Elevator can park, turn it off
-        heightControlRequest = neutralOut;
-      } else {
-        heightControlRequest = elevatorControl.withPosition(elevatorDistanceToRotations(elevatorHeightSetpoint));
-      }
+    if (park && getElevatorMeters() < (ELEVATOR_PARK_HEIGHT.in(Meters) + ELEVATOR_PARK_TOLERANCE.in(Meters))) {
+      // Elevator can park, turn it off
+      heightControlRequest = neutralOut;
     } else {
-      // Arm is not at the target yet
-      if (getElevatorMeters() >= ELEVATOR_SAFE_HEIGHT.in(Meters)) {
-        // Elevator is above the safe zone, so the arm can move
-        angleControlRequest = armControl;
-        // Don't let the elevator move below safe zone while the arm is still moving
-        elevatorHeightSetpoint = elevatorHeightSetpoint.lt(ELEVATOR_SAFE_HEIGHT) ? ELEVATOR_SAFE_TARGET
-            : elevatorHeightSetpoint;
-        heightControlRequest = elevatorControl.withPosition(elevatorDistanceToRotations(elevatorHeightSetpoint));
-      } else {
-        // The elevator is below the safe zone, where conflict can occur so just turn the arm off
-        angleControlRequest = neutralOut; // best option to try to prevent damage
-        // Move the elevator to the target if it's above the safe zone, otherwise move it to the edge of the safe zone
-        elevatorHeightSetpoint = elevatorHeightSetpoint.gt(ELEVATOR_SAFE_HEIGHT) ? elevatorHeightSetpoint
-            : ELEVATOR_SAFE_TARGET;
-        heightControlRequest = elevatorControl.withPosition(elevatorDistanceToRotations(elevatorHeightSetpoint));
-      }
+      heightControlRequest = elevatorControl.withPosition(elevatorDistanceToRotations(targetElevatorHeight));
     }
     elevatorMotorLeader.setControl(heightControlRequest);
-    armMotor.setControl(angleControlRequest);
   }
 
   /**
