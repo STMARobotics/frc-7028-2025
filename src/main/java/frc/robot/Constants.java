@@ -336,8 +336,8 @@ public class Constants {
         Rotation2d.fromDegrees(-90));
     /** Pose of the robot relative to a reef branch for scoring coral on L3 */
     public static final Transform2d RELATIVE_SCORING_POSE_CORAL_L3 = new Transform2d(
-        inchesToMeters(-40),
-        inchesToMeters(8),
+        inchesToMeters(-38),
+        inchesToMeters(9.75),
         Rotation2d.fromDegrees(-90));
 
     // spotless:off
