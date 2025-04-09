@@ -9,13 +9,9 @@ import static edu.wpi.first.units.Units.Percent;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
-import static edu.wpi.first.wpilibj.LEDPattern.GradientType.kContinuous;
-import static edu.wpi.first.wpilibj.LEDPattern.gradient;
 import static edu.wpi.first.wpilibj.LEDPattern.progressMaskLayer;
 import static edu.wpi.first.wpilibj.LEDPattern.rainbow;
 import static edu.wpi.first.wpilibj.LEDPattern.solid;
-import static edu.wpi.first.wpilibj.util.Color.kAqua;
-import static edu.wpi.first.wpilibj.util.Color.kBlack;
 import static edu.wpi.first.wpilibj.util.Color.kBlue;
 import static edu.wpi.first.wpilibj.util.Color.kOrange;
 import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
@@ -43,7 +39,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.EjectCoralCommand;
-import frc.robot.commands.ShootAlgaeCommand;
 import frc.robot.commands.TuneArmCommand;
 import frc.robot.commands.led.DefaultLEDCommand;
 import frc.robot.commands.led.LEDBootAnimationCommand;
@@ -134,6 +129,10 @@ public class RobotContainer {
         "intakeAndHoldCoral",
           new EjectCoralCommand(gamePieceManipulatorSubsystem, armSubsystem, indexerSubsystem).withTimeout(0.25)
               .andThen(autoCommands.intakeCoral().andThen(autoCommands.holdCoral()).repeatedly()));
+    NamedCommands.registerCommand("moveArmToReefLowerAlgae", autoCommands.moveArmToReefLowerAlgae());
+    NamedCommands.registerCommand("moveArmToReefUpperAlgae", autoCommands.moveArmToReefUpperAlgae());
+    NamedCommands.registerCommand("holdAlgae", autoCommands.holdAlgae());
+    NamedCommands.registerCommand("shootAlgae", autoCommands.shootAlgae());
 
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Mode", autoChooser);
@@ -247,30 +246,9 @@ public class RobotContainer {
 
     // Algae
     controlBindings.moveArmToReefLowerAlgae()
-        .ifPresent(
-            trigger -> trigger.onTrue(
-                armSubsystem.run(armSubsystem::moveToAlgaeLevel1)
-                    .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::intakeAlgae))
-                    .alongWith(
-                        ledSubsystem.runPatternAsCommand(
-                            gradient(kContinuous, kAqua, kBlack).scrollAtRelativeSpeed(Percent.per(Second).of(100))
-                                .reversed()))
-                    .finallyDo(() -> {
-                      armSubsystem.stop();
-                      gamePieceManipulatorSubsystem.stop();
-                    })));
+        .ifPresent(trigger -> trigger.onTrue(autoCommands.moveArmToReefLowerAlgae()));
     controlBindings.moveArmToReefUpperAlgae()
-        .ifPresent(
-            trigger -> trigger.onTrue(
-                armSubsystem.run(armSubsystem::moveToAlgaeLevel2)
-                    .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::intakeAlgae))
-                    .alongWith(
-                        ledSubsystem.runPatternAsCommand(
-                            gradient(kContinuous, kAqua, kBlack).scrollAtRelativeSpeed(Percent.per(Second).of(100))))
-                    .finallyDo(() -> {
-                      armSubsystem.stop();
-                      gamePieceManipulatorSubsystem.stop();
-                    })));
+        .ifPresent(trigger -> trigger.onTrue(autoCommands.moveArmToReefUpperAlgae()));
 
     controlBindings.holdAlgae().ifPresent(trigger -> trigger.toggleOnTrue(autoCommands.holdAlgae()));
 
@@ -284,10 +262,7 @@ public class RobotContainer {
                       armSubsystem.stop();
                     })));
 
-    controlBindings.shootAlgae()
-        .ifPresent(
-            trigger -> trigger
-                .whileTrue(new ShootAlgaeCommand(armSubsystem, gamePieceManipulatorSubsystem, ledSubsystem)));
+    controlBindings.shootAlgae().ifPresent(trigger -> trigger.whileTrue(autoCommands.shootAlgae()));
 
     // Coral scoring level selection
     controlBindings.selectCoralLevel1().ifPresent(trigger -> trigger.onTrue(runOnce(scoreChooser::selectLevel1)));

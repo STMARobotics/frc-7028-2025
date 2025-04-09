@@ -3,8 +3,10 @@
   "robotLength": 0.922338,
   "holonomicMode": true,
   "pathFolders": [
-    "Three Coral Right",
-    "Three Coral Left"
+    "Center Coral",
+    "Center Coral and Algae",
+    "Three Coral Left",
+    "Three Coral Right"
   ],
   "autoFolders": [],
   "defaultMaxVel": 4.25,
@@ -31,5 +33,7 @@
   "brModuleY": -0.301625,
   "bumperOffsetX": 0.0,
   "bumperOffsetY": 0.0,
-  "robotFeatures": []
+  "robotFeatures": [
+    "{\"name\":\"Line\",\"type\":\"line\",\"data\":{\"start\":{\"x\":0.3,\"y\":0.6},\"end\":{\"x\":0.3,\"y\":0.0},\"strokeWidth\":0.02}}"
+  ]
 }

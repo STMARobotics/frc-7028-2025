@@ -1,6 +1,10 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Percent;
+import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.wpilibj.LEDPattern.GradientType.kContinuous;
+import static edu.wpi.first.wpilibj.LEDPattern.gradient;
 import static edu.wpi.first.wpilibj.LEDPattern.solid;
 import static edu.wpi.first.wpilibj.util.Color.*;
 import static edu.wpi.first.wpilibj2.command.Commands.parallel;
@@ -29,6 +33,7 @@ import frc.robot.commands.AlignToReefCommand;
 import frc.robot.commands.DriveToNearestPose;
 import frc.robot.commands.HoldCoralCommand;
 import frc.robot.commands.IntakeCoralCommand;
+import frc.robot.commands.ShootAlgaeCommand;
 import frc.robot.subsystems.AlignmentSubsystem;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -128,6 +133,49 @@ public class AutoCommands {
    */
   public Command holdCoral(BooleanSupplier parkForLevel1) {
     return new HoldCoralCommand(indexerSubsystem, gamePieceSubsystem, armSubsystem, ledSubsystem, parkForLevel1);
+  }
+
+  /**
+   * Shoots algae into the barge
+   * 
+   * @return new command
+   */
+  public Command shootAlgae() {
+    return new ShootAlgaeCommand(armSubsystem, gamePieceSubsystem, ledSubsystem);
+  }
+
+  /**
+   * Moves the arm into position to pluck algae from the reef in the upper position
+   * 
+   * @return new command
+   */
+  public Command moveArmToReefUpperAlgae() {
+    return armSubsystem.run(armSubsystem::moveToAlgaeLevel2)
+        .alongWith(gamePieceSubsystem.run(gamePieceSubsystem::intakeAlgae))
+        .alongWith(
+            ledSubsystem.runPatternAsCommand(
+                gradient(kContinuous, kAqua, kBlack).scrollAtRelativeSpeed(Percent.per(Second).of(100))))
+        .finallyDo(() -> {
+          armSubsystem.stop();
+          gamePieceSubsystem.stop();
+        });
+  }
+
+  /**
+   * Moves the arm into position to pluck algae from the reef in the lower position
+   * 
+   * @return new command
+   */
+  public Command moveArmToReefLowerAlgae() {
+    return armSubsystem.run(armSubsystem::moveToAlgaeLevel1)
+        .alongWith(gamePieceSubsystem.run(gamePieceSubsystem::intakeAlgae))
+        .alongWith(
+            ledSubsystem.runPatternAsCommand(
+                gradient(kContinuous, kAqua, kBlack).scrollAtRelativeSpeed(Percent.per(Second).of(100)).reversed()))
+        .finallyDo(() -> {
+          armSubsystem.stop();
+          gamePieceSubsystem.stop();
+        });
   }
 
   /**
