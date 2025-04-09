@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Microsecond;
+import static edu.wpi.first.wpilibj.LEDPattern.kOff;
 import static frc.robot.Constants.LEDConstants.DEVICE_ID_LEDS;
 import static frc.robot.Constants.LEDConstants.LED_STRIP_LENGTH;
 import static frc.robot.Constants.LEDConstants.TOTAL_LEDS;
@@ -56,7 +57,7 @@ public class LEDSubsystem extends SubsystemBase {
     return run(() -> {
       pattern.applyTo(frontStripBuffer);
       pattern.applyTo(backStripBuffer);
-    }).finallyDo(() -> LEDPattern.kOff.applyTo(ledBuffer)).ignoringDisable(true);
+    }).finallyDo(this::off).ignoringDisable(true);
   }
 
   /**
@@ -117,6 +118,13 @@ public class LEDSubsystem extends SubsystemBase {
    */
   public int getStripLength() {
     return LED_STRIP_LENGTH;
+  }
+
+  /**
+   * Turns off the LEDs
+   */
+  public void off() {
+    runPattern(kOff);
   }
 
 }

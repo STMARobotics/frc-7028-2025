@@ -2,7 +2,6 @@ package frc.robot.commands;
 
 import static edu.wpi.first.wpilibj.LEDPattern.GradientType.kDiscontinuous;
 import static edu.wpi.first.wpilibj.LEDPattern.gradient;
-import static edu.wpi.first.wpilibj.LEDPattern.kOff;
 import static edu.wpi.first.wpilibj.LEDPattern.solid;
 import static edu.wpi.first.wpilibj.util.Color.kBlack;
 import static edu.wpi.first.wpilibj.util.Color.kCornflowerBlue;
@@ -72,6 +71,6 @@ public class HoldCoralCommand extends Command {
     indexerSubsystem.stop();
     gamePieceManipulatorSubsystem.stop();
     armSubsystem.stop();
-    ledSubsystem.runPattern(kOff);
+    ledSubsystem.off();
   }
 }

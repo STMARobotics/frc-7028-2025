@@ -57,7 +57,7 @@ public class DefaultLEDCommand extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    ledSubsystem.runPattern(kOff);
+    ledSubsystem.off();
   }
 
   @Override

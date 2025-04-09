@@ -1,6 +1,7 @@
 package frc.robot;
 
-import static edu.wpi.first.wpilibj.LEDPattern.kOff;
+import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.wpilibj.LEDPattern.solid;
 import static edu.wpi.first.wpilibj.util.Color.*;
 import static edu.wpi.first.wpilibj2.command.Commands.parallel;
 import static edu.wpi.first.wpilibj2.command.Commands.run;
@@ -168,7 +169,7 @@ public class AutoCommands {
    * 
    * @return new command
    */
-  public Command scoreCoralLevel3LeftTeleop() {
+  public Command scoreCoralLevel3Left() {
     return driveToReefAndAutoScoreCoral(
         armSubsystem::moveToLevel3Align,
           armSubsystem::moveToLevel3Release,
@@ -185,7 +186,7 @@ public class AutoCommands {
    * 
    * @return new command
    */
-  public Command scoreCoralLevel3RightTeleop() {
+  public Command scoreCoralLevel3Right() {
     return driveToReefAndAutoScoreCoral(
         armSubsystem::moveToLevel3Align,
           armSubsystem::moveToLevel3Release,
@@ -195,6 +196,110 @@ public class AutoCommands {
           LATERAL_TARGET_L3_RIGHT,
           highCameraForRight,
           kBlue);
+  }
+
+  /**
+   * Creates a command that will auto align on the left side of level 4, and then runs <code>driveCommand</code>.
+   * This command does not score nor end on its own.
+   * 
+   * @param driveCommand command to run after alignment, while holding the arm up
+   * @return new command
+   */
+  public Command autoAlignCoralLevel4Left(Command driveCommand) {
+    return driveToReefAndAlign(
+        armSubsystem::moveToLevel4Align,
+          armSubsystem::moveToLevel4Release,
+          REEF_L4_SCORE_POSES_RED_LEFT,
+          REEF_L4_SCORE_POSES_BLUE_LEFT,
+          DISTANCE_TARGET_L4,
+          LATERAL_TARGET_L4_LEFT,
+          highCameraForLeft,
+          kGreenYellow,
+          kOrange,
+          driveCommand);
+  }
+
+  /**
+   * Creates a command that will auto align on the right side of level 4, and then runs <code>driveCommand</code>. This
+   * command does not score nor end on its own.
+   * 
+   * @param driveCommand command to run after alignment, while holding the arm up
+   * @return new command
+   */
+  public Command autoAlignCoralLevel4Right(Command driveCommand) {
+    return driveToReefAndAlign(
+        armSubsystem::moveToLevel4Align,
+          armSubsystem::moveToLevel4Release,
+          REEF_L4_SCORE_POSES_RED_RIGHT,
+          REEF_L4_SCORE_POSES_BLUE_RIGHT,
+          DISTANCE_TARGET_L4,
+          LATERAL_TARGET_L4_RIGHT,
+          highCameraForRight,
+          kPurple,
+          kBlue,
+          driveCommand);
+  }
+
+  private Command strobeLeds(Color ledColor) {
+    return ledSubsystem.runPatternAsCommand(solid(ledColor).blink(Seconds.of(0.05)));
+  }
+
+  private Command driveToReef(Color ledColor, List<Pose2d> redPoses, List<Pose2d> bluePoses) {
+    return new DriveToNearestPose(drivetrain, redPoses, bluePoses)
+        .deadlineFor(ledSubsystem.runPatternAsCommand(solid(ledColor)))
+        .finallyDo(ledSubsystem::off);
+  }
+
+  private AlignToReefCommand alignToReef(
+      Distance targetDistance,
+      Distance lateralTarget,
+      PhotonCamera highCamera,
+      boolean allowScoreWithoutTag) {
+    return new AlignToReefCommand(
+        drivetrain,
+        alignmentSubsystem,
+        targetDistance,
+        lateralTarget,
+        highCamera,
+        allowScoreWithoutTag);
+  }
+
+  private Command ledAlignmentSegments(Color ledColor, AlignToReefCommand alignToReef) {
+    return ledSubsystem.runPatternAsCommand(
+        ledSegments(
+            ledColor,
+              // segment order is bottom up
+              armSubsystem::isElevatorAtPosition,
+              armSubsystem::isArmAtAngle,
+              alignToReef::atDistanceGoal,
+              alignToReef::atLateralGoal,
+              alignToReef::atThetaGoal))
+        .finallyDo(ledSubsystem::off);
+  }
+
+  private Command driveToReefAndAlign(
+      Runnable armMethod,
+      Runnable armMethodRelease,
+      List<Pose2d> redPoses,
+      List<Pose2d> bluePoses,
+      Distance targetDistance,
+      Distance lateralTarget,
+      PhotonCamera highCamera,
+      Color driveLedColor,
+      Color alignLedColor,
+      Command driveCommand) {
+
+    var driveToReef = driveToReef(driveLedColor, redPoses, bluePoses);
+    var alignToReef = alignToReef(targetDistance, lateralTarget, highCamera, true);
+    var alignLedCommand = ledAlignmentSegments(alignLedColor, alignToReef);
+
+    return armSubsystem.run(armMethod)
+        .withDeadline(driveToReef)
+        .andThen(
+            alignLedCommand
+                .withDeadline(parallel(armSubsystem.run(armMethod).until(armSubsystem::isAtPosition), alignToReef))
+                .andThen(parallel(strobeLeds(kGreen), armSubsystem.run(armMethodRelease), driveCommand)))
+        .finallyDo(armSubsystem::stop);
   }
 
   private Command autoScoreCoral(
@@ -207,7 +312,7 @@ public class AutoCommands {
       Color ledColor) {
 
     var alignToReef = alignToReef(targetDistance, lateralTarget, highCamera, allowScoreWithoutTag);
-    var ledCommand = ledAlignCommand(ledColor, alignToReef);
+    var ledCommand = ledAlignmentSegments(ledColor, alignToReef);
 
     return ledCommand
         .withDeadline(
@@ -247,104 +352,4 @@ public class AutoCommands {
         .andThen(autoScoreCommand);
   }
 
-  /**
-   * Creates a command that will auto align on the left side of level 4, and then runs <code>driveCommand</code>.
-   * This command does not score nor end on its own.
-   * 
-   * @param driveCommand command to run after alignment, while holding the arm up
-   * @return new command
-   */
-  public Command autoAlignCoralLevel4Left(Command driveCommand) {
-    return driveToReefAndAlignCoral(
-        armSubsystem::moveToLevel4Align,
-          armSubsystem::moveToLevel4Release,
-          REEF_L4_SCORE_POSES_RED_LEFT,
-          REEF_L4_SCORE_POSES_BLUE_LEFT,
-          DISTANCE_TARGET_L4,
-          LATERAL_TARGET_L4_LEFT,
-          highCameraForLeft,
-          kOrange,
-          driveCommand);
-  }
-
-  /**
-   * Creates a command that will auto align on the right side of level 4, and then runs <code>driveCommand</code>. This
-   * command does not score nor end on its own.
-   * 
-   * @param driveCommand command to run after alignment, while holding the arm up
-   * @return new command
-   */
-  public Command autoAlignCoralLevel4Right(Command driveCommand) {
-    return driveToReefAndAlignCoral(
-        armSubsystem::moveToLevel4Align,
-          armSubsystem::moveToLevel4Release,
-          REEF_L4_SCORE_POSES_RED_RIGHT,
-          REEF_L4_SCORE_POSES_BLUE_RIGHT,
-          DISTANCE_TARGET_L4,
-          LATERAL_TARGET_L4_RIGHT,
-          highCameraForRight,
-          kBlue,
-          driveCommand);
-  }
-
-  private Command driveToReefAndAlignCoral(
-      Runnable armMethod,
-      Runnable armMethodRelease,
-      List<Pose2d> redPoses,
-      List<Pose2d> bluePoses,
-      Distance targetDistance,
-      Distance lateralTarget,
-      PhotonCamera highCamera,
-      Color ledColor,
-      Command driveCommand) {
-
-    var driveToReef = driveToReef(ledColor, redPoses, bluePoses);
-    var alignToReef = alignToReef(targetDistance, lateralTarget, highCamera, true);
-    var ledCommand = ledAlignCommand(ledColor, alignToReef);
-
-    return armSubsystem.run(armMethod)
-        .withDeadline(driveToReef)
-        .andThen(
-            ledCommand.withDeadline(
-                parallel(armSubsystem.run(armMethod).until(armSubsystem::isAtPosition), alignToReef)
-                    .andThen(parallel(armSubsystem.run(armMethodRelease), driveCommand))))
-        .finallyDo(armSubsystem::stop);
-  }
-
-  private Command ledAlignCommand(Color ledColor, AlignToReefCommand alignToReef) {
-    return ledSubsystem.runPatternAsCommand(
-        ledSegments(
-            ledColor,
-              // segment order is bottom up
-              armSubsystem::isElevatorAtPosition,
-              armSubsystem::isArmAtAngle,
-              alignToReef::atDistanceGoal,
-              alignToReef::atLateralGoal,
-              alignToReef::atThetaGoal))
-        .finallyDo(() -> ledSubsystem.runPattern(kOff));
-  }
-
-  private AlignToReefCommand alignToReef(
-      Distance targetDistance,
-      Distance lateralTarget,
-      PhotonCamera highCamera,
-      boolean allowScoreWithoutTag) {
-    return new AlignToReefCommand(
-        drivetrain,
-        alignmentSubsystem,
-        targetDistance,
-        lateralTarget,
-        highCamera,
-        allowScoreWithoutTag);
-  }
-
-  private Command driveToReef(Color baseLedColor, List<Pose2d> redPoses, List<Pose2d> bluePoses) {
-    return new DriveToNearestPose(
-        drivetrain,
-        ledSubsystem,
-        lerpRGB(baseLedColor, kWhite, 0.25),
-        () -> drivetrain.getState().Pose,
-        redPoses,
-        bluePoses);
-  }
 }

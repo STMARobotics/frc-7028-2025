@@ -8,7 +8,6 @@ import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
-import static edu.wpi.first.wpilibj.LEDPattern.kOff;
 import static frc.robot.Constants.DriveToPoseConstants.MAX_DRIVE_TO_POSE_ANGULAR_ACCELERATION;
 import static frc.robot.Constants.DriveToPoseConstants.MAX_DRIVE_TO_POSE_ANGULAR_VELOCITY;
 import static frc.robot.Constants.DriveToPoseConstants.MAX_DRIVE_TO_POSE_TRANSLATION_ACCELERATION;
@@ -135,7 +134,7 @@ public class DriveToPoseCommand extends Command {
     thetaController.reset(robotPose.getRotation().getRadians());
     xController.reset(robotPose.getX());
     yController.reset(robotPose.getY());
-    ledSubsystem.runPattern(kOff);
+    ledSubsystem.off();
   }
 
   @Override
@@ -171,7 +170,7 @@ public class DriveToPoseCommand extends Command {
   @Override
   public void end(boolean interrupted) {
     drivetrainSubsystem.setControl(new SwerveRequest.Idle());
-    ledSubsystem.runPattern(kOff);
+    ledSubsystem.off();
   }
 
 }
