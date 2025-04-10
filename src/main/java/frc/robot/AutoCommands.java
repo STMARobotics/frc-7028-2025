@@ -1,10 +1,14 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.wpilibj.LEDPattern.solid;
 import static edu.wpi.first.wpilibj.util.Color.*;
+import static edu.wpi.first.wpilibj2.command.Commands.deadline;
 import static edu.wpi.first.wpilibj2.command.Commands.parallel;
 import static edu.wpi.first.wpilibj2.command.Commands.run;
+import static edu.wpi.first.wpilibj2.command.Commands.sequence;
+import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 import static frc.robot.Constants.AlignmentConstants.DISTANCE_TARGET_L3;
 import static frc.robot.Constants.AlignmentConstants.DISTANCE_TARGET_L4;
 import static frc.robot.Constants.AlignmentConstants.LATERAL_TARGET_L3_LEFT;
@@ -21,7 +25,9 @@ import static frc.robot.Constants.AlignmentConstants.REEF_L4_SCORE_POSES_RED_LEF
 import static frc.robot.Constants.AlignmentConstants.REEF_L4_SCORE_POSES_RED_RIGHT;
 import static frc.robot.subsystems.LEDSubsystem.ledSegments;
 
+import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -29,6 +35,7 @@ import frc.robot.commands.AlignToReefCommand;
 import frc.robot.commands.DriveToNearestPose;
 import frc.robot.commands.HoldCoralCommand;
 import frc.robot.commands.IntakeCoralCommand;
+import frc.robot.commands.ShootAlgaeCommand;
 import frc.robot.subsystems.AlignmentSubsystem;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -128,6 +135,15 @@ public class AutoCommands {
    */
   public Command holdCoral(BooleanSupplier parkForLevel1) {
     return new HoldCoralCommand(indexerSubsystem, gamePieceSubsystem, armSubsystem, ledSubsystem, parkForLevel1);
+  }
+
+  /**
+   * Shoots algae into the barge
+   * 
+   * @return new command
+   */
+  public Command shootAlgae() {
+    return new ShootAlgaeCommand(armSubsystem, gamePieceSubsystem, ledSubsystem);
   }
 
   /**
@@ -238,6 +254,70 @@ public class AutoCommands {
           kPurple,
           kBlue,
           driveCommand);
+  }
+
+  /**
+   * Plucks algae from the reef in the upper position, when approaching from the left. It aligns to the reef, then moves
+   * the arm and drives forward and back
+   * 
+   * @return new command
+   */
+  public Command autoPluckAlgaeHighFromLeft() {
+    return autoPluckAlgae(armSubsystem::moveToAlgaeLevel2, highCameraForLeft);
+  }
+
+  /**
+   * Plucks algae from the reef in the upper position, when approaching from the right. It aligns to the reef, then
+   * moves the arm and drives forward and back
+   * 
+   * @return new command
+   */
+  public Command autoPluckAlgaeHighFromRight() {
+    return autoPluckAlgae(armSubsystem::moveToAlgaeLevel2, highCameraForRight);
+  }
+
+  /**
+   * Plucks algae from the reef in the lower position, when approaching from the left. It aligns to the reef, then moves
+   * the arm and drives forward and back
+   * 
+   * @return new command
+   */
+  public Command autoPluckAlgaeLowFromLeft() {
+    return autoPluckAlgae(armSubsystem::moveToAlgaeLevel1, highCameraForLeft);
+  }
+
+  /**
+   * Plucks algae from the reef in the lower position, when approaching from the right. It aligns to the reef, then
+   * moves the arm and drives forward and back
+   * 
+   * @return new command
+   */
+  public Command autoPluckAlgaeLowFromRight() {
+    return autoPluckAlgae(armSubsystem::moveToAlgaeLevel1, highCameraForRight);
+  }
+
+  private Command autoPluckAlgae(Runnable armMethod, PhotonCamera camera) {
+    return sequence(
+        armSubsystem.run(armSubsystem::park).until(armSubsystem::isAtPosition).withTimeout(0.8),
+          alignToReef(Meters.of(.39), Meters.of(-0.13), camera, true),
+          armSubsystem.run(armMethod).until(armSubsystem::isAtPosition).withTimeout(0.8),
+          deadline(
+              sequence(
+                  drive(new ChassisSpeeds(0, .5, 0)).withTimeout(1.0),
+                    waitSeconds(0.5),
+                    drive(new ChassisSpeeds(0, -.5, 0)).withTimeout(0.5)),
+                armSubsystem.run(armSubsystem::moveToAlgaeLevel1),
+                gamePieceSubsystem.run(gamePieceSubsystem::intakeAlgae)),
+          holdAlgae().until(armSubsystem::isAtPosition))
+        .finallyDo(() -> {
+          armSubsystem.stop();
+          gamePieceSubsystem.stop();
+        });
+  }
+
+  private Command drive(ChassisSpeeds chassisSpeeds) {
+    return drivetrain.applyRequest(() -> new SwerveRequest.ApplyRobotSpeeds().withSpeeds(chassisSpeeds))
+        .finallyDo(() -> drivetrain.setControl(new SwerveRequest.Idle()));
   }
 
   private Command strobeLeds(Color ledColor) {

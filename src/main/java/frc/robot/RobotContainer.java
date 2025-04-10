@@ -43,7 +43,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.EjectCoralCommand;
-import frc.robot.commands.ShootAlgaeCommand;
 import frc.robot.commands.TuneArmCommand;
 import frc.robot.commands.led.DefaultLEDCommand;
 import frc.robot.commands.led.LEDBootAnimationCommand;
@@ -134,6 +133,12 @@ public class RobotContainer {
         "intakeAndHoldCoral",
           new EjectCoralCommand(gamePieceManipulatorSubsystem, armSubsystem, indexerSubsystem).withTimeout(0.25)
               .andThen(autoCommands.intakeCoral().andThen(autoCommands.holdCoral()).repeatedly()));
+    NamedCommands.registerCommand("autoPluckAlgaeLowFromRight", autoCommands.autoPluckAlgaeLowFromRight());
+    NamedCommands.registerCommand("autoPluckAlgaeLowFromLeft", autoCommands.autoPluckAlgaeLowFromLeft());
+    NamedCommands.registerCommand("autoPluckAlgaeHighFromRight", autoCommands.autoPluckAlgaeHighFromRight());
+    NamedCommands.registerCommand("autoPluckAlgaeHighFromLeft", autoCommands.autoPluckAlgaeHighFromLeft());
+    NamedCommands.registerCommand("holdAlgae", autoCommands.holdAlgae());
+    NamedCommands.registerCommand("shootAlgae", autoCommands.shootAlgae());
 
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Mode", autoChooser);
@@ -284,10 +289,7 @@ public class RobotContainer {
                       armSubsystem.stop();
                     })));
 
-    controlBindings.shootAlgae()
-        .ifPresent(
-            trigger -> trigger
-                .whileTrue(new ShootAlgaeCommand(armSubsystem, gamePieceManipulatorSubsystem, ledSubsystem)));
+    controlBindings.shootAlgae().ifPresent(trigger -> trigger.whileTrue(autoCommands.shootAlgae()));
 
     // Coral scoring level selection
     controlBindings.selectCoralLevel1().ifPresent(trigger -> trigger.onTrue(runOnce(scoreChooser::selectLevel1)));
