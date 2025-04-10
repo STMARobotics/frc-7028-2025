@@ -9,9 +9,13 @@ import static edu.wpi.first.units.Units.Percent;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.wpilibj.LEDPattern.GradientType.kContinuous;
+import static edu.wpi.first.wpilibj.LEDPattern.gradient;
 import static edu.wpi.first.wpilibj.LEDPattern.progressMaskLayer;
 import static edu.wpi.first.wpilibj.LEDPattern.rainbow;
 import static edu.wpi.first.wpilibj.LEDPattern.solid;
+import static edu.wpi.first.wpilibj.util.Color.kAqua;
+import static edu.wpi.first.wpilibj.util.Color.kBlack;
 import static edu.wpi.first.wpilibj.util.Color.kBlue;
 import static edu.wpi.first.wpilibj.util.Color.kOrange;
 import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
@@ -129,8 +133,10 @@ public class RobotContainer {
         "intakeAndHoldCoral",
           new EjectCoralCommand(gamePieceManipulatorSubsystem, armSubsystem, indexerSubsystem).withTimeout(0.25)
               .andThen(autoCommands.intakeCoral().andThen(autoCommands.holdCoral()).repeatedly()));
-    NamedCommands.registerCommand("moveArmToReefLowerAlgae", autoCommands.moveArmToReefLowerAlgae());
-    NamedCommands.registerCommand("moveArmToReefUpperAlgae", autoCommands.moveArmToReefUpperAlgae());
+    NamedCommands.registerCommand("autoPluckAlgaeLowFromRight", autoCommands.autoPluckAlgaeLowFromRight());
+    NamedCommands.registerCommand("autoPluckAlgaeLowFromLeft", autoCommands.autoPluckAlgaeLowFromLeft());
+    NamedCommands.registerCommand("autoPluckAlgaeHighFromRight", autoCommands.autoPluckAlgaeHighFromRight());
+    NamedCommands.registerCommand("autoPluckAlgaeHighFromLeft", autoCommands.autoPluckAlgaeHighFromLeft());
     NamedCommands.registerCommand("holdAlgae", autoCommands.holdAlgae());
     NamedCommands.registerCommand("shootAlgae", autoCommands.shootAlgae());
 
@@ -246,9 +252,30 @@ public class RobotContainer {
 
     // Algae
     controlBindings.moveArmToReefLowerAlgae()
-        .ifPresent(trigger -> trigger.onTrue(autoCommands.moveArmToReefLowerAlgae()));
+        .ifPresent(
+            trigger -> trigger.onTrue(
+                armSubsystem.run(armSubsystem::moveToAlgaeLevel1)
+                    .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::intakeAlgae))
+                    .alongWith(
+                        ledSubsystem.runPatternAsCommand(
+                            gradient(kContinuous, kAqua, kBlack).scrollAtRelativeSpeed(Percent.per(Second).of(100))
+                                .reversed()))
+                    .finallyDo(() -> {
+                      armSubsystem.stop();
+                      gamePieceManipulatorSubsystem.stop();
+                    })));
     controlBindings.moveArmToReefUpperAlgae()
-        .ifPresent(trigger -> trigger.onTrue(autoCommands.moveArmToReefUpperAlgae()));
+        .ifPresent(
+            trigger -> trigger.onTrue(
+                armSubsystem.run(armSubsystem::moveToAlgaeLevel2)
+                    .alongWith(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::intakeAlgae))
+                    .alongWith(
+                        ledSubsystem.runPatternAsCommand(
+                            gradient(kContinuous, kAqua, kBlack).scrollAtRelativeSpeed(Percent.per(Second).of(100))))
+                    .finallyDo(() -> {
+                      armSubsystem.stop();
+                      gamePieceManipulatorSubsystem.stop();
+                    })));
 
     controlBindings.holdAlgae().ifPresent(trigger -> trigger.toggleOnTrue(autoCommands.holdAlgae()));
 

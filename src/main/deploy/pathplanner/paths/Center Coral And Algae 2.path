@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.985596026490067,
-        "y": 3.908774834437086
+        "x": 6.0073882450331135,
+        "y": 3.727173013245033
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.618031925891329,
-        "y": 4.684007401137878
+        "x": 6.24188675021612,
+        "y": 4.420622291262632
       },
       "isLocked": false,
-      "linkedName": "CenterCoralAndAlgaeScore1"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -20,8 +20,8 @@
         "y": 4.548013245033112
       },
       "prevControl": {
-        "x": 6.161152268347556,
-        "y": 4.171309270191429
+        "x": 6.305032495903043,
+        "y": 4.090884843181979
       },
       "nextControl": null,
       "isLocked": false,
