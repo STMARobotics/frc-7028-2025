@@ -22,7 +22,6 @@ import static frc.robot.Constants.ArmConstants.ALGAE_LOWER_ANGLE;
 import static frc.robot.Constants.ArmConstants.ALGAE_LOWER_HEIGHT;
 import static frc.robot.Constants.ArmConstants.ALGAE_UPPER_ANGLE;
 import static frc.robot.Constants.ArmConstants.ALGAE_UPPER_HEIGHT;
-import static frc.robot.Constants.ArmConstants.ARM_DANGER_TOLERANCE;
 import static frc.robot.Constants.ArmConstants.ARM_FORBIDDEN_ZONE_MAX;
 import static frc.robot.Constants.ArmConstants.ARM_FORBIDDEN_ZONE_MIN;
 import static frc.robot.Constants.ArmConstants.ARM_INTAKE_ANGLE;
@@ -147,7 +146,6 @@ public class ArmSubsystem extends SubsystemBase {
   private final StatusSignal<AngularVelocity> elevatorVelocitySignal = elevatorMotorLeader.getVelocity();
   private final StatusSignal<Boolean> hasCoralSignal = armCanDi.getS2Closed();
 
-  private final Debouncer armDangerDebouncer = new Debouncer(0.1, DebounceType.kFalling);
   private final Debouncer coralDebouncer = new Debouncer(0.1, DebounceType.kBoth);
 
   @NotLogged
@@ -484,20 +482,6 @@ public class ArmSubsystem extends SubsystemBase {
    * @return true if the arm is at the target angle, within a tolerance
    */
   public boolean isArmAtAngle() {
-    return isArmAtAngle(ARM_POSITION_TOLERANCE);
-  }
-
-  /**
-   * Checks if the arm is at the target angle with the danger zone tolerance. This is public so it gets logged by
-   * Epilogue.
-   * 
-   * @return true if the arm is at the target angle, within the tolerance for danger zone
-   */
-  public boolean isArmAtAngleDangerZone() {
-    return armDangerDebouncer.calculate(isArmAtAngle(ARM_DANGER_TOLERANCE));
-  }
-
-  private boolean isArmAtAngle(Angle tolerance) {
     return armControl.getPositionMeasure().isNear(getArmAngle(), ARM_POSITION_TOLERANCE);
   }
 

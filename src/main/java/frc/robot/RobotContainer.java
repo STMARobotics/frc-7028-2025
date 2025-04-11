@@ -151,6 +151,10 @@ public class RobotContainer {
     photonThread.setDaemon(true);
     photonThread.start();
 
+    // Run the boot animation
+    var bootAnimation = new LEDBootAnimationCommand(ledSubsystem);
+    bootAnimation.schedule();
+
     // Set up default commmands
     var defaultLedCommand = new DefaultLEDCommand(ledSubsystem);
     ledSubsystem.setDefaultCommand(defaultLedCommand);
@@ -159,7 +163,8 @@ public class RobotContainer {
     new Trigger(
         () -> RobotState.isEnabled() && RobotState.isTeleop() && armSubsystem.getCurrentCommand() == null
             && indexerSubsystem.getCurrentCommand() == null
-            && (ledSubsystem.getCurrentCommand() == null || ledSubsystem.getCurrentCommand() == defaultLedCommand))
+            && (ledSubsystem.getCurrentCommand() == null || (ledSubsystem.getCurrentCommand() == defaultLedCommand
+                || ledSubsystem.getCurrentCommand() == bootAnimation)))
         .onTrue(
             autoCommands.intakeCoral().andThen(autoCommands.holdCoral(scoreChooser::isLevel1Selected)).repeatedly());
 
@@ -167,9 +172,6 @@ public class RobotContainer {
     // are not running any command
     gamePieceManipulatorSubsystem
         .setDefaultCommand(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::activeHoldCoral));
-
-    // Run the boot animation
-    new LEDBootAnimationCommand(ledSubsystem).schedule();
   }
 
   private Command makeSlowModeCommand() {

@@ -203,10 +203,6 @@ public class Constants {
     public static final Distance ELEVATOR_SAFE_HEIGHT = Meters.of(0.017);
     public static final Distance ELEVATOR_SAFE_TARGET = Meters.of(0.05);
     /** Min of the range where the manipulator hits the belt when holding coral */
-    public static final Angle ARM_DANGER_MIN = Rotations.of(0.775);
-    /** Max of the range where the manipulator hits the belt when holding coral */
-    public static final Angle ARM_DANGER_MAX = Rotations.of(0.874);
-    public static final Angle ARM_DANGER_TOLERANCE = Degrees.of(20);
 
     /** Min of the zone that the arm is never allowed to be commanded into, or to pass through. */
     public static final Angle ARM_FORBIDDEN_ZONE_MIN = Rotations.of(0.9);

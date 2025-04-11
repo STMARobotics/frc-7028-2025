@@ -376,8 +376,8 @@ public class AutoCommands {
     return armSubsystem.run(armMethod)
         .withDeadline(driveToReef)
         .andThen(
-            alignLedCommand
-                .withDeadline(parallel(armSubsystem.run(armMethod).until(armSubsystem::isAtPosition), alignToReef))
+            alignLedCommand.withDeadline(
+                parallel(armSubsystem.run(armMethod).until(armSubsystem::isAtPosition), alignToReef).withTimeout(3.0))
                 .andThen(parallel(strobeLeds(kGreen), armSubsystem.run(armMethodRelease), driveCommand)))
         .finallyDo(armSubsystem::stop);
   }
@@ -399,6 +399,7 @@ public class AutoCommands {
             gamePieceSubsystem.run(gamePieceSubsystem::activeHoldCoral)
                 .withDeadline(
                     parallel(armSubsystem.run(armMethod).until(armSubsystem::isAtPosition), alignToReef)
+                        .withTimeout(3.0)
                         .andThen(armSubsystem.run(armMethodRelease).withTimeout(0.2)))
                 .andThen(
                     parallel(armSubsystem.run(armMethodRelease), gamePieceSubsystem.run(gamePieceSubsystem::ejectCoral))
