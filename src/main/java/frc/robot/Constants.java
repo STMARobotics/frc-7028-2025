@@ -445,14 +445,14 @@ public class Constants {
         .map(reefPose -> reefPose.plus(RELATIVE_SCORING_POSE_CORAL_L3))
         .collect(toUnmodifiableList());
 
-    public static final Distance DISTANCE_TARGET_L4 = Meters.of(0.38);
+    public static final Distance DISTANCE_TARGET_L4 = Meters.of(0.37);
     public static final Distance DISTANCE_TARGET_L3 = Meters.of(0.34);
 
     public static final Distance LATERAL_TARGET_L3_LEFT = Meters.of(0.05);
     public static final Distance LATERAL_TARGET_L3_RIGHT = Meters.of(0.02);
 
     public static final Distance LATERAL_TARGET_L4_LEFT = Meters.of(0.05);
-    public static final Distance LATERAL_TARGET_L4_RIGHT = Meters.of(0.04);
+    public static final Distance LATERAL_TARGET_L4_RIGHT = Meters.of(0.03);
   }
 
   /**
