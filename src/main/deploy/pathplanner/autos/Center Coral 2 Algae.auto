@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Center Coral And Algae 1"
+                  "pathName": "Center Coral 2 Algae 1"
                 }
               },
               {
@@ -33,6 +33,43 @@
           "type": "named",
           "data": {
             "name": "autoPluckAlgaeLowFromRight"
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Center Coral 2 Algae 2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "holdAlgae"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootAlgae"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center Coral 2 Algae 3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "autoPluckAlgaeHighFromRight"
           }
         },
         {
