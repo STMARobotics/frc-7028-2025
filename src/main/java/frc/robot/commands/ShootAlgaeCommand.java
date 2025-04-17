@@ -6,6 +6,7 @@ import static edu.wpi.first.wpilibj.util.Color.kAqua;
 import static edu.wpi.first.wpilibj.util.Color.kGreen;
 
 import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.GamePieceManipulatorSubsystem;
@@ -20,6 +21,7 @@ public class ShootAlgaeCommand extends Command {
   private final ArmSubsystem armSubsystem;
   private final GamePieceManipulatorSubsystem gamePieceManipulatorSubsystem;
   private final LEDSubsystem ledSubsystem;
+  private final Timer shootTimer = new Timer();
 
   /**
    * Constructs a new ShootAlgaeCommand.
@@ -42,6 +44,8 @@ public class ShootAlgaeCommand extends Command {
   @Override
   public void initialize() {
     gamePieceManipulatorSubsystem.activeHoldAlgae();
+    shootTimer.stop();
+    shootTimer.reset();
   }
 
   @Override
@@ -52,6 +56,7 @@ public class ShootAlgaeCommand extends Command {
       // Release the algae
       gamePieceManipulatorSubsystem.shootAlgae();
       ledSubsystem.runPattern(solid(kGreen));
+      shootTimer.start();
     } else {
       // Hold the algae
       gamePieceManipulatorSubsystem.activeHoldAlgae();
@@ -68,10 +73,16 @@ public class ShootAlgaeCommand extends Command {
   }
 
   @Override
+  public boolean isFinished() {
+    return armSubsystem.isAtPosition() && shootTimer.isRunning() && shootTimer.hasElapsed(0.2);
+  }
+
+  @Override
   public void end(boolean interrupted) {
     gamePieceManipulatorSubsystem.stop();
     armSubsystem.stop();
     ledSubsystem.runPattern(LEDPattern.kOff);
+    shootTimer.stop();
   }
 
 }

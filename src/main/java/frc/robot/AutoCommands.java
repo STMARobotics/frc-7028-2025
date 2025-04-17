@@ -306,7 +306,7 @@ public class AutoCommands {
                   drive(new ChassisSpeeds(0, .5, 0)).withTimeout(1.0),
                     waitSeconds(0.5),
                     drive(new ChassisSpeeds(0, -.5, 0)).withTimeout(0.5)),
-                armSubsystem.run(armSubsystem::moveToAlgaeLevel1),
+                armSubsystem.run(armMethod),
                 gamePieceSubsystem.run(gamePieceSubsystem::intakeAlgae)),
           holdAlgae().until(armSubsystem::isAtPosition))
         .finallyDo(() -> {

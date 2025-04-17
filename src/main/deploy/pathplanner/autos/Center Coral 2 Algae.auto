@@ -61,9 +61,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "deadline",
           "data": {
-            "pathName": "Center Coral 2 Algae 3"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Center Coral 2 Algae 3"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intakeAndHoldCoral"
+                }
+              }
+            ]
           }
         },
         {
