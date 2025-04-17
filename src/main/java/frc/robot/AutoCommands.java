@@ -399,7 +399,7 @@ public class AutoCommands {
             gamePieceSubsystem.run(gamePieceSubsystem::activeHoldCoral)
                 .withDeadline(
                     parallel(armSubsystem.run(armMethod).until(armSubsystem::isAtPosition), alignToReef)
-                        .withTimeout(3.0)
+                        .withTimeout(2.0)
                         .andThen(armSubsystem.run(armMethodRelease).withTimeout(0.2)))
                 .andThen(
                     parallel(armSubsystem.run(armMethodRelease), gamePieceSubsystem.run(gamePieceSubsystem::ejectCoral))
