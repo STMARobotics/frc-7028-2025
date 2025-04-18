@@ -48,7 +48,7 @@
   "folder": "Center Coral 2 Algae",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": -70.0
   },
   "useDefaultConstraints": false
 }
