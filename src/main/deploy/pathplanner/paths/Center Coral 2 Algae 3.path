@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.836185771373376,
-        "y": 5.2460677859008475
+        "x": 6.599263602067011,
+        "y": 4.496713651959344
       },
       "isLocked": false,
       "linkedName": "CenterCoral2AlgaeScore2"
     },
     {
       "anchor": {
-        "x": 5.564279801324504,
-        "y": 5.303476821192053
+        "x": 6.272130681818181,
+        "y": 4.1995028409090915
       },
       "prevControl": {
-        "x": 6.305175320431092,
-        "y": 5.162387901838042
+        "x": 7.183894629787114,
+        "y": 4.813072167833087
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 147.99461679191657
+    "rotation": -58.91249467652004
   },
   "reversed": false,
   "folder": "Center Coral 2 Algae",

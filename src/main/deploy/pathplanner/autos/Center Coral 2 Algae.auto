@@ -98,18 +98,6 @@
               }
             ]
           }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "autoPluckAlgaeHighFromRight"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "holdAlgae"
-          }
         }
       ]
     }
