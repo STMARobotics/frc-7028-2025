@@ -1,6 +1,10 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.Constants.FIELD_LENGTH;
+import static frc.robot.Constants.FIELD_WIDTH;
+import static frc.robot.Constants.QuestNavConstants.QUESTNAV_STD_DEVS;
+import static frc.robot.Constants.QuestNavConstants.ROBOT_TO_QUEST;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
@@ -24,6 +28,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.QuestNav;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 import frc.robot.subsystems.sysid.SysIdSwerveTranslationTorque;
 import java.util.function.Supplier;
@@ -52,6 +57,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   private final SwerveRequest.SysIdSwerveSteerGains m_steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
   private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
   private final SysIdSwerveTranslationTorque m_translationCharacterizationTorque = new SysIdSwerveTranslationTorque();
+
+  private final QuestNav questNav = new QuestNav();
 
   /*
    * SysId routine for characterizing translation with Voltage output mode. This is used to find PID gains for the drive
@@ -134,6 +141,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
     configureAutoBuilder();
     configNeutralMode(NeutralModeValue.Brake);
+    resetPose(new Pose2d());
   }
 
   /**
@@ -323,6 +331,31 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         m_hasAppliedOperatorPerspective = true;
       });
     }
+
+    // QuestNav
+    questNav.processHeartbeat();
+    questNav.cleanupResponses();
+
+    if (questNav.getConnected() && questNav.getTrackingStatus()) {
+      var timestamp = Utils.fpgaToCurrentTime(questNav.getTimestamp());
+      var questPose = questNav.getPose();
+      var robotPose = questPose.transformBy(ROBOT_TO_QUEST.inverse());
+
+      // Make sure we are inside the field
+      if (robotPose.getX() >= 0.0 && robotPose.getX() <= FIELD_LENGTH.in(Meters) && robotPose.getY() >= 0.0
+          && robotPose.getY() <= FIELD_WIDTH.in(Meters)) {
+        // Add the measurement
+        addVisionMeasurement(robotPose, timestamp, QUESTNAV_STD_DEVS);
+      }
+    }
+  }
+
+  @Override
+  public void resetPose(Pose2d pose) {
+    // Reset QuestNav pose
+    questNav.setPose(pose.transformBy(ROBOT_TO_QUEST));
+    // Reset pose estimator pose
+    super.resetPose(pose);
   }
 
   private void startSimThread() {

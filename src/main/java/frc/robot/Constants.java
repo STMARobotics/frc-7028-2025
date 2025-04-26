@@ -27,6 +27,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -127,6 +128,18 @@ public class Constants {
     public static final double APRILTAG_AMBIGUITY_THRESHOLD = 0.2;
     public static final Distance SINGLE_TAG_DISTANCE_THRESHOLD = Meters.of(4.5);
 
+  }
+
+  public static class QuestNavConstants {
+    public static Transform2d ROBOT_TO_QUEST = new Transform2d(
+        new Translation2d(0.0, 0.0),
+        Rotation2d.fromDegrees(0.0));
+
+    public static Matrix<N3, N1> QUESTNAV_STD_DEVS = VecBuilder.fill(
+        0.02, // Trust down to 2cm in X direction
+          0.02, // Trust down to 2cm in Y direction
+          0.035 // Trust down to 2 degrees rotational
+    );
   }
 
   /**

@@ -149,7 +149,8 @@ public class RobotContainer {
     // Start PhotonVision thread
     photonThread.setName("PhotonVision");
     photonThread.setDaemon(true);
-    photonThread.start();
+    // No photonvision, QuestNav instead
+    // photonThread.start();
 
     // Run the boot animation
     var bootAnimation = new LEDBootAnimationCommand(ledSubsystem);
