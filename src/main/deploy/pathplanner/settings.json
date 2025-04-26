@@ -3,9 +3,7 @@
   "robotLength": 0.922338,
   "holonomicMode": true,
   "pathFolders": [
-    "Center Coral",
-    "Center Coral and Algae",
-    "Center Coral 2 Algae",
+    "Center Coral Algae",
     "Three Coral Left",
     "Three Coral Right"
   ],

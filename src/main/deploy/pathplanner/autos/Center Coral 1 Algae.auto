@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Center Coral 2 Algae 1"
+                  "pathName": "Center Coral 1.5 Algae 1"
                 }
               },
               {
@@ -42,7 +42,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Center Coral 2 Algae 2"
+                  "pathName": "Center Coral 1.5 Algae 2"
                 }
               },
               {
@@ -87,7 +87,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Center Coral 2 Algae 3"
+                  "pathName": "Center Coral 1 Algae 3"
                 }
               },
               {
@@ -97,18 +97,6 @@
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "autoPluckAlgaeHighFromRight"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "holdAlgae"
           }
         }
       ]

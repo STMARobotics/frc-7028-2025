@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 6.0073882450331135,
-        "y": 3.727173013245033
-      },
-      "prevControl": null,
-      "nextControl": {
-        "x": 6.435387233493267,
-        "y": 4.919408341935163
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
         "x": 7.4,
         "y": 5.230836092715231
       },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.599263602067011,
+        "y": 4.496713651959344
+      },
+      "isLocked": false,
+      "linkedName": "CenterCoral2AlgaeScore2"
+    },
+    {
+      "anchor": {
+        "x": 6.272130681818181,
+        "y": 4.1995028409090915
+      },
       "prevControl": {
-        "x": 6.8002496761986055,
-        "y": 5.064972974461368
+        "x": 7.183894629787114,
+        "y": 4.813072167833087
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "CenterCoral2AlgaeScore2"
+      "linkedName": "CenterCoral2AlgaePluck2"
     }
   ],
   "rotationTargets": [],
@@ -36,19 +36,19 @@
     "maxVelocity": 2.0,
     "maxAcceleration": 1.5,
     "maxAngularVelocity": 360.0,
-    "maxAngularAcceleration": 360.0,
+    "maxAngularAcceleration": 540.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -70.0
+    "rotation": -58.91249467652004
   },
   "reversed": false,
-  "folder": "Center Coral 2 Algae",
+  "folder": "Center Coral Algae",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 90.0
+    "rotation": -70.0
   },
   "useDefaultConstraints": false
 }
