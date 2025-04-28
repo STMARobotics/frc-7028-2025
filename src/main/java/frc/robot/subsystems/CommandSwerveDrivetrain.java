@@ -337,7 +337,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     questNav.cleanupResponses();
 
     if (questNav.getConnected() && questNav.getTrackingStatus()) {
-      var timestamp = Utils.fpgaToCurrentTime(questNav.getTimestamp());
+      var timestamp = questNav.getTimestamp();
       var questPose = questNav.getPose();
       var robotPose = questPose.transformBy(ROBOT_TO_QUEST.inverse());
 
