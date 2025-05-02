@@ -23,8 +23,6 @@ import static edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kForwa
 import static edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kReverse;
 import static frc.robot.Constants.TeleopDriveConstants.MAX_TELEOP_ANGULAR_VELOCITY;
 import static frc.robot.Constants.TeleopDriveConstants.MAX_TELEOP_VELOCITY;
-import static frc.robot.Constants.VisionConstants.CAMERA_NAMES;
-import static frc.robot.Constants.VisionConstants.ROBOT_TO_CAMERA_TRANSFORMS;
 import static frc.robot.subsystems.LEDSubsystem.candyCane;
 import static frc.robot.subsystems.LEDSubsystem.ledSegments;
 
@@ -33,9 +31,13 @@ import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -71,6 +73,9 @@ public class RobotContainer {
       .withDriveRequestType(DriveRequestType.Velocity)
       .withSteerRequestType(SteerRequestType.MotionMagicExpo);
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
+
+  /** Swerve request to apply during robot-centric path following */
+  private final SwerveRequest.ApplyRobotSpeeds m_pathApplyRobotSpeeds = new SwerveRequest.ApplyRobotSpeeds();
 
   @Logged
   private final IndexerSubsystem indexerSubsystem = new IndexerSubsystem();
@@ -110,12 +115,17 @@ public class RobotContainer {
   private final SendableChooser<Command> autoChooser;
   private final ControlBindings controlBindings;
 
-  private final Thread photonThread = new Thread(
-      new PhotonRunnable(
-          CAMERA_NAMES,
-          ROBOT_TO_CAMERA_TRANSFORMS,
-          drivetrain::addVisionMeasurement,
-          () -> drivetrain.getState().Pose));
+  // private final Thread photonThread = new Thread(
+  // new PhotonRunnable(
+  // CAMERA_NAMES,
+  // ROBOT_TO_CAMERA_TRANSFORMS,
+  // drivetrain::addVisionMeasurement,
+  // () -> drivetrain.getState().Pose));
+
+  private final QuestNav questNavRunnable = new QuestNav(
+      drivetrain::addVisionMeasurement,
+      () -> drivetrain.getState().Pose);
+  private final Thread questNavThread = new Thread(questNavRunnable);
 
   public RobotContainer() {
     // Configure control binding scheme
@@ -141,6 +151,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("holdAlgae", autoCommands.holdAlgae());
     NamedCommands.registerCommand("shootAlgae", autoCommands.shootAlgae());
 
+    configureAutoBuilder();
+
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Mode", autoChooser);
 
@@ -148,10 +160,15 @@ public class RobotContainer {
     configureBindings();
 
     // Start PhotonVision thread
-    photonThread.setName("PhotonVision");
-    photonThread.setDaemon(true);
+    // photonThread.setName("PhotonVision");
+    // photonThread.setDaemon(true);
     // No photonvision, QuestNav instead
     // photonThread.start();
+
+    // Start QuestNav thread
+    questNavThread.setName("QuestNav");
+    questNavThread.setDaemon(true);
+    questNavThread.start();
 
     // Run the boot animation
     var bootAnimation = new LEDBootAnimationCommand(ledSubsystem);
@@ -174,6 +191,33 @@ public class RobotContainer {
     // are not running any command
     gamePieceManipulatorSubsystem
         .setDefaultCommand(gamePieceManipulatorSubsystem.run(gamePieceManipulatorSubsystem::activeHoldCoral));
+  }
+
+  private void configureAutoBuilder() {
+    try {
+      var config = RobotConfig.fromGUISettings();
+      AutoBuilder.configure(
+          () -> drivetrain.getState().Pose, // Supplier of current robot pose
+            (pose) -> { // Consumer for seeding pose against auto
+              questNavRunnable.resetRobotPose(pose);
+              drivetrain.resetPose(pose);
+            },
+            () -> drivetrain.getState().Speeds, // Supplier of current robot speeds
+            // Consumer of ChassisSpeeds and feedforwards to drive the robot
+            (speeds, feedforwards) -> drivetrain.setControl(m_pathApplyRobotSpeeds.withSpeeds(speeds)),
+            new PPHolonomicDriveController(
+                // PID constants for translation
+                new PIDConstants(9, 0, 0),
+                // PID constants for rotation
+                new PIDConstants(8, 0, 0)),
+            config,
+            // Assume the path needs to be flipped for Red vs Blue, this is normally the case
+            () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
+            drivetrain // Subsystem for requirements
+      );
+    } catch (Exception ex) {
+      DriverStation.reportError("Failed to load PathPlanner config and configure AutoBuilder", ex.getStackTrace());
+    }
   }
 
   private Command makeSlowModeCommand() {

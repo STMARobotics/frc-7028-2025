@@ -1,17 +1,27 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Microseconds;
 import static edu.wpi.first.units.Units.Seconds;
+import static frc.robot.Constants.FIELD_LENGTH;
+import static frc.robot.Constants.FIELD_WIDTH;
+import static frc.robot.Constants.QuestNavConstants.QUESTNAV_STD_DEVS;
 import static frc.robot.Constants.QuestNavConstants.ROBOT_TO_QUEST;
 
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Quaternion;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.*;
+import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.Timer;
+import java.util.Arrays;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Supplier;
 
 /**
  * The QuestNav class provides an interface to communicate with an Oculus/Meta Quest VR headset
@@ -22,7 +32,7 @@ import edu.wpi.first.wpilibj.Timer;
  * remove AdvantageKit logger
  * </p>
  */
-public class QuestNav {
+public class QuestNav implements Runnable {
   // Static inner classes for status and command codes
   public static class Status {
     /** Status indicating system is ready for commands */
@@ -46,14 +56,12 @@ public class QuestNav {
     public static final int PING = 3;
   }
 
-  public static class QuestNavPoseEstimate {
-    public final Pose2d pose;
-    public final double timestamp;
-
-    public QuestNavPoseEstimate(Pose2d pose, double timestamp) {
-      this.pose = pose;
-      this.timestamp = timestamp;
-    }
+  @FunctionalInterface
+  public interface AddVisionMeasurement {
+    void addVisionMeasurement(
+        Pose2d visionRobotPoseMeters,
+        double timestampSeconds,
+        Matrix<N3, N1> visionMeasurementStdDevs);
   }
 
   /** NetworkTable instance used for communication */
@@ -72,15 +80,14 @@ public class QuestNav {
   private final DoubleSubscriber questTimestamp = nt4Table.getDoubleTopic("timestamp").subscribe(-1.0f);
 
   /**
-   * Subscriber for raw position data from Quest in Unity coordinate system (in getTranslation, Unity's x becomes FRC's
+   * Subscriber for raw position data from Quest in Unity coordinate system (translation, Unity's x becomes FRC's
    * -y, and Unity's z becomes FRC's x)
    */
-  /** Subscriber for Quest orientation as quaternion */
-  private final FloatArraySubscriber questQuaternion = nt4Table.getFloatArrayTopic("quaternion")
-      .subscribe(new float[] { 0.0f, 0.0f, 0.0f, 0.0f });
-
   private final FloatArraySubscriber questPoseArray = nt4Table.getFloatArrayTopic("poseArray")
-      .subscribe(new float[] { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f });
+      .subscribe(
+          new float[] { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f },
+            PubSubOption.sendAll(true),
+            PubSubOption.pollStorage(20));
 
   /** Subscriber for Quest frame counter */
   private final IntegerSubscriber questFrameCount = nt4Table.getIntegerTopic("frameCount").subscribe(-1);
@@ -106,6 +113,9 @@ public class QuestNav {
   /** Custom log entry */
   private final StringLogEntry logEntry = new StringLogEntry(DataLogManager.getLog(), "QuestNav/Log");
 
+  /** Lock so resetting pose doesn't conflict with getting pose on a separate thread */
+  private final ReentrantLock lock = new ReentrantLock();
+
   /** Last processed heartbeat request ID */
   private double lastProcessedHeartbeatId = 0;
 
@@ -115,22 +125,89 @@ public class QuestNav {
   /** Pose of the robot when the pose was reset */
   private Pose2d resetPoseRobot = new Pose2d();
 
+  /** Server time for the last pose update, used to calculate frequency metric */
+  private double lastPoseServerTime = 0.0;
+
+  /* Consumer of QuestNav pose estimates */
+  private final AddVisionMeasurement poseConsumer;
+
+  /** Supplier of the robot's current pose estimate */
+  private final Supplier<Pose2d> poseSupplier;
+
+  // Entries for metrics/logging
+  private final NetworkTable questDataTable = NetworkTableInstance.getDefault().getTable("QuestData");
+  private final StructPublisher<Pose2d> questPosePublisher = questDataTable.getStructTopic("Robot Pose", Pose2d.struct)
+      .publish();
+  private final DoublePublisher questPeriodPublisher = questDataTable.getDoubleTopic("Period").publish();
+
+  private boolean hasQuestConnected = false;
+
   /**
-   * Gets the pose of the robot on the field
+   * Constructs a new QuestNav object
    * 
-   * @return pose of the robot
+   * @param poseConsumer consumer for pose estimates from QuestNav
+   * @param poseSupplier supplier for the robot's current pose estimate
    */
-  public QuestNavPoseEstimate getRobotPose() {
-    var timestampedPoseArray = questPoseArray.getAtomic();
+  public QuestNav(AddVisionMeasurement poseConsumer, Supplier<Pose2d> poseSupplier) {
+    this.poseConsumer = poseConsumer;
+    this.poseSupplier = poseSupplier;
+  }
 
-    // Calculate the Quest pose by applying the reset offset
-    var rawQuestPose = unpackPose2d(timestampedPoseArray.value);
-    var questOffsetRelativeToReset = rawQuestPose.minus(resetPoseOculus);
-    var questPose = resetPoseRobot.transformBy(questOffsetRelativeToReset);
+  @Override
+  public void run() {
+    var waitHandle = questPoseArray.getHandle();
+    while (!Thread.interrupted()) {
+      // Block the thread until new data comes in from QuestNav
+      try {
+        WPIUtilJNI.waitForObject(waitHandle);
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+      }
 
-    // Calculate the robot pose relative to the Quest
-    var robotPoseRelativeToReset = questPose.transformBy(ROBOT_TO_QUEST.inverse());
-    return new QuestNavPoseEstimate(robotPoseRelativeToReset, timestampedPoseArray.timestamp);
+      if (isTracking()) {
+        if (!hasQuestConnected) {
+          // When QuestNav connects the first time and starts tracking, set the pose to the current pose of the robot
+          resetRobotPose(poseSupplier.get());
+          hasQuestConnected = true;
+        }
+        var timestampedPoseArrays = questPoseArray.readQueue();
+        Arrays.stream(timestampedPoseArrays).forEach(timestampedPoseArray -> {
+          // Process all of the pose estimates since the last notification
+          var robotPoseEstimate = calculateRobotPose(timestampedPoseArray);
+
+          // Make sure we are inside the field
+          if (robotPoseEstimate.getX() >= 0.0 && robotPoseEstimate.getX() <= FIELD_LENGTH.in(Meters)
+              && robotPoseEstimate.getY() >= 0.0 && robotPoseEstimate.getY() <= FIELD_WIDTH.in(Meters)) {
+            // Add the measurement
+            poseConsumer.addVisionMeasurement(robotPoseEstimate, timestampedPoseArray.serverTime, QUESTNAV_STD_DEVS);
+          }
+
+          // Publish data for debugging/logging
+          questPosePublisher.accept(robotPoseEstimate);
+          questPeriodPublisher.accept((timestampedPoseArray.serverTime - lastPoseServerTime) / 1000);
+          lastPoseServerTime = timestampedPoseArray.serverTime;
+        });
+      }
+      // Required cleanup
+      processHeartbeat();
+      cleanupResponses();
+    }
+  }
+
+  private Pose2d calculateRobotPose(TimestampedFloatArray timestampedPoseArray) {
+    lock.lock();
+    try {
+      // Calculate the Quest pose by applying the reset offset
+      var rawQuestPose = unpackPose2d(timestampedPoseArray.value);
+      var questOffsetRelativeToReset = rawQuestPose.minus(resetPoseOculus);
+      var questPose = resetPoseRobot.transformBy(questOffsetRelativeToReset);
+
+      // Calculate the robot pose relative to the Quest
+      var robotPoseRelativeToReset = questPose.transformBy(ROBOT_TO_QUEST.inverse());
+      return robotPoseRelativeToReset;
+    } finally {
+      lock.unlock();
+    }
   }
 
   /**
@@ -140,9 +217,14 @@ public class QuestNav {
    * @param newPose new robot pose
    */
   public void resetRobotPose(Pose2d newPose) {
-    var questPose = unpackPose2d(questPoseArray.get());
-    resetPoseOculus = questPose.transformBy(ROBOT_TO_QUEST.inverse());
-    resetPoseRobot = newPose;
+    lock.lock();
+    try {
+      var questPose = unpackPose2d(questPoseArray.get());
+      resetPoseOculus = questPose.transformBy(ROBOT_TO_QUEST.inverse());
+      resetPoseRobot = newPose;
+    } finally {
+      lock.unlock();
+    }
   }
 
   /**
@@ -161,7 +243,7 @@ public class QuestNav {
    * <br/>
    * <b>MUST BE RUN IN PERIODIC METHOD</b>
    */
-  public void processHeartbeat() {
+  private void processHeartbeat() {
     double requestId = heartbeatRequestSub.get();
     // Only respond to new requests to avoid flooding
     if (requestId > 0 && requestId != lastProcessedHeartbeatId) {
@@ -184,7 +266,7 @@ public class QuestNav {
    *
    * @return Boolean indicating if the Quest is currently tracking (true) or not (false)
    */
-  public boolean getTrackingStatus() {
+  public boolean isTracking() {
     return questIsTracking.get();
   }
 
@@ -217,22 +299,12 @@ public class QuestNav {
   }
 
   /**
-   * Gets the orientation of the Quest headset as a Quaternion.
-   *
-   * @return The orientation as a Quaternion object
-   */
-  public Quaternion getQuaternion() {
-    float[] qqFloats = questQuaternion.get();
-    return new Quaternion(qqFloats[0], qqFloats[1], qqFloats[2], qqFloats[3]);
-  }
-
-  /**
    * Cleans up Quest navigation subroutine messages after processing on the headset.
    * Resets the MOSI value to zero if MISO is non-zero.
    * <br/>
    * <b>MUST BE RUN IN PERIODIC METHOD</b>
    */
-  public void cleanupResponses() {
+  private void cleanupResponses() {
     if (questMiso.get() != Status.READY) {
       switch ((int) questMiso.get()) {
         case Status.POSE_RESET_COMPLETE -> {
