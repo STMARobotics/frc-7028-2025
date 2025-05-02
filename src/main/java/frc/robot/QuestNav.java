@@ -140,7 +140,7 @@ public class QuestNav implements Runnable {
       .publish();
   private final DoublePublisher questPeriodPublisher = questDataTable.getDoubleTopic("Period").publish();
 
-  private boolean hasQuestConnected = false;
+  private boolean wasQuestConnected = false;
 
   /**
    * Constructs a new QuestNav object
@@ -165,10 +165,10 @@ public class QuestNav implements Runnable {
       }
 
       if (isTracking()) {
-        if (!hasQuestConnected) {
-          // When QuestNav connects the first time and starts tracking, set the pose to the current pose of the robot
+        if (!wasQuestConnected) {
+          // When QuestNav (re)connects and is tracking, set the pose to the current pose of the robot
           resetRobotPose(poseSupplier.get());
-          hasQuestConnected = true;
+          wasQuestConnected = true;
         }
         var timestampedPoseArrays = questPoseArray.readQueue();
         Arrays.stream(timestampedPoseArrays).forEach(timestampedPoseArray -> {
@@ -187,6 +187,8 @@ public class QuestNav implements Runnable {
           questPeriodPublisher.accept((timestampedPoseArray.serverTime - lastPoseServerTime) / 1000);
           lastPoseServerTime = timestampedPoseArray.serverTime;
         });
+      } else {
+        wasQuestConnected = false;
       }
       // Required cleanup
       processHeartbeat();

@@ -238,8 +238,11 @@ public class RobotContainer {
                 .withRotationalRate(controlBindings.omega().get())));
 
     controlBindings.wheelsToX().ifPresent(trigger -> trigger.whileTrue(drivetrain.applyRequest(() -> brake)));
-    controlBindings.resetPose()
-        .ifPresent(trigger -> trigger.onTrue(drivetrain.runOnce(() -> drivetrain.resetPose(new Pose2d()))));
+    controlBindings.resetPose().ifPresent(trigger -> trigger.onTrue(drivetrain.runOnce(() -> {
+      var newPose = new Pose2d();
+      drivetrain.resetPose(newPose);
+      questNavRunnable.resetRobotPose(newPose);
+    })));
 
     controlBindings.climb()
         .ifPresent(
