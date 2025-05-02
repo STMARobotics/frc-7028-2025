@@ -123,7 +123,7 @@ public class JoystickControlBindings extends ControlBindings {
   }
 
   @Override
-  public Optional<Trigger> seedFieldCentric() {
+  public Optional<Trigger> resetPose() {
     return Optional.of(leftJoystick.button(11));
   }
 

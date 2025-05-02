@@ -2,6 +2,7 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.Microseconds;
 import static edu.wpi.first.units.Units.Seconds;
+import static frc.robot.Constants.QuestNavConstants.ROBOT_TO_QUEST;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Quaternion;
@@ -105,9 +106,51 @@ public class QuestNav {
   /** Last processed heartbeat request ID */
   private double lastProcessedHeartbeatId = 0;
 
-  public void setPose(Pose2d pose) {
-    resetPosePub.set(new double[] { pose.getX(), pose.getY(), pose.getRotation().getDegrees() });
-    questMosi.set(Command.RESET_POSE);
+  /** Pose of the Quest when the pose was reset */
+  private Pose2d resetPoseOculus = new Pose2d();
+
+  /** Pose of the robot when the pose was reset */
+  private Pose2d resetPoseRobot = new Pose2d();
+
+  /**
+   * Gets the pose of the robot on the field
+   * 
+   * @return pose of the robot
+   */
+  public Pose2d getRobotPose() {
+    return getQuestPose().transformBy(ROBOT_TO_QUEST.inverse());
+  }
+
+  /**
+   * Gets the pose of the Quest on the field
+   * 
+   * @return pose of the Quest
+   */
+  private Pose2d getQuestPose() {
+    var rawPose = getUncorrectedOculusPose();
+    var poseRelativeToReset = rawPose.minus(resetPoseOculus);
+
+    return resetPoseRobot.transformBy(poseRelativeToReset);
+  }
+
+  /**
+   * Gets the raw pose of the oculus, relative to the position where it started
+   * 
+   * @return pose of the oculus
+   */
+  private Pose2d getUncorrectedOculusPose() {
+    return new Pose2d(getTranslation(), getYaw());
+  }
+
+  /**
+   * Set the robot's pose on the field. This is useful to seed the robot to a known position. This is usually called at
+   * the start of the autonomous period.
+   * 
+   * @param newPose new robot pose
+   */
+  public void resetRobotPose(Pose2d newPose) {
+    resetPoseOculus = getUncorrectedOculusPose().transformBy(ROBOT_TO_QUEST.inverse());
+    resetPoseRobot = newPose;
   }
 
   /**
@@ -239,12 +282,4 @@ public class QuestNav {
     return new Translation2d(questnavPosition[2], -questnavPosition[0]);
   }
 
-  /**
-   * Gets the complete pose (position and orientation) of the Quest headset.
-   *
-   * @return The pose as a Pose2d object
-   */
-  public Pose2d getPose() {
-    return new Pose2d(getTranslation(), getYaw());
-  }
 }

@@ -132,8 +132,8 @@ public class Constants {
 
   public static class QuestNavConstants {
     public static Transform2d ROBOT_TO_QUEST = new Transform2d(
-        new Translation2d(0.0, 0.0),
-        Rotation2d.fromDegrees(0.0));
+        new Translation2d(Inches.of((29.0 / 2) - 16.725), Inches.of((29.0 / 2.0) - 5.762)),
+        Rotation2d.fromDegrees(180));
 
     public static Matrix<N3, N1> QUESTNAV_STD_DEVS = VecBuilder.fill(
         0.02, // Trust down to 2cm in X direction

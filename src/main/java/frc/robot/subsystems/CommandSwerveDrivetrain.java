@@ -4,7 +4,6 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.FIELD_LENGTH;
 import static frc.robot.Constants.FIELD_WIDTH;
 import static frc.robot.Constants.QuestNavConstants.QUESTNAV_STD_DEVS;
-import static frc.robot.Constants.QuestNavConstants.ROBOT_TO_QUEST;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
@@ -21,6 +20,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
@@ -59,6 +60,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   private final SysIdSwerveTranslationTorque m_translationCharacterizationTorque = new SysIdSwerveTranslationTorque();
 
   private final QuestNav questNav = new QuestNav();
+
+  private final StructPublisher<Pose2d> questPublisher = NetworkTableInstance.getDefault()
+      .getTable("Drive")
+      .getStructTopic("Quest Robot Pose", Pose2d.struct)
+      .publish();
 
   /*
    * SysId routine for characterizing translation with Voltage output mode. This is used to find PID gains for the drive
@@ -208,15 +214,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             this::resetPose, // Consumer for seeding pose against auto
             () -> getState().Speeds, // Supplier of current robot speeds
             // Consumer of ChassisSpeeds and feedforwards to drive the robot
-            (speeds, feedforwards) -> setControl(
-                m_pathApplyRobotSpeeds.withSpeeds(speeds)
-                    .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesXNewtons())
-                    .withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesYNewtons())),
+            (speeds, feedforwards) -> setControl(m_pathApplyRobotSpeeds.withSpeeds(speeds)),
             new PPHolonomicDriveController(
                 // PID constants for translation
-                new PIDConstants(8, 0, 0),
+                new PIDConstants(9, 0, 0),
                 // PID constants for rotation
-                new PIDConstants(2.5, 0, 0)),
+                new PIDConstants(8, 0, 0)),
             config,
             // Assume the path needs to be flipped for Red vs Blue, this is normally the case
             () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
@@ -333,13 +336,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 
     // QuestNav
-    questNav.processHeartbeat();
-    questNav.cleanupResponses();
-
     if (questNav.getConnected() && questNav.getTrackingStatus()) {
       var timestamp = questNav.getTimestamp();
-      var questPose = questNav.getPose();
-      var robotPose = questPose.transformBy(ROBOT_TO_QUEST.inverse());
+      var robotPose = questNav.getRobotPose();
+      questPublisher.accept(robotPose);
 
       // Make sure we are inside the field
       if (robotPose.getX() >= 0.0 && robotPose.getX() <= FIELD_LENGTH.in(Meters) && robotPose.getY() >= 0.0
@@ -348,12 +348,14 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         addVisionMeasurement(robotPose, timestamp, QUESTNAV_STD_DEVS);
       }
     }
+    questNav.processHeartbeat();
+    questNav.cleanupResponses();
   }
 
   @Override
   public void resetPose(Pose2d pose) {
     // Reset QuestNav pose
-    questNav.setPose(pose.transformBy(ROBOT_TO_QUEST));
+    questNav.resetRobotPose(pose);
     // Reset pose estimator pose
     super.resetPose(pose);
   }

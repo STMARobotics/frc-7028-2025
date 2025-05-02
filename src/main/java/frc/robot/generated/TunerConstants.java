@@ -1,6 +1,7 @@
 package frc.robot.generated;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.Constants.QuestNavConstants.QUESTNAV_STD_DEVS;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.*;
@@ -9,6 +10,7 @@ import com.ctre.phoenix6.signals.*;
 import com.ctre.phoenix6.swerve.*;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.*;
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.measure.*;
@@ -217,7 +219,15 @@ public class TunerConstants {
    * This should only be called once in your robot program,.
    */
   public static CommandSwerveDrivetrain createDrivetrain() {
-    return new CommandSwerveDrivetrain(DrivetrainConstants, FrontLeft, FrontRight, BackLeft, BackRight);
+    return new CommandSwerveDrivetrain(
+        DrivetrainConstants,
+        0,
+        VecBuilder.fill(10.0, 10.0, 30.0),
+        QUESTNAV_STD_DEVS,
+        FrontLeft,
+        FrontRight,
+        BackLeft,
+        BackRight);
   }
 
   /**
