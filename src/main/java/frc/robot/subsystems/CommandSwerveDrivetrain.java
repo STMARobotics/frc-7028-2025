@@ -60,6 +60,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   private final SysIdSwerveTranslationTorque m_translationCharacterizationTorque = new SysIdSwerveTranslationTorque();
 
   private final QuestNav questNav = new QuestNav();
+  private boolean hasQuestConnected = false;
 
   private final StructPublisher<Pose2d> questPublisher = NetworkTableInstance.getDefault()
       .getTable("Drive")
@@ -147,7 +148,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
     configureAutoBuilder();
     configNeutralMode(NeutralModeValue.Brake);
-    resetPose(new Pose2d());
   }
 
   /**
@@ -336,16 +336,21 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 
     // QuestNav
-    if (questNav.getConnected() && questNav.getTrackingStatus()) {
-      var timestamp = questNav.getTimestamp();
-      var robotPose = questNav.getRobotPose();
+    if (questNav.isConnected() && questNav.getTrackingStatus()) {
+      if (!hasQuestConnected) {
+        // When QuestNav connects for the first time and starts tracking, set the pose to the current pose of the robot
+        questNav.resetRobotPose(getState().Pose);
+        hasQuestConnected = true;
+      }
+      var robotPoseEstimate = questNav.getRobotPose();
+      var robotPose = robotPoseEstimate.pose;
       questPublisher.accept(robotPose);
 
       // Make sure we are inside the field
       if (robotPose.getX() >= 0.0 && robotPose.getX() <= FIELD_LENGTH.in(Meters) && robotPose.getY() >= 0.0
           && robotPose.getY() <= FIELD_WIDTH.in(Meters)) {
         // Add the measurement
-        addVisionMeasurement(robotPose, timestamp, QUESTNAV_STD_DEVS);
+        addVisionMeasurement(robotPose, robotPoseEstimate.timestamp, QUESTNAV_STD_DEVS);
       }
     }
     questNav.processHeartbeat();

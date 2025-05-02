@@ -46,6 +46,16 @@ public class QuestNav {
     public static final int PING = 3;
   }
 
+  public static class QuestNavPoseEstimate {
+    public final Pose2d pose;
+    public final double timestamp;
+
+    public QuestNavPoseEstimate(Pose2d pose, double timestamp) {
+      this.pose = pose;
+      this.timestamp = timestamp;
+    }
+  }
+
   /** NetworkTable instance used for communication */
   private final NetworkTableInstance nt4Instance = NetworkTableInstance.getDefault();
 
@@ -65,16 +75,12 @@ public class QuestNav {
    * Subscriber for raw position data from Quest in Unity coordinate system (in getTranslation, Unity's x becomes FRC's
    * -y, and Unity's z becomes FRC's x)
    */
-  private final FloatArraySubscriber questPosition = nt4Table.getFloatArrayTopic("position")
-      .subscribe(new float[] { 0.0f, 0.0f, 0.0f });
-
   /** Subscriber for Quest orientation as quaternion */
   private final FloatArraySubscriber questQuaternion = nt4Table.getFloatArrayTopic("quaternion")
       .subscribe(new float[] { 0.0f, 0.0f, 0.0f, 0.0f });
 
-  /** Subscriber for Quest orientation as Euler angles */
-  private final FloatArraySubscriber questEulerAngles = nt4Table.getFloatArrayTopic("eulerAngles")
-      .subscribe(new float[] { 0.0f, 0.0f, 0.0f });
+  private final FloatArraySubscriber questPoseArray = nt4Table.getFloatArrayTopic("poseArray")
+      .subscribe(new float[] { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f });
 
   /** Subscriber for Quest frame counter */
   private final IntegerSubscriber questFrameCount = nt4Table.getIntegerTopic("frameCount").subscribe(-1);
@@ -89,9 +95,6 @@ public class QuestNav {
   /** Subscriber for Quest tracking loss counter */
   private final IntegerSubscriber questTrackingLostCount = nt4Table.getIntegerTopic("device/trackingLostCounter")
       .subscribe(-1);
-
-  /** Publisher for resetting Quest pose */
-  private final DoubleArrayPublisher resetPosePub = nt4Table.getDoubleArrayTopic("resetpose").publish();
 
   /** Subscriber for heartbeat requests from Quest */
   private final DoubleSubscriber heartbeatRequestSub = nt4Table.getDoubleTopic("heartbeat/quest_to_robot")
@@ -117,29 +120,17 @@ public class QuestNav {
    * 
    * @return pose of the robot
    */
-  public Pose2d getRobotPose() {
-    return getQuestPose().transformBy(ROBOT_TO_QUEST.inverse());
-  }
+  public QuestNavPoseEstimate getRobotPose() {
+    var timestampedPoseArray = questPoseArray.getAtomic();
 
-  /**
-   * Gets the pose of the Quest on the field
-   * 
-   * @return pose of the Quest
-   */
-  private Pose2d getQuestPose() {
-    var rawPose = getUncorrectedOculusPose();
-    var poseRelativeToReset = rawPose.minus(resetPoseOculus);
+    // Calculate the Quest pose by applying the reset offset
+    var rawQuestPose = unpackPose2d(timestampedPoseArray.value);
+    var questOffsetRelativeToReset = rawQuestPose.minus(resetPoseOculus);
+    var questPose = resetPoseRobot.transformBy(questOffsetRelativeToReset);
 
-    return resetPoseRobot.transformBy(poseRelativeToReset);
-  }
-
-  /**
-   * Gets the raw pose of the oculus, relative to the position where it started
-   * 
-   * @return pose of the oculus
-   */
-  private Pose2d getUncorrectedOculusPose() {
-    return new Pose2d(getTranslation(), getYaw());
+    // Calculate the robot pose relative to the Quest
+    var robotPoseRelativeToReset = questPose.transformBy(ROBOT_TO_QUEST.inverse());
+    return new QuestNavPoseEstimate(robotPoseRelativeToReset, timestampedPoseArray.timestamp);
   }
 
   /**
@@ -149,8 +140,19 @@ public class QuestNav {
    * @param newPose new robot pose
    */
   public void resetRobotPose(Pose2d newPose) {
-    resetPoseOculus = getUncorrectedOculusPose().transformBy(ROBOT_TO_QUEST.inverse());
+    var questPose = unpackPose2d(questPoseArray.get());
+    resetPoseOculus = questPose.transformBy(ROBOT_TO_QUEST.inverse());
     resetPoseRobot = newPose;
+  }
+
+  /**
+   * Unpacks the pose data from the Quest headset into a Pose2d object.
+   *
+   * @param poseArray The array containing pose data from the Quest headset
+   * @return A Pose2d object representing the unpacked pose
+   */
+  private Pose2d unpackPose2d(float[] poseArray) {
+    return new Pose2d(new Translation2d(poseArray[2], -poseArray[0]), Rotation2d.fromDegrees(-poseArray[4]));
   }
 
   /**
@@ -173,7 +175,7 @@ public class QuestNav {
    *
    * @return The battery percentage as a Double value
    */
-  public Double getBatteryPercent() {
+  public double getBatteryPercent() {
     return questBatteryPercent.get();
   }
 
@@ -182,7 +184,7 @@ public class QuestNav {
    *
    * @return Boolean indicating if the Quest is currently tracking (true) or not (false)
    */
-  public Boolean getTrackingStatus() {
+  public boolean getTrackingStatus() {
     return questIsTracking.get();
   }
 
@@ -191,7 +193,7 @@ public class QuestNav {
    *
    * @return The frame count as a Long value
    */
-  public Long getFrameCount() {
+  public long getFrameCount() {
     return questFrameCount.get();
   }
 
@@ -200,7 +202,7 @@ public class QuestNav {
    *
    * @return The tracking lost counter as a Long value
    */
-  public Long getTrackingLostCounter() {
+  public long getTrackingLostCounter() {
     return questTrackingLostCount.get();
   }
 
@@ -210,7 +212,7 @@ public class QuestNav {
    *
    * @return Boolean indicating if the Quest is connected (true) or not (false)
    */
-  public Boolean getConnected() {
+  public boolean isConnected() {
     return Seconds.of(Timer.getTimestamp()).minus(Microseconds.of(questTimestamp.getLastChange())).lt(Seconds.of(0.25));
   }
 
@@ -222,15 +224,6 @@ public class QuestNav {
   public Quaternion getQuaternion() {
     float[] qqFloats = questQuaternion.get();
     return new Quaternion(qqFloats[0], qqFloats[1], qqFloats[2], qqFloats[3]);
-  }
-
-  /**
-   * Gets the Quest's timestamp in NetworkTables server time.
-   *
-   * @return The timestamp as a double value
-   */
-  public double getTimestamp() {
-    return questTimestamp.getAtomic().serverTime;
   }
 
   /**
@@ -259,27 +252,6 @@ public class QuestNav {
         }
       }
     }
-  }
-
-  /**
-   * Converts the raw QuestNav yaw to a Rotation2d object. Applies necessary coordinate system
-   * transformations.
-   *
-   * @return Rotation2d representing the headset's yaw
-   */
-  private Rotation2d getYaw() {
-    return Rotation2d.fromDegrees(-questEulerAngles.get()[1]);
-  }
-
-  /**
-   * Gets the position of the Quest headset as a Translation2d object.
-   * Converts the Quest coordinate system to the robot coordinate system.
-   *
-   * @return The position as a Translation2d object
-   */
-  private Translation2d getTranslation() {
-    float[] questnavPosition = questPosition.get();
-    return new Translation2d(questnavPosition[2], -questnavPosition[0]);
   }
 
 }
