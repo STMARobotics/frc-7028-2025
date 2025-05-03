@@ -49,7 +49,7 @@ public class DriveToNearestPose extends Command {
         1.25,
         1.25,
         Units.degreesToRadians(360),
-        Units.degreesToRadians(540));
+        Units.degreesToRadians(360));
     pathCommand = AutoBuilder.pathfindToPose(robotPose.nearest(isRed ? redPoses : bluePoses), constraints);
     pathCommand.initialize();
   }

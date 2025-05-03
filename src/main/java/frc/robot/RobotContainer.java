@@ -36,6 +36,7 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotState;
@@ -239,9 +240,15 @@ public class RobotContainer {
 
     controlBindings.wheelsToX().ifPresent(trigger -> trigger.whileTrue(drivetrain.applyRequest(() -> brake)));
     controlBindings.resetPose().ifPresent(trigger -> trigger.onTrue(drivetrain.runOnce(() -> {
-      var newPose = new Pose2d();
-      drivetrain.resetPose(newPose);
-      questNavRunnable.resetRobotPose(newPose);
+      var isRed = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red;
+      Pose2d resetPose;
+      if (isRed) {
+        resetPose = new Pose2d(17.020, 1.708, Rotation2d.fromDegrees(180));
+      } else {
+        resetPose = new Pose2d(0.46, 6.313, new Rotation2d());
+      }
+      drivetrain.resetPose(resetPose);
+      questNavRunnable.resetRobotPose(resetPose);
     })));
 
     controlBindings.climb()
