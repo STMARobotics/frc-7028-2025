@@ -110,7 +110,7 @@ public class GamePieceManipulatorSubsystem extends SubsystemBase {
    * Allow the wheel to go backward do the the coral can go on the reef
    */
   public void ejectCoral() {
-    wheelMotor.setControl(wheelVoltageOut.withOutput(-4.0));
+    wheelMotor.setControl(wheelVoltageOut.withOutput(-2.1));
   }
 
   /**
