@@ -235,7 +235,7 @@ public class Constants {
 
     public static final Distance ELEVATOR_INTAKE_POSITION = Meters.of(0);
     public static final Distance LEVEL_2_HEIGHT = Meters.of(0.62);
-    public static final Distance LEVEL_3_HEIGHT = Meters.of(0.04);
+    public static final Distance LEVEL_3_HEIGHT = Meters.of(0.0);
     public static final Distance LEVEL_4_HEIGHT = Meters.of(0.71);
     public static final Distance LEVEL_4_HEIGHT_RELEASE = Meters.of(0.71);
     public static final Distance ALGAE_LOWER_HEIGHT = Meters.of(0.0);
@@ -246,7 +246,7 @@ public class Constants {
 
     public static final Angle ARM_INTAKE_ANGLE = Rotations.of(0.765);
     public static final Angle LEVEL_2_ANGLE = Rotations.of(0.72);
-    public static final Angle LEVEL_3_ANGLE_ALIGN = Rotations.of(0.172);
+    public static final Angle LEVEL_3_ANGLE_ALIGN = Rotations.of(0.174);
     public static final Angle LEVEL_3_ANGLE_RELEASE = Rotations.of(0.16);
     public static final Angle LEVEL_4_ANGLE_ALIGN = Rotations.of(0.18);
     public static final Angle LEVEL_4_ANGLE_RELEASE = Rotations.of(0.16);
