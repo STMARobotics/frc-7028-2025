@@ -43,14 +43,11 @@ public abstract class ControlBindings {
   }
 
   /**
-   * Trigger to reset reset the heading to zero.
-   * <p>
-   * Because of global pose estimation, <b>there is no reason this should be used in competition bindings.<b>
-   * </p>
+   * Trigger to reset the robot's pose.
    *
    * @return optional trigger
    */
-  public Optional<Trigger> seedFieldCentric() {
+  public Optional<Trigger> resetPose() {
     return Optional.empty();
   }
 

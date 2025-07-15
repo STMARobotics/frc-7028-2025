@@ -1,6 +1,10 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.Constants.FIELD_LENGTH;
+import static frc.robot.Constants.FIELD_WIDTH;
+import static frc.robot.Constants.QuestNavConstants.QUESTNAV_STD_DEVS;
+import static frc.robot.Constants.QuestNavConstants.ROBOT_TO_QUEST;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
@@ -17,6 +21,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
@@ -24,8 +30,10 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.QuestNavConstants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 import frc.robot.subsystems.sysid.SysIdSwerveTranslationTorque;
+import gg.questnav.questnav.QuestNav;
 import java.util.function.Supplier;
 
 /**
@@ -52,6 +60,13 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   private final SwerveRequest.SysIdSwerveSteerGains m_steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
   private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
   private final SysIdSwerveTranslationTorque m_translationCharacterizationTorque = new SysIdSwerveTranslationTorque();
+
+  private final QuestNav questNav = new QuestNav();
+
+  private final StructPublisher<Pose2d> questPublisher = NetworkTableInstance.getDefault()
+      .getTable("Drive")
+      .getStructTopic("Quest Robot Pose", Pose2d.struct)
+      .publish();
 
   /*
    * SysId routine for characterizing translation with Voltage output mode. This is used to find PID gains for the drive
@@ -134,6 +149,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
     configureAutoBuilder();
     configNeutralMode(NeutralModeValue.Brake);
+    resetPose(new Pose2d());
   }
 
   /**
@@ -200,15 +216,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             this::resetPose, // Consumer for seeding pose against auto
             () -> getState().Speeds, // Supplier of current robot speeds
             // Consumer of ChassisSpeeds and feedforwards to drive the robot
-            (speeds, feedforwards) -> setControl(
-                m_pathApplyRobotSpeeds.withSpeeds(speeds)
-                    .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesXNewtons())
-                    .withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesYNewtons())),
+            (speeds, feedforwards) -> setControl(m_pathApplyRobotSpeeds.withSpeeds(speeds)),
             new PPHolonomicDriveController(
                 // PID constants for translation
-                new PIDConstants(8, 0, 0),
+                new PIDConstants(9, 0, 0),
                 // PID constants for rotation
-                new PIDConstants(2.5, 0, 0)),
+                new PIDConstants(8, 0, 0)),
             config,
             // Assume the path needs to be flipped for Red vs Blue, this is normally the case
             () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
@@ -323,6 +336,31 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         m_hasAppliedOperatorPerspective = true;
       });
     }
+
+    // QuestNav
+    if (questNav.isConnected() && questNav.isTracking()) {
+      var timestamp = questNav.getDataTimestamp();
+      var questPose = questNav.getPose();
+      var robotPose = questPose.transformBy(QuestNavConstants.ROBOT_TO_QUEST.inverse());
+
+      questPublisher.accept(robotPose);
+
+      // Make sure we are inside the field
+      if (robotPose.getX() >= 0.0 && robotPose.getX() <= FIELD_LENGTH.in(Meters) && robotPose.getY() >= 0.0
+          && robotPose.getY() <= FIELD_WIDTH.in(Meters)) {
+        // Add the measurement
+        addVisionMeasurement(robotPose, timestamp, QUESTNAV_STD_DEVS);
+      }
+    }
+    questNav.commandPeriodic();
+  }
+
+  @Override
+  public void resetPose(Pose2d robotPose) {
+    // Reset QuestNav pose
+    questNav.setPose(robotPose.transformBy(ROBOT_TO_QUEST));
+    // Reset pose estimator pose
+    super.resetPose(robotPose);
   }
 
   private void startSimThread() {
