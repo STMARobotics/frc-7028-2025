@@ -7,8 +7,11 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.LEDSubsystem;
+
 import java.util.List;
 
 /**
@@ -19,6 +22,7 @@ public class DriveToNearestPose extends Command {
   private final List<Pose2d> redPoses;
   private final List<Pose2d> bluePoses;
   private final CommandSwerveDrivetrain drivetrain;
+  private final LEDSubsystem ledSubsystem;
 
   private Command pathCommand;
 
@@ -31,14 +35,16 @@ public class DriveToNearestPose extends Command {
    */
   public DriveToNearestPose(
       CommandSwerveDrivetrain drivetrainSubsystem,
+      LEDSubsystem ledSubsystem,
       List<Pose2d> redPoses,
       List<Pose2d> bluePoses) {
 
     this.drivetrain = drivetrainSubsystem;
     this.redPoses = redPoses;
     this.bluePoses = bluePoses;
+    this.ledSubsystem = ledSubsystem;
 
-    addRequirements(drivetrainSubsystem);
+    addRequirements(drivetrainSubsystem, ledSubsystem);
   }
 
   @Override
@@ -50,7 +56,13 @@ public class DriveToNearestPose extends Command {
         1.25,
         Units.degreesToRadians(360),
         Units.degreesToRadians(540));
-    pathCommand = AutoBuilder.pathfindToPose(robotPose.nearest(isRed ? redPoses : bluePoses), constraints);
+    // pathCommand = AutoBuilder.pathfindToPose(robotPose.nearest(isRed ? redPoses : bluePoses), constraints);
+    pathCommand = new DriveToPoseCommand(
+        drivetrain,
+        ledSubsystem,
+        Color.kGreen,
+        () -> robotPose,
+        robotPose.nearest(isRed ? redPoses : bluePoses));
     pathCommand.initialize();
   }
 
