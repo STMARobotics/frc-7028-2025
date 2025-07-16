@@ -4,6 +4,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -51,18 +52,14 @@ public class DriveToNearestPose extends Command {
   public void initialize() {
     var robotPose = drivetrain.getState().Pose;
     var isRed = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red;
-    PathConstraints constraints = new PathConstraints(
-        1.25,
-        1.25,
-        Units.degreesToRadians(360),
-        Units.degreesToRadians(540));
-    // pathCommand = AutoBuilder.pathfindToPose(robotPose.nearest(isRed ? redPoses : bluePoses), constraints);
+    Pose2d targetPose = robotPose.nearest(isRed ? redPoses : bluePoses);
     pathCommand = new DriveToPoseCommand(
         drivetrain,
         ledSubsystem,
         Color.kGreen,
         () -> robotPose,
-        robotPose.nearest(isRed ? redPoses : bluePoses));
+        targetPose,
+        targetPose.getRotation().rotateBy(Rotation2d.k180deg));
     pathCommand.initialize();
   }
 
