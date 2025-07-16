@@ -10,7 +10,6 @@ import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentric;
 import com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue;
 import com.therekrab.autopilot.APTarget;
 import com.therekrab.autopilot.Autopilot;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -93,14 +92,18 @@ public class DriveToPoseCommand extends Command {
   @Override
   public void execute() {
     var robotPose = poseProvider.get();
-    
+
     Transform2d output = autopilot.calculate(
         robotPose,
-        new Translation2d(drivetrainSubsystem.getState().Speeds.vxMetersPerSecond, drivetrainSubsystem.getState().Speeds.vyMetersPerSecond),
-        autopilotTarget);
+          new Translation2d(
+              drivetrainSubsystem.getState().Speeds.vxMetersPerSecond,
+              drivetrainSubsystem.getState().Speeds.vyMetersPerSecond),
+          autopilotTarget);
 
     drivetrainSubsystem.setControl(
-        fieldCentricSwerveRequest.withVelocityX(output.getX()).withVelocityY(output.getY()).withRotationalRate(output.getRotation().getRadians()));
+        fieldCentricSwerveRequest.withVelocityX(output.getX())
+            .withVelocityY(output.getY())
+            .withRotationalRate(output.getRotation().getRadians()));
 
     ledSubsystem.runPattern(ledSegments(ledColor, () -> autopilot.atTarget(robotPose, autopilotTarget)));
   }
