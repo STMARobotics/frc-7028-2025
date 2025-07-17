@@ -2,7 +2,6 @@ package frc.robot.commands;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.util.Color;
@@ -49,13 +48,8 @@ public class DriveToNearestPose extends Command {
     var robotPose = drivetrain.getState().Pose;
     var isRed = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red;
     Pose2d targetPose = robotPose.nearest(isRed ? redPoses : bluePoses);
-    pathCommand = new DriveToPoseCommand(
-        drivetrain,
-        ledSubsystem,
-        Color.kGreen,
-        () -> robotPose,
-        targetPose,
-        targetPose.getRotation().rotateBy(Rotation2d.k180deg));
+    pathCommand = new DriveToPoseCommand(drivetrain, ledSubsystem, Color.kGreen, () -> robotPose, targetPose);
+    // targetPose.getRotation().rotateBy(Rotation2d.k180deg));
     pathCommand.initialize();
   }
 

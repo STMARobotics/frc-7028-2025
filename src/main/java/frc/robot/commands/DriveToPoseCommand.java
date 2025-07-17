@@ -6,7 +6,7 @@ import static frc.robot.subsystems.LEDSubsystem.ledSegments;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentric;
+import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentricFacingAngle;
 import com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue;
 import com.therekrab.autopilot.APTarget;
 import com.therekrab.autopilot.Autopilot;
@@ -31,10 +31,15 @@ public class DriveToPoseCommand extends Command {
 
   private final APTarget autopilotTarget;
 
-  private final FieldCentric fieldCentricSwerveRequest = new FieldCentric()
+  // private final FieldCentric fieldCentricSwerveRequest = new FieldCentric()
+  // .withSteerRequestType(SteerRequestType.MotionMagicExpo)
+  // .withDriveRequestType(DriveRequestType.Velocity)
+  // .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance); // Always Blue coordinate system for auto drive
+  private final FieldCentricFacingAngle fieldCentricSwerveRequest = new FieldCentricFacingAngle()
       .withSteerRequestType(SteerRequestType.MotionMagicExpo)
       .withDriveRequestType(DriveRequestType.Velocity)
-      .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance); // Always Blue coordinate system for auto drive
+      .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
+      .withHeadingPID(2.5, 0, 0);
   protected final Supplier<Pose2d> poseProvider;
 
   /**
@@ -79,7 +84,8 @@ public class DriveToPoseCommand extends Command {
     this.ledSubsystem = ledSubsystem;
     this.poseProvider = poseProvider;
     this.ledColor = ledColor;
-    this.autopilotTarget = new APTarget(goalPose).withEntryAngle(entryAngle);
+    // this.autopilotTarget = new APTarget(goalPose).withEntryAngle(entryAngle);
+    this.autopilotTarget = new APTarget().withReference(goalPose);
 
     addRequirements(drivetrainSubsystem, ledSubsystem);
   }
@@ -93,17 +99,16 @@ public class DriveToPoseCommand extends Command {
   public void execute() {
     var robotPose = poseProvider.get();
 
-    Transform2d output = autopilot.calculate(
-        robotPose,
-          new Translation2d(
-              drivetrainSubsystem.getState().Speeds.vxMetersPerSecond,
-              drivetrainSubsystem.getState().Speeds.vyMetersPerSecond),
-          autopilotTarget);
+    var velocities = new Translation2d(
+        drivetrainSubsystem.getState().Speeds.vxMetersPerSecond,
+        drivetrainSubsystem.getState().Speeds.vyMetersPerSecond).rotateBy(robotPose.getRotation().unaryMinus());
+
+    Transform2d output = autopilot.calculate(robotPose, velocities, autopilotTarget);
 
     drivetrainSubsystem.setControl(
         fieldCentricSwerveRequest.withVelocityX(output.getX())
             .withVelocityY(output.getY())
-            .withRotationalRate(output.getRotation().getRadians()));
+            .withTargetDirection(output.getRotation()));
 
     ledSubsystem.runPattern(ledSegments(ledColor, () -> autopilot.atTarget(robotPose, autopilotTarget)));
   }
