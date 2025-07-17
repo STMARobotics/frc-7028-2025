@@ -325,9 +325,7 @@ public class AutoCommands {
   }
 
   private Command driveToReef(Color ledColor, List<Pose2d> redPoses, List<Pose2d> bluePoses) {
-    return new DriveToNearestPose(drivetrain, ledSubsystem, redPoses, bluePoses)
-        .deadlineFor(ledSubsystem.runPatternAsCommand(solid(ledColor)))
-        .finallyDo(ledSubsystem::off);
+    return new DriveToNearestPose(drivetrain, ledSubsystem, redPoses, bluePoses);
   }
 
   private AlignToReefCommand alignToReef(
