@@ -4,6 +4,7 @@ import static com.ctre.phoenix6.signals.GravityTypeValue.Arm_Cosine;
 import static edu.wpi.first.math.util.Units.degreesToRadians;
 import static edu.wpi.first.math.util.Units.inchesToMeters;
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Centimeters;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
@@ -82,20 +83,19 @@ public class Constants {
    * @see DriveToPoseCommand
    */
   public static class DriveToPoseConstants {
-    public static final LinearVelocity MAX_DRIVE_TO_POSE_TRANSLATION_VELOCITY = MAX_TELEOP_VELOCITY.div(2.0);
+    public static final LinearVelocity MAX_DRIVE_TO_POSE_TRANSLATION_VELOCITY = MAX_TELEOP_VELOCITY;
     public static final LinearAcceleration MAX_DRIVE_TO_POSE_TRANSLATION_ACCELERATION = MetersPerSecondPerSecond
-        .of(2.0);
-    public static final AngularVelocity MAX_DRIVE_TO_POSE_ANGULAR_VELOCITY = MAX_TELEOP_ANGULAR_VELOCITY.times(0.75);
+        .of(5.0);
+    public static final AngularVelocity MAX_DRIVE_TO_POSE_ANGULAR_VELOCITY = MAX_TELEOP_ANGULAR_VELOCITY;
     public static final AngularAcceleration MAX_DRIVE_TO_POSE_ANGULAR_ACCELERATION = RadiansPerSecondPerSecond
         .of(6.0 * Math.PI);
 
-    private static final Distance DRIVE_TO_POSE_AUTOPILOT_BEELINE_RADIUS = Meters.of(0.5);
-    private static final Distance DRIVE_TO_POSE_AUTOPILOT_ERROR_XY = Meters.of(0.1);
-    private static final Angle DRIVE_TO_POSE_AUTOPILOT_ERROR_THETA = Degrees.of(5);
-    private static final APConstraints DRIVE_TO_POSE_AUTOPILOT_CONSTRAINTS = new APConstraints()
-        .withVelocity(MAX_DRIVE_TO_POSE_TRANSLATION_VELOCITY.in(MetersPerSecond))
-        .withAcceleration(MAX_DRIVE_TO_POSE_TRANSLATION_ACCELERATION.in(MetersPerSecondPerSecond))
-        .withJerk(2.0);
+    private static final Distance DRIVE_TO_POSE_AUTOPILOT_BEELINE_RADIUS = Centimeters.of(8);
+    private static final Distance DRIVE_TO_POSE_AUTOPILOT_ERROR_XY = Centimeters.of(2);
+    private static final Angle DRIVE_TO_POSE_AUTOPILOT_ERROR_THETA = Degrees.of(.5);
+    private static final APConstraints DRIVE_TO_POSE_AUTOPILOT_CONSTRAINTS = new APConstraints().withVelocity(4)
+        .withAcceleration(15)
+        .withJerk(12.0);
     public static final APProfile DRIVE_TO_POSE_AUTOPILOT_PROFILE = new APProfile()
         .withConstraints(DRIVE_TO_POSE_AUTOPILOT_CONSTRAINTS)
         .withBeelineRadius(DRIVE_TO_POSE_AUTOPILOT_BEELINE_RADIUS)

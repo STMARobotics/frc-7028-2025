@@ -14,6 +14,9 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.ProtobufPublisher;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -35,12 +38,17 @@ public class DriveToPoseCommand extends Command {
   // .withSteerRequestType(SteerRequestType.MotionMagicExpo)
   // .withDriveRequestType(DriveRequestType.Velocity)
   // .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance); // Always Blue coordinate system for auto drive
-  private final FieldCentricFacingAngle fieldCentricSwerveRequest = new FieldCentricFacingAngle()
+  private final FieldCentricFacingAngle fieldCentricSwerveRequest = new FieldCentricFacingAngle().withDeadband(0)
       .withSteerRequestType(SteerRequestType.MotionMagicExpo)
       .withDriveRequestType(DriveRequestType.Velocity)
       .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
       .withHeadingPID(2.5, 0, 0);
   protected final Supplier<Pose2d> poseProvider;
+
+  private final NetworkTable autoPilotTable = NetworkTableInstance.getDefault().getTable("AutoPilot");
+  private final ProtobufPublisher<Transform2d> targetPublisher = autoPilotTable
+      .getProtobufTopic("AutoPilot Output", Transform2d.proto)
+      .publish();
 
   /**
    * Constructs a DriveToPoseCommand
@@ -84,8 +92,7 @@ public class DriveToPoseCommand extends Command {
     this.ledSubsystem = ledSubsystem;
     this.poseProvider = poseProvider;
     this.ledColor = ledColor;
-    // this.autopilotTarget = new APTarget(goalPose).withEntryAngle(entryAngle);
-    this.autopilotTarget = new APTarget().withReference(goalPose);
+    this.autopilotTarget = new APTarget().withReference(goalPose).withEntryAngle(entryAngle);
 
     addRequirements(drivetrainSubsystem, ledSubsystem);
   }
@@ -101,9 +108,11 @@ public class DriveToPoseCommand extends Command {
 
     var velocities = new Translation2d(
         drivetrainSubsystem.getState().Speeds.vxMetersPerSecond,
-        drivetrainSubsystem.getState().Speeds.vyMetersPerSecond).rotateBy(robotPose.getRotation().unaryMinus());
+        drivetrainSubsystem.getState().Speeds.vyMetersPerSecond).rotateBy(robotPose.getRotation());
 
     Transform2d output = autopilot.calculate(robotPose, velocities, autopilotTarget);
+
+    targetPublisher.accept(output);
 
     drivetrainSubsystem.setControl(
         fieldCentricSwerveRequest.withVelocityX(output.getX())
