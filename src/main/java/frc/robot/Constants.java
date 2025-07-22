@@ -96,8 +96,7 @@ public class Constants {
     private static final APConstraints DRIVE_TO_POSE_AUTOPILOT_CONSTRAINTS = new APConstraints().withVelocity(4)
         .withAcceleration(15)
         .withJerk(12.0);
-    public static final APProfile DRIVE_TO_POSE_AUTOPILOT_PROFILE = new APProfile()
-        .withConstraints(DRIVE_TO_POSE_AUTOPILOT_CONSTRAINTS)
+    public static final APProfile DRIVE_TO_POSE_AUTOPILOT_PROFILE = new APProfile(DRIVE_TO_POSE_AUTOPILOT_CONSTRAINTS)
         .withBeelineRadius(DRIVE_TO_POSE_AUTOPILOT_BEELINE_RADIUS)
         .withErrorXY(DRIVE_TO_POSE_AUTOPILOT_ERROR_XY)
         .withErrorTheta(DRIVE_TO_POSE_AUTOPILOT_ERROR_THETA);

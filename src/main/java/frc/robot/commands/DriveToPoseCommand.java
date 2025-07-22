@@ -92,7 +92,7 @@ public class DriveToPoseCommand extends Command {
     this.ledSubsystem = ledSubsystem;
     this.poseProvider = poseProvider;
     this.ledColor = ledColor;
-    this.autopilotTarget = new APTarget().withReference(goalPose).withEntryAngle(entryAngle);
+    this.autopilotTarget = new APTarget(goalPose).withEntryAngle(entryAngle);
 
     addRequirements(drivetrainSubsystem, ledSubsystem);
   }
