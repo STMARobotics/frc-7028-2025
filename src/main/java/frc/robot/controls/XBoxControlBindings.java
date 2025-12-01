@@ -98,4 +98,9 @@ public class XBoxControlBindings extends ControlBindings {
   public Optional<Trigger> shootAlgae() {
     return Optional.of(driverController.povUp());
   }
+
+  @Override
+  public Optional<Trigger> resetPose() {
+    return Optional.of(driverController.start());
+  }
 }

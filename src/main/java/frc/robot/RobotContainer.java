@@ -34,7 +34,9 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -195,7 +197,11 @@ public class RobotContainer {
 
     controlBindings.wheelsToX().ifPresent(trigger -> trigger.whileTrue(drivetrain.applyRequest(() -> brake)));
     controlBindings.resetPose()
-        .ifPresent(trigger -> trigger.onTrue(drivetrain.runOnce(() -> drivetrain.resetPose(new Pose2d()))));
+        .ifPresent(
+            trigger -> trigger.onTrue(
+                drivetrain.runOnce(
+                    () -> drivetrain
+                        .resetPose(new Pose3d(new Translation3d(1, 1, 0), new Rotation3d(0.0, 0.0, 0.0))))));
 
     controlBindings.climb()
         .ifPresent(

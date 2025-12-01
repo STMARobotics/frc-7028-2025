@@ -18,7 +18,10 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -63,9 +66,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
   private final QuestNav questNav = new QuestNav();
 
-  private final StructPublisher<Pose2d> questPublisher = NetworkTableInstance.getDefault()
+  private final StructPublisher<Pose3d> questPublisher = NetworkTableInstance.getDefault()
       .getTable("Drive")
-      .getStructTopic("Quest Robot Pose", Pose2d.struct)
+      .getStructTopic("Quest Robot Pose", Pose3d.struct)
       .publish();
 
   /*
@@ -338,29 +341,39 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 
     // QuestNav
-    if (questNav.isConnected() && questNav.isTracking()) {
-      var timestamp = questNav.getDataTimestamp();
-      var questPose = questNav.getPose();
-      var robotPose = questPose.transformBy(QuestNavConstants.ROBOT_TO_QUEST.inverse());
+    var frames = questNav.getAllUnreadPoseFrames();
+    for (var frame : frames) {
+      if (frame.isTracking()) {
+        var timestamp = frame.dataTimestamp();
+        var questPose = frame.questPose3d();
+        var robotPose = questPose.transformBy(QuestNavConstants.ROBOT_TO_QUEST.inverse());
 
-      questPublisher.accept(robotPose);
+        questPublisher.accept(robotPose);
 
-      // Make sure we are inside the field
-      if (robotPose.getX() >= 0.0 && robotPose.getX() <= FIELD_LENGTH.in(Meters) && robotPose.getY() >= 0.0
-          && robotPose.getY() <= FIELD_WIDTH.in(Meters)) {
-        // Add the measurement
-        addVisionMeasurement(robotPose, timestamp, QUESTNAV_STD_DEVS);
+        // Make sure we are inside the field
+        if (robotPose.getX() >= 0.0 && robotPose.getX() <= FIELD_LENGTH.in(Meters) && robotPose.getY() >= 0.0
+            && robotPose.getY() <= FIELD_WIDTH.in(Meters)) {
+          // Add the measurement
+          addVisionMeasurement(robotPose.toPose2d(), timestamp, QUESTNAV_STD_DEVS);
+        }
       }
     }
     questNav.commandPeriodic();
   }
 
-  @Override
-  public void resetPose(Pose2d robotPose) {
+  public void resetPose(Pose3d robotPose) {
     // Reset QuestNav pose
     questNav.setPose(robotPose.transformBy(ROBOT_TO_QUEST));
     // Reset pose estimator pose
-    super.resetPose(robotPose);
+    super.resetPose(robotPose.toPose2d());
+  }
+
+  @Override
+  public void resetPose(Pose2d robotPose) {
+    resetPose(
+        new Pose3d(
+            new Translation3d(robotPose.getX(), robotPose.getY(), 0.0),
+            new Rotation3d(robotPose.getRotation().getRadians(), 0.0, 0.0)));
   }
 
   private void startSimThread() {
