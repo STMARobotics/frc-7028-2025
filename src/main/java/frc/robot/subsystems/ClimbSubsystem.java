@@ -76,7 +76,7 @@ public class ClimbSubsystem extends SubsystemBase {
         .withSupplyCurrentLimitEnable(true);
     if (Robot.isReal()) {
       // CANdi doesn't support sim
-      climbTalonConfig.Feedback.withRotorToSensorRatio(CLIMB_ROTOR_TO_SENSOR_RATIO).withFusedCANdiPwm2(climbCanDi);
+      climbTalonConfig.Feedback.withRotorToSensorRatio(CLIMB_ROTOR_TO_SENSOR_RATIO).withFusedCANdiPWM2(climbCanDi);
     }
 
     climbMotor.getConfigurator().apply(climbTalonConfig);

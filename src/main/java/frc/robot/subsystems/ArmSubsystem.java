@@ -75,14 +75,13 @@ import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANdi;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.S1CloseStateValue;
 import com.ctre.phoenix6.signals.S2CloseStateValue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
-import edu.wpi.first.units.AngleUnit;
-import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
@@ -199,7 +198,7 @@ public class ArmSubsystem extends SubsystemBase {
 
     elevatorMotorLeader.getConfigurator().apply(elevatorTalonConfig);
     elevatorMotorFollower.getConfigurator().apply(elevatorTalonConfig);
-    elevatorMotorFollower.setControl(new Follower(elevatorMotorLeader.getDeviceID(), false));
+    elevatorMotorFollower.setControl(new Follower(elevatorMotorLeader.getDeviceID(), MotorAlignmentValue.Opposed));
 
     CANdiConfiguration armCanDiConfig = new CANdiConfiguration();
     armCanDiConfig.PWM1.withAbsoluteSensorOffset(ARM_MAGNETIC_OFFSET)
@@ -216,7 +215,7 @@ public class ArmSubsystem extends SubsystemBase {
         .withStatorCurrentLimit(ARM_STATOR_CURRENT_LIMIT)
         .withStatorCurrentLimitEnable(true);
     armTalonConfig.withMotionMagic(ARM_MOTION_MAGIC_CONFIGS);
-    armTalonConfig.Feedback.withRotorToSensorRatio(ARM_ROTOR_TO_SENSOR_RATIO).withFusedCANdiPwm1(armCanDi);
+    armTalonConfig.Feedback.withRotorToSensorRatio(ARM_ROTOR_TO_SENSOR_RATIO).withFusedCANdiPWM1(armCanDi);
 
     armMotor.getConfigurator().apply(armTalonConfig);
     SmartDashboard.putData("Arm", armMechanism);
@@ -490,7 +489,7 @@ public class ArmSubsystem extends SubsystemBase {
    * 
    * @return arm angle
    */
-  private Measure<AngleUnit> getArmAngle() {
+  private Angle getArmAngle() {
     BaseStatusSignal.refreshAll(armPositionSignal, armVelocitySignal);
     return BaseStatusSignal.getLatencyCompensatedValue(armPositionSignal, armVelocitySignal);
   }
@@ -500,7 +499,7 @@ public class ArmSubsystem extends SubsystemBase {
    * 
    * @return arm angle
    */
-  public Measure<AngleUnit> getArmAngleNormalized() {
+  public Angle getArmAngleNormalized() {
     BaseStatusSignal.refreshAll(armPositionSignal, armVelocitySignal);
     return armAngle.mut_replace(
         normalizeArmAngle(BaseStatusSignal.getLatencyCompensatedValue(armPositionSignal, armVelocitySignal)),
@@ -546,7 +545,7 @@ public class ArmSubsystem extends SubsystemBase {
     return elevatorAngleToMeters(elevatorPosition);
   }
 
-  private static double elevatorAngleToMeters(Measure<AngleUnit> angle) {
+  private static double elevatorAngleToMeters(Angle angle) {
     return angle.in(Rotations) * ELEVATOR_DISTANCE_PER_ROTATION.in(Meters.per(Rotation));
   }
 
@@ -613,7 +612,7 @@ public class ArmSubsystem extends SubsystemBase {
    * @param armAngle arm angle to normalize
    * @return normalized arm angle, in rotations
    */
-  static double normalizeArmAngle(Measure<AngleUnit> armAngle) {
+  static double normalizeArmAngle(Angle armAngle) {
     return ((armAngle.in(Rotations) % 1.0) + 1.0) % 1.0;
   }
 
